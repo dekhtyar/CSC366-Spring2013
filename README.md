@@ -1,3 +1,10 @@
-This is a README file for CSC366-Spring2013 repository.
+Business Majors
+===============
 
-Most of the attention should go to the wiki.
+Members
+-------
+- Stephen Calabrese sccalabr@calpoly.edu
+- Luke Larson Luke.P.Larson@gmail.com
+- Alex Boltunov aboltunov@gmail.com
+- Alex Spotnitz aspotnitz@gmail.com
+- Kevin Stein kestein@calpoly.edu
