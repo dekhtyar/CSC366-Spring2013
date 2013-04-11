@@ -13,19 +13,25 @@
 * Lance Tyler <lctyler@calpoly.edu>
 
 ## How to track
+
 Checkout the files like so:
 
-    git clone git@github.com:dekhtyar/CSC366-Spring2013.git CSC366
-    cd CSC366
-    git checkout slightly-blue-team origin/slightly-blue-team
+```sh
+git clone --branch slightly-blue-team git@github.com:dekhtyar/CSC366-Spring2013.git
+cd CSC366
+```
 
 Do some work
 
 Commit your work
 
-    git add new-file modified-file
-    git commit -m 'made some changes'
+```sh
+git add new-file modified-file
+git commit -m 'made some changes'
+```
 
 Push to our ref
 
-    git push
+```sh
+git push
+```
