@@ -1,3 +1,9 @@
-This is a README file for CSC366-Spring2013 repository.
+Team Ross
+---------
 
-Most of the attention should go to the wiki.
+## Team Members
+Riley Lew
+Ian McBride
+Ross McKelvie
+Matt Tondreau
+Matt Schirle
