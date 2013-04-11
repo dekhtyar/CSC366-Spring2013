@@ -1,3 +1,9 @@
-This is a README file for CSC366-Spring2013 repository.
+# Channel 4 News Team
+## Members
+[Daniel Crawford](http://github.com/drcrawfo) (drcrawfo)
 
-Most of the attention should go to the wiki.
+[Doug Guastaferro](http://github.com/dguastaf) (dguastaf)
+
+[Kevin Backers](http://github.com/ksteeleb) (kbackers)
+
+[Timothy Phan](http://github.com/timphan212) (tphan03)
