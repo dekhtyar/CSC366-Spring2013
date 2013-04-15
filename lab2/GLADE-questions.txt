@@ -1,3 +1,10 @@
-Are manufacturers and catalog entity sets?
+G.L.A.D.E. Questions for Q&A Session
 
-Is inventory position the same as inventory record?
+1. Should we have an entity for Manufacturer and Catalog IDs or should they
+just be attributes?
+2. Can you explain what an inventory position is?
+3. Is Allocation an entity or relationship?
+4. Can you explain in greater detail what the External Fulfiller Location ID
+is?
+5. What do you mean by store bins linking External Fulfiller Location IDs to
+the name of the bins?
