@@ -1,0 +1,3 @@
+Are manufacturers and catalog entity sets?
+
+Is inventory position the same as inventory record?
