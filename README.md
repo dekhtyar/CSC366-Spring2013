@@ -6,6 +6,6 @@
 
 [Jack Henderson](http://github.com/jhende) (jhende) 
 
-[Aaron Phung](http://github.com/aaphung) (aaphung)
+[Aaron Phung](http://github.com/phungonyte) (phungonyte)
 
 [Brandon Tanaka](http://github.com/bstanaka) (bstanaka)
