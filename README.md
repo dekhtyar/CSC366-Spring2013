@@ -1,8 +1,11 @@
-This is a README file for CSC366-Spring2013 repository.
+# The Backstreet Boys
+## Members
+[James Aldag](http://github.com/jaldag) (jaldag)
 
-Most of the attention should go to the wiki.
+[Raymond Ching](http://github.com/chaching976) (chaching976)
 
+[Jack Henderson](http://github.com/jhende) (jhende) 
 
-James has now changed this readme so we have a unique branch
+[Aaron Phung](http://github.com/aaphung) (aaphung)
 
-Take that cancer!
+[Brandon Tanaka](http://github.com/bstanaka) (bstanaka)
