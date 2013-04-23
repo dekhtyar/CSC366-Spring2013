@@ -42,3 +42,11 @@ CREATE TABLE Manufacturer (
 CREATE TABLE Catalog (
 
 );
+
+CREATE TABLE Fulfiller (
+
+);
+
+CREATE TABLE Fulfiller (
+
+);
