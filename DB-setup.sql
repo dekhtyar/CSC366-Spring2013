@@ -13,14 +13,20 @@
 CREATE TABLE Location (
     ExternalId          INT PRIMARY KEY,
     Name                VARCHAR2(60),
-    Type                
+    Type                VARCHAR2(60),   -- i.e StoreFront, Warehouse, ect
     Latitude            FLOAT,
     Longitude           FLOAT,
-    SafetyStock         INT,
+    Status              VARCHAR2(15),
+    SafetyStock         INT,  -- Stocks info
     CatalogID           INT,
-    ManufacturerID      INT,
-    Status              VARCHAR2(15)
+    ManufacturerID      INT,  -- /stocks info
+    ItemUPC             VARCHAR2(20), -- These foreign keys reference a StoreItem
+    ItemSKU             VARCHAR2(20),
+    FulfillerID         VARCHAR2(20), 
+    FOREIGN KEY (ItemUPC, ItemSKU, FulfillerID) REFERENCES StoreItem  
 );
+
+
 
 
 CREATE TABLE Bin (
