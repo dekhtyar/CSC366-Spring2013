@@ -13,7 +13,7 @@
 CREATE TABLE Location (
     ExternalId          INT PRIMARY KEY,
     Name                VARCHAR2(60),
-    Type                VARCHAR2(60),   -- i.e StoreFront, Warehouse, ect
+    StoreType           VARCHAR2(60),   -- i.e StoreFront, Warehouse, ect
     Latitude            FLOAT,
     Longitude           FLOAT,
     Status              VARCHAR2(15),
