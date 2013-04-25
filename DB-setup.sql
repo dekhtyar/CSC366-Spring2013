@@ -62,3 +62,10 @@ CREATE TABLE SubscribesTo (
    PRIMARY KEY(CatalogueId, FullfullerId, FullfillerLocationId)
 );
 
+CREATE TABLE FullfilledBy (
+   SKU				VARCHAR2(50),
+	FullfillerId			VARCHAR2(50) REFERENCES FullfillerIds,
+	UPC				INTEGER REFERENCES Items,
+	PRIMARY KEY(SKU, FullfillerId, UPC)
+);
+
