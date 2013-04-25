@@ -9,24 +9,24 @@
 --  CPE366 - Spring 2013
 --  Lab 3
 
-DROP TABLE Manufacturer;
-
-DROP TABLE Catalog;
-
-DROP TABLE Item;
-
-DROP TABLE Fulfiller;
-
-DROP TABLE Location;
-
-DROP TABLE Bin;
-
-DROP TABLE Seller;
-
-DROP TABLE FulfillerItem;
-
-DROP TABLE Stock;
+DROP TABLE OnHandOrder;
 
 DROP TABLE OnHand;
 
-DROP TABLE OnHandOrder;
+DROP TABLE Stock;
+
+DROP TABLE FulfillerItem;
+
+DROP TABLE Seller;
+
+DROP TABLE Bin;
+
+DROP TABLE Location;
+
+DROP TABLE Fulfiller;
+
+DROP TABLE Item;
+
+DROP TABLE Catalog;
+
+DROP TABLE Manufacturer;
