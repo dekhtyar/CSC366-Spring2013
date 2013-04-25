@@ -4,7 +4,7 @@
 --  Corey Farwell
 --  Kyle Sletten
 --  Lance Tyler
---  Ray Tam
+--  Ray Tam (rmtam)
 -- 
 --  CPE366 - Spring 2013
 --  Lab 3
@@ -14,11 +14,19 @@ CREATE TABLE Manufacturer (
 );
 
 CREATE TABLE Catalog (
-
+   --PRIMARY KEY?
 );
 
 CREATE TABLE Fulfiller (
-    Id      INT PRIMARY KEY
+    Id      INT PRIMARY KEY,
+);
+
+CREATE TABLE Item (
+    UPC           INT PRIMARY KEY,
+    SKU           INT PRIMARY KEY,
+    -- CatalogId     INT,
+    -- ManufactureId INT,
+    FOREIGN KEY (FulfillerID) REFERENCES Fulfiller
 );
 
 CREATE TABLE Location (
@@ -40,10 +48,6 @@ CREATE TABLE Location (
 
 
 CREATE TABLE Bin (
-);
-
-CREATE TABLE Item (
-    UPC     INT PRIMARY KEY
 );
 
 CREATE TABLE StoreItem (
