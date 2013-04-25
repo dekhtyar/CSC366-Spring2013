@@ -12,21 +12,23 @@
 -- BEGIN Mfc
 
 CREATE TABLE Manufacturer (
-   MfcId          INT PRIMARY KEY
+   MfcID   INT PRIMARY KEY
 );
 
 CREATE TABLE Catalog (
-   CatalogId      INT,
-   MfcBy          INT,
-   PRIMARY KEY (CatalogId, MfcBy)
-   FOREIGN KEY (MfcBy) REFERENCES Manufacturer
+   MfcID        INT,
+   CatalogID    INT,
+   PRIMARY KEY (MfcID, CatalogID)
+   FOREIGN KEY (MfcID)
+        REFERENCES Manufacturer (MfcID)
 );
 
 CREATE TABLE Item (
     UPC           INT PRIMARY KEY,
-    CatalogId     INT,
-    ManufactureId INT,
-    FOREIGN KEY (FulfillerID) REFERENCES Fulfiller
+    MfcID         INT,
+    CatalogID     INT,
+    FOREIGN KEY (MfcID, CatalogID)
+        REFERENCES Catalog (MfcID, CatalogID)
 );
 
 -- END Mfc
@@ -34,28 +36,33 @@ CREATE TABLE Item (
 -- BEGIN Fulfiller
 
 CREATE TABLE Fulfiller (
-    FulfillerId      VARCHAR2(20) PRIMARY KEY,
+    FulfillerID INT PRIMARY KEY,
 );
 
 CREATE TABLE Location (
-    FulfillerID         VARCHAR2(20),
-    ExternalId          INT PRIMARY KEY,
+    FulfillerID         INT,
+    ExternalID          INT,
     Name                VARCHAR2(60),
     StoreType           VARCHAR2(60),   -- i.e StoreFront, Warehouse, ect
     Latitude            FLOAT,
     Longitude           FLOAT,
     Status              VARCHAR2(15),
-    SafetyStock         INT,  -- Stocks info
-    FOREIGN KEY (ManufacturerID, CatalogID) REFERENCES Catalog,
-    FOREIGN KEY (FulfillerID) REFERENCES Fulfiller
+    SafetyStock         INT,  -- Stocks info,
+    PRIMARY KEY (FulfillerID, ExternalID),
+    FOREIGN KEY (MfcID, CatalogID)
+        REFERENCES Catalog (MfcID, CatalogID),
+    FOREIGN KEY (FulfillerID)
+        REFERENCES Fulfiller (FulfillerID)
 );
 
 -- Incomplete
 CREATE TABLE Bin (
-    Name                VARCHAR2(25),
-    LocId               INT,
-    PRIMARY KEY (Name, Location),
-    FOREIGN KEY (LocId) REFERENCES Location
+    FulfillerID INT,
+    ExternalID  INT,
+    Name        VARCHAR2(25),
+    PRIMARY KEY (FulfillerID, ExternalID, Name),
+    FOREIGN KEY (FulfillerID, ExternalID)
+        REFERENCES Location (FulfillerID, ExternalID)
 );
 
 CREATE TABLE Seller (
@@ -64,8 +71,10 @@ CREATE TABLE Seller (
     FulfillerID INT,
     ExternalID  INT,
     PRIMARY KEY (MfcID, CatalogID, FulfillerID, ExternalID),
-    FOREIGN KEY (MfcID, CatalogID) REFERENCES Catalog,
-    FOREIGN KEY (FulfillerID, ExternalID) REFERENCES Location
+    FOREIGN KEY (MfcID, CatalogID)
+        REFERENCES Catalog (MfcID, CatalogID),
+    FOREIGN KEY (FulfillerID, ExternalID)
+        REFERENCES Location(FulfillerID, ExternalID)
 );
 
 -- END Fulfiller
@@ -77,7 +86,8 @@ CREATE TABLE StoreItem (
     SKU         INT,
     UPC         INT,
     PRIMARY KEY (FulfillerID, SKU),
-    FOREIGN KEY (UPC) REFERENCES Item
+    FOREIGN KEY (UPC)
+        REFERENCES Item (UPC)
 );
 
 CREATE TABLE Stock (
@@ -88,20 +98,24 @@ CREATE TABLE Stock (
     Safety      INT,
     LTD         INT,
     PRIMARY KEY (FulfillerID, ExternalID, SKU),
-    FOREIGN KEY (FulfillerID, ExternalID) REFERENCES Location,
-    FOREIGN KEY (FulfillerID, SKU) REFERENCESS StoreItem
+    FOREIGN KEY (FulfillerID, ExternalID)
+        REFERENCES Location (FulfillerID, ExternalID),
+    FOREIGN KEY (FulfillerID, SKU)
+        REFERENCES StoreItem (FulfillerID, SKU)
 );
 
 CREATE TABLE OnHand (
     FulfillerID INT,
     ExternalID  INT,
-    Name        VARCHAR2(20),
+    Name        VARCHAR2(25),
     SKU         INT,
     Quantity    INT,
     Allocated   INT,
     PRIMARY KEY (FulfillerID, ExternalID, Name, SKU),
-    FOREIGN KEY (FulfillerID, ExternalID, Name) REFERENCES Bin,
-    FOREIGN KEY (FulfillerID, SKU) REFERENCES StoreItem
+    FOREIGN KEY (FulfillerID, ExternalID, Name)
+        REFERENCES Bin (FulfillerID, ExternalID, Name),
+    FOREIGN KEY (FulfillerID, SKU)
+        REFERENCES StoreItem (FulfillerID, SKU)
 );
 
 -- END Stock
@@ -109,15 +123,18 @@ CREATE TABLE OnHand (
 -- BEGIN Order
 
 CREATE TABLE OnHandOrder (
-    OrderId     INT PRIMARY KEY,
+    OrderID     INT PRIMARY KEY,
     FulfillerID INT,
     ExternalID  INT,
-    Name        VARCHAR2(20),
+    Name        VARCHAR2(25),
     SKU         INT,
     CreatedOn   DATE,
     Quantity    INT,
-    FOREIGN KEY (FulfillerID, ExternalID, Name) REFERENCES Bin,
-    FOREIGN KEY (FulfillerID, ExternalID, Name, SKU) REFERENCES OnHand
+    FOREIGN KEY (FulfillerID, ExternalID, Name)
+        REFERENCES Bin (FulfillerID, ExternalID, Name),
+    FOREIGN KEY (FulfillerID, ExternalID, Name, SKU)
+        REFERENCES OnHand (FulfillerID, ExternalID, Name, SKU)
+
 );
 
 -- END Order
