@@ -7,3 +7,4 @@ DROP TABLE Bins;
 DROP TABLE Items;
 DROP TABLE Locations;
 DROP TABLE FullfillerIds;
+DROP TABLE FullfilledBy;
