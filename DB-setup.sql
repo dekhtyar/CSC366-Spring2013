@@ -10,15 +10,18 @@
 --  Lab 3
 
 CREATE TABLE Manufacturer (
-
+   MfcId          INT PRIMARY KEY
 );
 
 CREATE TABLE Catalog (
-   --PRIMARY KEY?
+   CatalogId      INT,
+   MfcBy          INT,
+   PRIMARY KEY (CatalogId, MfcBy)
+   FOREIGN KEY (MfcBy) REFERENCES Manufacturer
 );
 
 CREATE TABLE Fulfiller (
-    Id      INT PRIMARY KEY,
+    FulfillerId      VARCHAR2(20) PRIMARY KEY,
 );
 
 CREATE TABLE Item (
@@ -46,8 +49,13 @@ CREATE TABLE Location (
     FOREIGN KEY (FulfillerID) REFERENCES Fulfiller
 );
 
-
+-- Incomplete
 CREATE TABLE Bin (
+    Name                VARCHAR2(25),
+    LocId               INT,
+
+    PRIMARY KEY (Name, Location),
+    FOREIGN KEY (LocId) REFERENCES Location
 );
 
 CREATE TABLE StoreItem (
