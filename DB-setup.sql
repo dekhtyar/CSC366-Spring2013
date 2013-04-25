@@ -12,7 +12,7 @@ CREATE TABLE Manufacturers (
 
 CREATE TABLE Catalogs (
   catalogId varchar2(10) PRIMARY KEY NOT NULL,
-  manufacturerId varchar2(10) FOREIGN KEY REFERENCES Manufacturers(manufacturerId) NOT NULL
+  manufacturerId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Manufacturers(manufacturerId) NOT NULL
 )
 
 CREATE TABLE Locations (
