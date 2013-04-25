@@ -7,7 +7,7 @@
 --Riley Lew
 
 DROP TABLE Manufacturers;
-DROP TABLE Catalog;
+DROP TABLE Catalogs;
 DROP TABLE Locations;
 DROP TABLE LocationOffersCatalogs;
 DROP TABLE Fulfillers;
