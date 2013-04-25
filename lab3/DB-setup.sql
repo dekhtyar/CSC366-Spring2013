@@ -28,11 +28,12 @@ Create Table Clients(
 
 CREATE TABLE Bins(
 	Name VARCHAR2(30),
-	ExtFulfillerID INT references Locations(ExtFulfillerID),
-	FulfillerID INT references Locations(FulfillerID),
+	ExtFulfillerID INT,
+	FulfillerID INT,
 	status VARCHAR2(30),
 	type VARCHAR2(30),
 	PRIMARY KEY (Name, ExtFulfillerID, FulfillerID)
+	FOREIGN KEY (ExtFulfillerID, FulfillerID) references Locations(ExtFulfillerId, FulfillerID)
 );
 
 Create Table Products(
@@ -53,14 +54,18 @@ Create Table Inventory(
 );
 
 CREATE TABLE Holds(
-	Name VARCHAR2(30) references Bins(Name),
-	FulfillerID INT references Locations(FulfillerID),
-	ExtFulfillerID INT references Locations(ExtFulfillerID),
-	SKU INT references Inventory(SKU),
-	UPC INT references Products(UPC),
+	Name VARCHAR2(30),
+	FulfillerID INT,
+	ExtFulfillerID INT,
+	SKU INT,
+	UPC INT,
 	Allocation INT,
 	OnHand INT,
-	PRIMARY KEY (Name, FulfillerID, ExtFulfillerID, SKU, UPC)
+	PRIMARY KEY (Name, FulfillerID, ExtFulfillerID, SKU, UPC),
+	FOREIGN KEY (Name) references Bins(Name),
+	FOREIGN KEY (SKU) references Inventory(SKU),
+	FOREIGN KEY (UPC) references Products(UPC),
+	FOREIGN KEY (ExtFulfillerID, FulfillerID) references Locations(ExtFulfillerId, FulfillerID)
 );
 
 Create Table Stocks(
