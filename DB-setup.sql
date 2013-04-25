@@ -17,7 +17,7 @@ CREATE TABLE Catalogs (
 
 CREATE TABLE Locations (
   locationId varchar2(10) PRIMARY KEY NOT NULL,
-  fulfillerId varchar2(10) PRIMARY KEY NOT NULL,
+  fulfillerId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
   name varchar2(50),
   type varchar2(50),
   latitude decimal(9,6),
@@ -50,9 +50,9 @@ CREATE TABLE Products (
 )
 
 CREATE TABLE Bins (
-  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
-  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
-  name varchar2(50),
+  locationId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
+  fulfillerId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
+  name varchar2(50) PRIMARY KEY,
   type varchar2(50),
   status varchar2(10)
 )
