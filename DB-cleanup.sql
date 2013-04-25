@@ -1,0 +1,9 @@
+DROP TABLE SubscribesTo;
+DROP TABLE Catalogues;
+DROP TABLE Manufacturers;
+DROP TABLE StoredAt;
+DROP TABLE StoredIn;
+DROP TABLE Bins;
+DROP TABLE Items;
+DROP TABLE Locations;
+DROP TABLE FullfillerIds;
