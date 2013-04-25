@@ -21,7 +21,7 @@ CREATE TABLE Locations (
   locationId varchar2(10) NOT NULL,
   fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
   name varchar2(50),
-  type varchar2(50),
+  locationType varchar2(50),
   latitude decimal(9,6),
   longitude decimal(9,6),
   status varchar2(50),
@@ -57,7 +57,7 @@ CREATE TABLE Bins (
   locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
   fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
   name varchar2(50),
-  type varchar2(50),
+  binType varchar2(50),
   status varchar2(10),
 
   PRIMARY KEY (locationId, fulfillerId, name)
