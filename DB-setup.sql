@@ -64,6 +64,6 @@ CREATE TABLE BinContainsProducts (
 
 CREATE TABLE LocationSellsProducts (
   ltd varchar2(10),
-  storeSku varchar2(10) NOT NULL,
+  storeSku varchar2(10),
   safetyStock varchar2(10)
 )
