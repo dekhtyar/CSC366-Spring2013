@@ -38,7 +38,7 @@ CREATE TABLE Fulfillers (
 CREATE TABLE FulfillerCarries (
   fulfillerId varchar2(10) FOREIGN KEY NOT NULL,
   productUpc varchar2(10) FOREIGN KEY NOT NULL,
-  sku varchar2(10)
+  sku varchar2(10) NOT NULL
 )
 
 CREATE TABLE Products (
