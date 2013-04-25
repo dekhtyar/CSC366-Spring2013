@@ -79,9 +79,9 @@ CREATE TABLE Seller (
 
 -- END Fulfiller
 
--- BEGIN StoreItem
+-- BEGIN FulfillerItem
 
-CREATE TABLE StoreItem (
+CREATE TABLE FulfillerItem (
     FulfillerID INT,
     SKU         INT,
     UPC         INT,
@@ -101,7 +101,7 @@ CREATE TABLE Stock (
     FOREIGN KEY (FulfillerID, ExternalID)
         REFERENCES Location (FulfillerID, ExternalID),
     FOREIGN KEY (FulfillerID, SKU)
-        REFERENCES StoreItem (FulfillerID, SKU)
+        REFERENCES FulfillerItem (FulfillerID, SKU)
 );
 
 CREATE TABLE OnHand (
@@ -115,7 +115,7 @@ CREATE TABLE OnHand (
     FOREIGN KEY (FulfillerID, ExternalID, Name)
         REFERENCES Bin (FulfillerID, ExternalID, Name),
     FOREIGN KEY (FulfillerID, SKU)
-        REFERENCES StoreItem (FulfillerID, SKU)
+        REFERENCES FulfillerItem (FulfillerID, SKU)
 );
 
 -- END Stock
