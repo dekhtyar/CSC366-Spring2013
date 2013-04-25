@@ -56,7 +56,7 @@ CREATE TABLE Products (
 CREATE TABLE Bins (
   locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
   fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
-  name varchar2(50),
+  name varchar2(50) NOT NULL,
   binType varchar2(50),
   status varchar2(10),
 
@@ -65,11 +65,17 @@ CREATE TABLE Bins (
 
 CREATE TABLE BinContainsProducts (
   productUpc varchar2(10) FOREIGN KEY REFERENCES Products(upc) NOT NULL,
+  binName varchar2(10) FOREIGN KEY REFERENCES Bins(name) NOT NULL,
+  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
+  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL
   allocated varchar2(6),
   onHand varchar2(6)
 )
 
 CREATE TABLE LocationSellsProducts (
+  productUpc varchar2(10) FOREIGN KEY REFERENCES Products(upc) NOT NULL,
+  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
+  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
   ltd varchar2(10),
   storeSku varchar2(10),
   safetyStock varchar2(10)
