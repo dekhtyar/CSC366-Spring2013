@@ -27,8 +27,9 @@ CREATE TABLE Locations (
 )
 
 CREATE TABLE LocationOffersCatalogs (
-  catalogId varchar2(10) FOREIGN KEY NOT NULL,
-  extFulfLocId varchar2(10) FOREIGN KEY NOT NULL
+  catalogId varchar2(10) FOREIGN KEY REFERENCES Catalogs(catalogId) NOT NULL,
+  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
+  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL
 )
 
 CREATE TABLE Fulfillers (
@@ -36,28 +37,28 @@ CREATE TABLE Fulfillers (
 )
 
 CREATE TABLE FulfillerCarriesProducts (
-  fulfillerId varchar2(10) FOREIGN KEY NOT NULL,
-  productUpc varchar2(10) FOREIGN KEY NOT NULL,
+  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
+  productUpc varchar2(10) FOREIGN KEY REFERENCES Products(upc) NOT NULL,
   sku varchar2(10) NOT NULL
 )
 
 CREATE TABLE Products (
   upc varchar2(10) PRIMARY KEY NOT NULL,
-  catalogId varchar2(10) FOREIGN KEY NOT NULL,
-  manufacturerId varchar2(10) FOREIGN KEY NOT NULL,
+  catalogId varchar2(10) FOREIGN KEY REFERENCES Catalogs(catalogId) NOT NULL,
+  manufacturerId varchar2(10) FOREIGN KEY REFERENCES Manufacturers(manufacturerId) NOT NULL,
   name varchar2(50)
 )
 
 CREATE TABLE Bins (
-  locationId varchar2(10) FOREIGN KEY NOT NULL,
-  fulfillerId varchar2(10) FOREIGN KEY NOT NULL,
+  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
+  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
   name varchar2(50),
   type varchar2(50),
   status varchar2(10)
 )
 
 CREATE TABLE BinContainsProducts (
-  productUpc varchar2(10) FOREIGN KEY NOT NULL,
+  productUpc varchar2(10) FOREIGN KEY REFERENCES Products(upc) NOT NULL,
   allocated varchar2(6),
   onHand varchar2(6)
 )
