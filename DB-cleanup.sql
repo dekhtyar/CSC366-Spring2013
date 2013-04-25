@@ -16,4 +16,3 @@ DROP TABLE Products;
 DROP TABLE Bins;
 DROP TABLE Contains;
 DROP TABLE LocationSells;
-DROP TABLE Indexes;

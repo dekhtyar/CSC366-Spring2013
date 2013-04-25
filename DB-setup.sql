@@ -42,6 +42,8 @@ CREATE TABLE FulfillerCarries (
 
 CREATE TABLE Products (
   upc varchar2(10) PRIMARY KEY,
+  catalogId varchar2(10) FOREIGN KEY,
+  manufacturerId varchar2(10) FOREIGN KEY,
   name varchar2(50)
 )
 
@@ -61,10 +63,4 @@ CREATE TABLE LocationSells (
   ltd varchar2(10),
   storeSku varchar2(10),
   safetyStock varchar2(10)
-)
-
-CREATE TABLE Indexes (
-  productUpc varchar2(10) FOREIGN KEY,
-  catalogId varchar2(10) FOREIGN KEY,
-  manufacturerId varchar2(10) FOREIGN KEY
 )
