@@ -38,8 +38,8 @@ CREATE TABLE StoredIn (
    UPC            INTEGER REFERENCES Items,
    OnHand         INTEGER,
    Allocated      INTEGER,
-   Name           VARCHAR2(20) REFERENCES Bins,
-   PRIMARY KEY(UPC, Name)
+   BinName        VARCHAR2(20) REFERENCES Bins,
+   PRIMARY KEY(UPC, BinName)
 );
 
 CREATE TABLE StoredAt (
