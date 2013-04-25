@@ -58,7 +58,7 @@ CREATE TABLE Catalogues (
 CREATE TABLE SubscribesTo (
    FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
    FullfillerLocationId	   VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
-   CatalogueId             VARCHAR2(50),
+   CatalogueId             VARCHAR2(50) REFERENCES Catalogues,
    PRIMARY KEY(CatalogueId, FullfullerId, FullfillerLocationId)
 );
 
