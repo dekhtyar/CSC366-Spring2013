@@ -1,3 +1,8 @@
+--Kevin Stein  kestein@calpoly.edu
+--Alex Spotnitz  aspotnitz@gmail.com
+--Stephen Calabrese  sccalabr@calpoly.edu
+--Alex Boltunov  aboltunov@gmail.com
+--Luke Larson  lplarson@calpoly.edu
 CREATE TABLE FullfillerIds (
    FullfillerId            VARCHAR2(50) PRIMARY KEY
 );
