@@ -12,13 +12,14 @@
 -- BEGIN Mfc
 
 CREATE TABLE Manufacturer (
-   MfcID   INT PRIMARY KEY
+   MfcID   INT, 
+   PRIMARY KEY (MfcID)
 );
 
 CREATE TABLE Catalog (
    MfcID        INT,
    CatalogID    INT,
-   PRIMARY KEY (MfcID, CatalogID)
+   PRIMARY KEY (MfcID, CatalogID),
    FOREIGN KEY (MfcID)
         REFERENCES Manufacturer (MfcID)
 );
