@@ -11,19 +11,23 @@ CREATE TABLE Manufacturers (
 )
 
 CREATE TABLE Catalogs (
-  catalogId varchar2(10) PRIMARY KEY NOT NULL,
-  manufacturerId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Manufacturers(manufacturerId) NOT NULL
+  catalogId varchar2(10) NOT NULL,
+  manufacturerId varchar2(10) FOREIGN KEY REFERENCES Manufacturers(manufacturerId) NOT NULL,
+
+  PRIMARY KEY (catalogId, manufacturerId)
 )
 
 CREATE TABLE Locations (
-  locationId varchar2(10) PRIMARY KEY NOT NULL,
-  fulfillerId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
+  locationId varchar2(10) NOT NULL,
+  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
   name varchar2(50),
   type varchar2(50),
   latitude decimal(9,6),
   longitude decimal(9,6),
   status varchar2(50),
-  safetyStockLimitDefault varchar2(10)
+  safetyStockLimitDefault varchar2(10),
+
+  PRIMARY KEY (locationId, fulfillerId)
 )
 
 CREATE TABLE LocationOffersCatalogs (
@@ -50,11 +54,13 @@ CREATE TABLE Products (
 )
 
 CREATE TABLE Bins (
-  locationId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
-  fulfillerId varchar2(10) PRIMARY KEY FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
-  name varchar2(50) PRIMARY KEY,
+  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
+  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
+  name varchar2(50),
   type varchar2(50),
-  status varchar2(10)
+  status varchar2(10),
+
+  PRIMARY KEY (locationId, fulfillerId, name)
 )
 
 CREATE TABLE BinContainsProducts (
