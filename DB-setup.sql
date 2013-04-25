@@ -64,6 +64,6 @@ CREATE TABLE Contains (
 
 CREATE TABLE LocationSells (
   ltd varchar2(10),
-  storeSku varchar2(10),
+  storeSku varchar2(10) NOT NULL,
   safetyStock varchar2(10)
 )
