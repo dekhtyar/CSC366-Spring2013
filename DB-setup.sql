@@ -37,7 +37,8 @@ CREATE TABLE Item (
 -- BEGIN Fulfiller
 
 CREATE TABLE Fulfiller (
-    FulfillerID INT PRIMARY KEY,
+    FulfillerID INT,
+    PRIMARY KEY (FilfillerID) 
 );
 
 CREATE TABLE Location (
