@@ -26,7 +26,7 @@ CREATE TABLE Locations (
   safetyStockLimitDefault varchar2(10)
 )
 
-CREATE TABLE Offers (
+CREATE TABLE LocationOffersCatalogs (
   catalogId varchar2(10) FOREIGN KEY NOT NULL,
   extFulfLocId varchar2(10) FOREIGN KEY NOT NULL
 )
@@ -35,7 +35,7 @@ CREATE TABLE Fulfillers (
   fulfillerId varchar2(10) PRIMARY KEY NOT NULL
 )
 
-CREATE TABLE FulfillerCarries (
+CREATE TABLE FulfillerCarriesProducts (
   fulfillerId varchar2(10) FOREIGN KEY NOT NULL,
   productUpc varchar2(10) FOREIGN KEY NOT NULL,
   sku varchar2(10) NOT NULL
@@ -56,13 +56,13 @@ CREATE TABLE Bins (
   status varchar2(10)
 )
 
-CREATE TABLE Contains (
+CREATE TABLE BinContainsProducts (
   productUpc varchar2(10) FOREIGN KEY NOT NULL,
   allocated varchar2(6),
   onHand varchar2(6)
 )
 
-CREATE TABLE LocationSells (
+CREATE TABLE LocationSellsProducts (
   ltd varchar2(10),
   storeSku varchar2(10) NOT NULL,
   safetyStock varchar2(10)
