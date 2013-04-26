@@ -37,7 +37,7 @@ CREATE TABLE StoredIn (
    UPC                      CHAR(12)     REFERENCES Items,
    FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
-   Name                     VARCHAR2(20) REFERENCES Bins,
+   Name                     VARCHAR2(20) REFERENCES Bins(Name),
    OnHand                   INTEGER,
    Allocated                INTEGER,
    PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId, Name)
