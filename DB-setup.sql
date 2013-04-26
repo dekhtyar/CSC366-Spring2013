@@ -54,7 +54,7 @@ CREATE TABLE StoredIn (
 CREATE TABLE StoredAt (
    LTD                     INTEGER,
    SafetyStockLimit        INTEGER,
-   UPC                     INTEGER REFERENCES Items,
+   UPC                     VARCHAR2(20) REFERENCES Items,
    FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
    FullfillerLocationId	   VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
    PRIMARY KEY(UPC, FullfullerId, FullfillerLocationId)
