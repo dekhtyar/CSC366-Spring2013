@@ -40,7 +40,7 @@ CREATE TABLE Bins (
    Name                    VARCHAR2(20),
    FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
    FullfillerLocationId 	VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
-   PRIMARY KEY(Name, FullfillerId, FullfillerLocationId)
+   PRIMARY KEY(Name, FullfillerId, FullfillerLocationId),
    UNIQUE(Name, FullfillerLocationId)
 );
 
