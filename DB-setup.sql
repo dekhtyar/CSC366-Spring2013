@@ -80,7 +80,7 @@ create table BinContainsProducts (
   allocated varchar2(6),
   onHand varchar2(6),
   constraint bcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc),
-  constraint bcp_binname_fk FOREIGN KEY (binName) REFERENCES Bins(name),
+  constraint bcp_binname_fk FOREIGN KEY (locationId, fulfillerId, binName) REFERENCES Bins(locationId, fulfillerId, name),
   constraint bcp_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations
 );
 
