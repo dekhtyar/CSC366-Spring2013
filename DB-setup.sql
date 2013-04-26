@@ -6,13 +6,13 @@
 --Matt Schirle
 --Riley Lew
 
-CREATE TABLE Manufacturers (
+create table Manufacturers (
   manufacturerId varchar2(10) NOT NULL,
 
   constraint manufacturers_pk PRIMARY KEY (manufacturerId)
 );
 
-CREATE TABLE Catalogs (
+create table Catalogs (
   catalogId varchar2(10) NOT NULL,
   manufacturerId varchar2(10) NOT NULL,
 
@@ -20,7 +20,7 @@ CREATE TABLE Catalogs (
   constraint catalogs_fk FOREIGN KEY (manufacturerId) REFERENCES Manufacturers
 );
 
-CREATE TABLE Locations (
+create table Locations (
   locationId varchar2(10) NOT NULL,
   fulfillerId varchar2(10) NOT NULL,
   name varchar2(50),
@@ -34,59 +34,77 @@ CREATE TABLE Locations (
   constraint locations_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers
 );
 
-CREATE TABLE LocationOffersCatalogs (
-  catalogId varchar2(10) FOREIGN KEY REFERENCES Catalogs(catalogId) NOT NULL,
-  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
-  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
+create table LocationOffersCatalogs (
+  catalogId varchar2(10) NOT NULL,
+  locationId varchar2(10) NOT NULL,
+  fulfillerId varchar2(10) NOT NULL,
+
+  constraint catalog_fk FOREIGN KEY (catalogId) REFERENCES Catalogs,
+  constraint location_fk FOREIGN KEY (locationId) REFERENCES Locations,
+  constraint fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers
 );
 
-CREATE TABLE Fulfillers (
+create table Fulfillers (
   fulfillerId varchar2(10) NOT NULL,
 
   constraint fulfillers_pk PRIMARY KEY (fulfillerId)
 );
 
-CREATE TABLE FulfillerCarriesProducts (
-  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
-  productUpc varchar2(10) FOREIGN KEY REFERENCES Products(upc) NOT NULL,
-  sku varchar2(10) NOT NULL
+create table FulfillerCarriesProducts (
+  fulfillerId varchar2(10) NOT NULL,
+  productUpc varchar2(10) NOT NULL,
+  sku varchar2(10) NOT NULL,
+
+  constraint fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers,
+  constraint productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc)
 );
 
-CREATE TABLE Products (
+create table Products (
   upc varchar2(10) NOT NULL,
-  catalogId varchar2(10) FOREIGN KEY REFERENCES Catalogs(catalogId) NOT NULL,
-  manufacturerId varchar2(10) FOREIGN KEY REFERENCES Manufacturers(manufacturerId) NOT NULL,
+  catalogId varchar2(10) NOT NULL,
+  manufacturerId varchar2(10) NOT NULL,
   name varchar2(50),
 
-  constraint products_pk PRIMARY KEY (upc)
+  constraint products_pk PRIMARY KEY (upc),
+  constraint catalog_fk FOREIGN KEY (catalogId) REFERENCES Catalogs,
+  constraint manuf_fk FOREIGN KEY (manufacturerId) REFERENCES Manufacturers
 );
 
-CREATE TABLE Bins (
+create table Bins (
   locationId varchar2(10) NOT NULL,
   fulfillerId varchar2(10) NOT NULL,
   name varchar2(50) NOT NULL,
   binType varchar2(50),
   status varchar2(10),
 
-  constraint bins_pk PRIMARY KEY (locationId, fulfillerId, name)
+  constraint bins_pk PRIMARY KEY (locationId, fulfillerId, name),
   constraint location_fk FOREIGN KEY (locationId) REFERENCES Locations,
   constraint fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers
 );
 
-CREATE TABLE BinContainsProducts (
-  productUpc varchar2(10) FOREIGN KEY REFERENCES Products(upc) NOT NULL,
-  binName varchar2(10) FOREIGN KEY REFERENCES Bins(name) NOT NULL,
-  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
-  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL
+create table BinContainsProducts (
+  productUpc varchar2(10) NOT NULL,
+  binName varchar2(10) NOT NULL,
+  fulfillerId varchar2(10) NOT NULL,
+  locationId varchar2(10) NOT NULL
   allocated varchar2(6),
-  onHand varchar2(6)
+  onHand varchar2(6),
+
+  constraint productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc),
+  constraint binname_fk FOREIGN KEY (binName) REFERENCES Bins(name),
+  constraint fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers,
+  constraint location_fk FOREIGN KEY (locationId) REFERENCES Locations
 );
 
-CREATE TABLE LocationSellsProducts (
-  productUpc varchar2(10) FOREIGN KEY REFERENCES Products(upc) NOT NULL,
-  fulfillerId varchar2(10) FOREIGN KEY REFERENCES Fulfillers(fulfillerId) NOT NULL,
-  locationId varchar2(10) FOREIGN KEY REFERENCES Locations(locationId) NOT NULL,
+create table LocationSellsProducts (
+  productUpc varchar2(10) NOT NULL,
+  fulfillerId varchar2(10) NOT NULL,
+  locationId varchar2(10) NOT NULL,
   ltd varchar2(10),
   storeSku varchar2(10),
-  safetyStock varchar2(10)
+  safetyStock varchar2(10),
+
+  constraint productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc),
+  constraint fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers,
+  constraint location_fk FOREIGN KEY (locationId) REFERENCES Locations
 );
