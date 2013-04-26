@@ -70,7 +70,7 @@ CREATE TABLE SubscribesTo (
 CREATE TABLE FullfilledBy (
    SKU				VARCHAR2(50),
 	FullfillerId			VARCHAR2(50) REFERENCES FullfillerIds,
-	UPC				INTEGER REFERENCES Items,
+	UPC				VARCHAR2(20) REFERENCES Items,
 	PRIMARY KEY(SKU, FullfillerId, UPC)
 );
 
