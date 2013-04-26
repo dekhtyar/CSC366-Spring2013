@@ -20,6 +20,15 @@ CREATE TABLE Locations (
    UNIQUE(Latitude, Longitude)   
 );
 
+CREATE TABLE Manufacturers (
+   ManufacturerId	   VARCHAR2(50) PRIMARY KEY
+);
+
+CREATE TABLE Catalogues (
+   CatalogueId	      VARCHAR2(50) PRIMARY KEY,
+   ManufacturerId 	VARCHAR2(50) REFERENCES Manufacturers
+);
+
 CREATE TABLE Items (
    UPC               VARCHAR2(20) PRIMARY KEY, 
    Name              VARCHAR2(80), 
@@ -50,15 +59,6 @@ CREATE TABLE StoredAt (
    FullfillerLocationId	   VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
    PRIMARY KEY(UPC, FullfullerId, FullfillerLocationId)
 ); 
-
-CREATE TABLE Manufacturers (
-   ManufacturerId	   VARCHAR2(50) PRIMARY KEY
-);
-
-CREATE TABLE Catalogues (
-   CatalogueId	      VARCHAR2(50) PRIMARY KEY,
-   ManufacturerId 	VARCHAR2(50) REFERENCES Manufacturers
-);
 
 CREATE TABLE SubscribesTo (
    FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
