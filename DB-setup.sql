@@ -44,7 +44,7 @@ CREATE TABLE Bins (
 );
 
 CREATE TABLE StoredIn (
-   UPC            INTEGER REFERENCES Items,
+   UPC            VARCHAR2(20) REFERENCES Items,
    OnHand         INTEGER,
    Allocated      INTEGER,
    BinName        VARCHAR2(20) REFERENCES Bins,
