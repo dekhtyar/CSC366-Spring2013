@@ -41,14 +41,14 @@ CREATE TABLE Bins (
    FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
    FullfillerLocationId 	VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
    PRIMARY KEY(Name, FullfillerId, FullfillerLocationId), 
-   UNIQUE(Name, FullfillerLocationId)
+   --UNIQUE(Name, FullfillerLocationId)
 );
 
 CREATE TABLE StoredIn (
    UPC            VARCHAR2(20) REFERENCES Items,
    OnHand         INTEGER,
    Allocated      INTEGER,
-   BinName        VARCHAR2(20) REFERENCES Bins,
+   BinName        VARCHAR2(20) REFERENCES Bins(Name),
    PRIMARY KEY(UPC, BinName)
 );
 
