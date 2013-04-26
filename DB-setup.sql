@@ -41,7 +41,7 @@ CREATE TABLE Bins (
    FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
    FullfillerLocationId 	VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
    PRIMARY KEY(Name, FullfillerId, FullfillerLocationId)
-   --UNIQUE(Name, FullfillerLocationId)
+   UNIQUE(Name, FullfillerLocationId)
 );
 
 CREATE TABLE StoredIn (
