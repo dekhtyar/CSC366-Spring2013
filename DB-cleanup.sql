@@ -12,7 +12,7 @@ DROP TABLE BinContainsProducts;
 DROP TABLE LocationSellsProducts;
 DROP TABLE Products;
 DROP TABLE Bins;
-DROP TABLE Fulfillers;
 DROP TABLE Catalogs;
 DROP TABLE Manufacturers;
 DROP TABLE Locations;
+DROP TABLE Fulfillers;
