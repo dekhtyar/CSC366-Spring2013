@@ -3,74 +3,81 @@
 --Stephen Calabrese  sccalabr@calpoly.edu
 --Alex Boltunov  aboltunov@gmail.com
 --Luke Larson  lplarson@calpoly.edu
-CREATE TABLE FullfillerIds (
-   FullfillerId            VARCHAR2(50) PRIMARY KEY
+
+CREATE TABLE Fulfillers (
+   FulfillerId              VARCHAR2(50) PRIMARY KEY
 );
 
 CREATE TABLE Locations (
-   FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
-   FullfillerLocationId	   VARCHAR2(50),
-   Name                    VARCHAR2(20),
-   Type                    VARCHAR2(20),
-   Latitude                FLOAT,
-   Longitude               FLOAT,
-   Status                  INTEGER,
-   DefaultSafetyStockLimit	INTEGER,
-   PRIMARY KEY(FullfillerId, FullfillerLocationId),
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   FulfillerLocationId      VARCHAR2(50),
+   Name                     VARCHAR2(20),
+   Type                     VARCHAR2(20),
+   Latitude                 FLOAT,
+   Longitude                FLOAT,
+   Status                   INTEGER,
+   DefaultSafetyStockLimit  INTEGER,
+   PRIMARY KEY(FulfillerId, FulfillerLocationId),
    UNIQUE(Latitude, Longitude)   
 );
 
 CREATE TABLE Items (
-   UPC               VARCHAR2(20) PRIMARY KEY, 
-   Name              VARCHAR2(80), 
-   ManufacturerId    VARCHAR2(20) REFERENCES Manufacturers, 
-   CatalogueId    	VARCHAR2(20) REFERENCES Catalogues
+   UPC                      CHAR(12)     PRIMARY KEY, 
+   Name                     VARCHAR2(80) 
 );
 
 CREATE TABLE Bins (
-   Name                    VARCHAR2(20),
-   FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
-   FullfillerLocationId 	VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
-   PRIMARY KEY(Name, FullfullerId, FullfillerLocationId)
+   Name                     VARCHAR2(20),
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
+   PRIMARY KEY(Name, FulfillerId, FulfillerLocationId)
 );
 
 CREATE TABLE StoredIn (
-   UPC            INTEGER REFERENCES Items,
-   OnHand         INTEGER,
-   Allocated      INTEGER,
-   BinName        VARCHAR2(20) REFERENCES Bins,
-   PRIMARY KEY(UPC, BinName)
+   UPC                      CHAR(12)     REFERENCES Items,
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
+   Name                     VARCHAR2(20) REFERENCES Bins,
+   OnHand                   INTEGER,
+   Allocated                INTEGER,
+   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId, Name)
 );
 
 CREATE TABLE StoredAt (
-   LTD                     INTEGER,
-   SafetyStockLimit        INTEGER,
-   UPC                     INTEGER REFERENCES Items,
-   FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
-   FullfillerLocationId	   VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
-   PRIMARY KEY(UPC, FullfullerId, FullfillerLocationId)
+   UPC                      CHAR(12)     REFERENCES Items,
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
+   LTD                      FLOAT,
+   SafetyStockLimit         INTEGER,
+   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId)
 ); 
 
 CREATE TABLE Manufacturers (
-   ManufacturerId	   VARCHAR2(50) PRIMARY KEY
+   ManufacturerId           VARCHAR2(50) PRIMARY KEY
 );
 
 CREATE TABLE Catalogues (
-   CatalogueId	      VARCHAR2(50) PRIMARY KEY,
-   ManufacturerId 	VARCHAR2(50) REFERENCES Manufacturers
+   CatalogueId              VARCHAR2(50) PRIMARY KEY,
+   ManufacturerId           VARCHAR2(50) REFERENCES Manufacturers
 );
 
-CREATE TABLE SubscribesTo (
-   FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
-   FullfillerLocationId	   VARCHAR2(50) REFERENCES Locations(FullfillerLocationId),
-   CatalogueId             VARCHAR2(50) REFERENCES Catalogues,
-   PRIMARY KEY(CatalogueId, FullfullerId, FullfillerLocationId)
+CREATE TABLE SubscribeTo (
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
+   CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
+   PRIMARY KEY(FulfillerId, FulfillerLocationId, CatalogueId)
 );
 
-CREATE TABLE FullfilledBy (
-   SKU				VARCHAR2(50),
-	FullfillerId			VARCHAR2(50) REFERENCES FullfillerIds,
-	UPC				INTEGER REFERENCES Items,
-	PRIMARY KEY(SKU, FullfillerId, UPC)
+CREATE TABLE FulfilledBy (
+   UPC                      CHAR(12)     REFERENCES Items,
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   SKU                      VARCHAR2(50),
+   PRIMARY KEY(UPC, FulfillerId)
+);
+
+CREATE TABLE ListedIn (
+   UPC                      CHAR(12)     REFERENCES Items,
+   CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
+   PRIMARY KEY(UPC, CatalogueId)
 );
 
