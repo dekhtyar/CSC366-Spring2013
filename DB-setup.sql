@@ -9,7 +9,7 @@ CREATE TABLE FullfillerIds (
 
 CREATE TABLE Locations (
    FullfillerId            VARCHAR2(50) REFERENCES FullfillerIds,
-   FullfillerLocationId	   VARCHAR2(50),
+   FullfillerLocationId	   VARCHAR2(50) UNIQUE,
    Name                    VARCHAR2(20),
    Type                    VARCHAR2(20),
    Latitude                FLOAT,
