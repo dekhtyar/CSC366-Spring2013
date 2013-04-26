@@ -42,8 +42,7 @@ create table Products (
   manufacturerId varchar2(10) NOT NULL,
   name varchar2(50),
   constraint products_pk PRIMARY KEY (upc),
-  constraint catalog_fk FOREIGN KEY (catalogId) REFERENCES Catalogs,
-  constraint manuf_fk FOREIGN KEY (manufacturerId) REFERENCES Manufacturers
+  constraint catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs
 );
 
 create table Bins (
@@ -59,9 +58,10 @@ create table Bins (
 
 create table LocationOffersCatalogs (
   catalogId varchar2(10) NOT NULL,
+  manufacturerId varchar2(10) NOT NULL,
   locationId varchar2(10) NOT NULL,
   fulfillerId varchar2(10) NOT NULL,
-  constraint catalog_fk FOREIGN KEY (catalogId) REFERENCES Catalogs,
+  constraint catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs,
   constraint location_fk FOREIGN KEY (locationId) REFERENCES Locations,
   constraint fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers
 );
