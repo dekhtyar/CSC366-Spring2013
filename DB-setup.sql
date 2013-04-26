@@ -4,6 +4,16 @@
 --Alex Boltunov  aboltunov@gmail.com
 --Luke Larson  lplarson@calpoly.edu
 
+
+CREATE TABLE Manufacturers (
+   ManufacturerId           VARCHAR2(50) PRIMARY KEY
+);
+
+CREATE TABLE Catalogues (
+   CatalogueId              VARCHAR2(50) PRIMARY KEY,
+   ManufacturerId           VARCHAR2(50) REFERENCES Manufacturers
+);
+
 CREATE TABLE Fulfillers (
    FulfillerId              VARCHAR2(50) PRIMARY KEY
 );
@@ -28,44 +38,43 @@ CREATE TABLE Items (
 
 CREATE TABLE Bins (
    Name                     VARCHAR2(20),
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
-   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
-   PRIMARY KEY(Name, FulfillerId, FulfillerLocationId)
+   FulfillerId              VARCHAR2(50),
+   FulfillerLocationId      VARCHAR2(50),
+   PRIMARY KEY(Name, FulfillerId, FulfillerLocationId),
+   FOREIGN KEY (FulfillerId, FulfillerLocationId)
+    REFERENCES Locations(FulfillerId, FulfillerLocationId)
 );
 
 CREATE TABLE StoredIn (
    UPC                      CHAR(12)     REFERENCES Items,
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
-   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
-   Name                     VARCHAR2(20) REFERENCES Bins(Name),
+   FulfillerId              VARCHAR2(50),
+   FulfillerLocationId      VARCHAR2(50),
+   Name                     VARCHAR2(20),
    OnHand                   INTEGER,
    Allocated                INTEGER,
-   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId, Name)
+   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId, Name),
+   FOREIGN KEY (Name, FulfillerId, FulfillerLocationId)
+    REFERENCES Bins(Name, FulfillerId, FulfillerLocationId)
 );
 
 CREATE TABLE StoredAt (
    UPC                      CHAR(12)     REFERENCES Items,
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
-   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
+   FulfillerId              VARCHAR2(50),
+   FulfillerLocationId      VARCHAR2(50),
    LTD                      FLOAT,
    SafetyStockLimit         INTEGER,
-   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId)
+   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId),
+   FOREIGN KEY (FulfillerId, FulfillerLocationId)
+    REFERENCES Locations(FulfillerId, FulfillerLocationId)
 ); 
 
-CREATE TABLE Manufacturers (
-   ManufacturerId           VARCHAR2(50) PRIMARY KEY
-);
-
-CREATE TABLE Catalogues (
-   CatalogueId              VARCHAR2(50) PRIMARY KEY,
-   ManufacturerId           VARCHAR2(50) REFERENCES Manufacturers
-);
-
 CREATE TABLE SubscribeTo (
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
-   FulfillerLocationId      VARCHAR2(50) REFERENCES Locations(FulfillerLocationId),
+   FulfillerId              VARCHAR2(50),
+   FulfillerLocationId      VARCHAR2(50),
    CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
-   PRIMARY KEY(FulfillerId, FulfillerLocationId, CatalogueId)
+   PRIMARY KEY(FulfillerId, FulfillerLocationId, CatalogueId),
+   FOREIGN KEY (FulfillerId, FulfillerLocationId)
+    REFERENCES Locations(FulfillerId, FulfillerLocationId)
 );
 
 CREATE TABLE FulfilledBy (
