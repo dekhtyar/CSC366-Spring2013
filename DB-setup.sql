@@ -4,7 +4,6 @@
 --Alex Boltunov  aboltunov@gmail.com
 --Luke Larson  lplarson@calpoly.edu
 
-
 CREATE TABLE Manufacturers (
    ManufacturerId           VARCHAR2(50) PRIMARY KEY
 );
