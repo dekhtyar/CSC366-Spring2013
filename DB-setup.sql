@@ -1,6 +1,6 @@
 -- Aaron Phung, Jack Henderson, Brandon Tanaka, Raymond Ching, James Aldag
 -- CPE 366
--- Lab 3
+-- Lab 4 (Revised from Lab 3)
 -- Database Setup
 
 CREATE TABLE Locations(
@@ -35,7 +35,8 @@ CREATE TABLE FulfillerProduct(
     FulfillerID int,
     UPC         int REFERENCES Products,
     SKU         int,
-    PRIMARY KEY(FulfillerID, UPC)
+    PRIMARY KEY(FulfillerID, UPC),
+    UNIQUE (FulfillerID, SKU)
 );
 
 CREATE TABLE BinProduct(
@@ -52,6 +53,7 @@ CREATE TABLE LocationProduct(
     FulfillerID int,
     LocationID  int,
     UPC         int REFERENCES Products,
+    SKU         VARCHAR2(15) REFERENCES FulfillerProduct(SKU),
     SafeStock   int NOT NULL,
     LTD         int NOT NULL,
     FOREIGN KEY(FulfillerID, LocationID) REFERENCES Locations,
