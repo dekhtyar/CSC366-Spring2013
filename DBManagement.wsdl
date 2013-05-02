@@ -2,11 +2,20 @@
 <!-- edited with XMLSpy v2013 sp1 (http://www.altova.com) by Dave Cumberland (Shopatron) -->
 <wsdl:definitions xmlns:impl="http://v4.core.coexprivate.api.shopatron.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://v4.core.coexprivate.api.shopatron.com">
   <wsdl:types>
-		<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://v4.core.coexprivate.api.shopatron.com" elementFormDefault="qualified">
-		<wsdl:operation name="createDatabase">
-			<wsdl:input message="tns:GetLastTradePriceInput"/>
-      <wsdl:output message="tns:GetLastTradePriceOutput"/>
-		</wsdl:operation>
+      <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://v4.core.coexprivate.api.shopatron.com" elementFormDefault="qualified">
+      <wsdl:message name="empty"></wsdl:message>
+      <wsdl:operation name="createDatabase">
+          <wsdl:input message="tns:empty"/>
+          <wsdl:output message="tns:empty"/>
+      </wsdl:operation>
+      <wsdl:operation name="destroyDatabase">
+          <wsdl:input message="tns:empty"/>
+          <wsdl:output message="tns:empty"/>
+      </wsdl:operation>
+      <wsdl:operation name="clearDatabase">
+          <wsdl:input message="tns:empty"/>
+          <wsdl:output message="tns:empty"/>
+      </wsdl:operation>
 	</wsdl:binding>
 	<wsdl:service name="CoreServiceService">
 		<wsdl:port name="CoreService" binding="impl:CoreServiceSoapBinding">
