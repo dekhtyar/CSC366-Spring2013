@@ -7,7 +7,6 @@
 --  Ray Tam
 -- 
 --  CPE366 - Spring 2013
---  Lab 3
 
 DROP TABLE OnHandOrder;
 

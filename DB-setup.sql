@@ -7,7 +7,6 @@
 --  Ray Tam (rmtam)
 -- 
 --  CPE366 - Spring 2013
---  Lab 3
 
 CREATE TABLE Manufacturer (
    MfcID   INT,
