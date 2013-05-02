@@ -9,41 +9,41 @@
 --  CPE366 - Spring 2013
 
 
--- Define Store Locations
+-- Define Store Locations -----------------------------------------------------
 
 INSERT INTO Location
    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 
--- Define Store Bins
+-- Define Store Bins ----------------------------------------------------------
 
 INSERT INTO Bins
    VALUES (?, ?, ?);
 
 
--- Bulk Inventory Update
+-- Bulk Inventory Update ------------------------------------------------------
 
 -- IF item doesn't exist
-INSERT INTO FulfillerItem
-   VALUES (?, ?, ?);
+   INSERT INTO FulfillerItem
+      VALUES (?, ?, ?);
 -- END
 
 -- IF on-hand doesn't exist
-INSERT INTO OnHand
-   VALUES (?, ?, ?, ?, 0, 0);
+   INSERT INTO OnHand
+      VALUES (?, ?, ?, ?, 0, 0);
 -- END
 
 -- IF stock doesn't exist
--- IF safety is overridden
-INSERT INTO Stock
-   VALUES (?, ?, ?, 0, ?, ?);
--- ELSE
-INSERT INTO Stock (FulfillerID, ExternalID, SKU, Quantity, Safety, LTD)
-   SELECT FulfillerID, ExternalID, ?, 0, Safety, ?
-   FROM Location
-      WHERE FulfillerID = ?
-         AND ExternalID = ?;
--- END
+   -- IF safety is overridden
+      INSERT INTO Stock
+         VALUES (?, ?, ?, 0, ?, ?);
+   -- ELSE
+      INSERT INTO Stock (FulfillerID, ExternalID, SKU, Quantity, Safety, LTD)
+         SELECT FulfillerID, ExternalID, ?, 0, Safety, ?
+         FROM Location
+            WHERE FulfillerID = ?
+               AND ExternalID = ?;
+   -- END
 -- END
 
 UPDATE Stock
@@ -64,7 +64,7 @@ UPDATE OnHand
       AND SKU = ?;
 
 
--- Trickle Inventory Update
+-- Trickle Inventory Update ---------------------------------------------------
 
 UPDATE OnHand
    SET Quantity = Quantity + ?,
@@ -79,7 +79,7 @@ UPDATE Stock
       AND SKU = ?;
 
 
--- Get Inventory
+-- Get Inventory -------------------------------------------------------------
 
 SELECT *
    FROM OnHand o, Bin b, Location l, Seller se, FulfillerItem f, Stock st
@@ -102,11 +102,11 @@ SELECT *
       AND f.UPC = ?
 
       -- IF safety enforced
-      AND st.Quantity - ? > st.Safety
+         AND st.Quantity - ? > st.Safety
       -- END
 
       -- IF negative inventory
-      AND st.Quantity - ? > 0
+         AND st.Quantity - ? > 0
       -- END 
 
       ORDER BY
@@ -118,7 +118,7 @@ SELECT *
       DESC;
 
 
--- Allocate Inventory
+-- Allocate Inventory --------------------------------------------------------
 
 UPDATE OnHand
    SET Allocated = Allocated + ?
@@ -131,7 +131,7 @@ INSERT INTO OnHandOrder
 
 
 
--- De-allocate Inventory
+-- De-allocate Inventory ------------------------------------------------------
 
 -- Fulfilled
 UPDATE OnHand
