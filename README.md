@@ -1,4 +1,4 @@
-This is the Aperture Science group branch.
+This is Aperture Science group branch.
 
 Team Members:
 * Jessica Cosio
