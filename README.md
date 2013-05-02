@@ -1,5 +1,4 @@
-This is a README file for CSC366-Spring2013 repository.
-This is a branch for the group Aperture Science.
+This is Aperture Science group branch.
 
 Team Members:
 * Jessica Cosio
