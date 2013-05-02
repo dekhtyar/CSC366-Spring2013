@@ -34,7 +34,7 @@ CREATE TABLE Products(
 CREATE TABLE FulfillerProduct(
     FulfillerID int,
     UPC         int REFERENCES Products,
-    SKU         int,
+    SKU         VARCHAR2(15),
     PRIMARY KEY(FulfillerID, UPC),
     UNIQUE (FulfillerID, SKU)
 );
@@ -42,10 +42,12 @@ CREATE TABLE FulfillerProduct(
 CREATE TABLE BinProduct(
     BinID       int REFERENCES Bins,
     UPC         int REFERENCES Products,
-    SKU         VARCHAR2(15) REFERENCES FulfillerProduct(SKU),
+    FulfillerID int, 
+    SKU         VARCHAR2(15),
     OnHand      int,
     Allocated   int,
     CHECK(OnHand - Allocated >= 0),
+    FOREIGN KEY(FulfillerID, SKU) REFERENCES FulfillerProduct(FulfillerID, SKU),
     PRIMARY KEY(BinID, UPC)
 );
 
@@ -53,9 +55,10 @@ CREATE TABLE LocationProduct(
     FulfillerID int,
     LocationID  int,
     UPC         int REFERENCES Products,
-    SKU         VARCHAR2(15) REFERENCES FulfillerProduct(SKU),
+    SKU         VARCHAR2(15),
     SafeStock   int NOT NULL,
     LTD         int NOT NULL,
+    FOREIGN KEY(FulfillerID, SKU) REFERENCES FulfillerProduct(FulfillerID, SKU),
     FOREIGN KEY(FulfillerID, LocationID) REFERENCES Locations,
     PRIMARY KEY(FulfillerID, LocationID, UPC)
 );
