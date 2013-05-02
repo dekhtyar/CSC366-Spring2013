@@ -62,7 +62,8 @@ create table LocationOffersCatalogs (
   locationId varchar2(10) NOT NULL,
   fulfillerId varchar2(10) NOT NULL,
   constraint loc_catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs,
-  constraint loc_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations
+  constraint loc_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations,
+  constraint loc_pk PRIMARY KEY (catalogId, manufacturerId, locationId, fulfillerId)
 );
 
 create table FulfillerCarriesProducts (
@@ -70,7 +71,8 @@ create table FulfillerCarriesProducts (
   productUpc varchar2(10) NOT NULL,
   sku varchar2(10) NOT NULL,
   constraint fcp_fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers,
-  constraint fcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc)
+  constraint fcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc),
+  constraint fcp_pk PRIMARY KEY (fulfillerId, productUpc)
 );
 
 create table BinContainsProducts (
@@ -82,7 +84,8 @@ create table BinContainsProducts (
   onHand varchar2(6),
   constraint bcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc),
   constraint bcp_binname_fk FOREIGN KEY (locationId, fulfillerId, binName) REFERENCES Bins(locationId, fulfillerId, name),
-  constraint bcp_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations
+  constraint bcp_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations,
+  constraint bcp_pk PRIMARY KEY (productUpc, locationId, fulfillerId, binName)
 );
 
 create table LocationSellsProducts (
@@ -93,5 +96,6 @@ create table LocationSellsProducts (
   storeSku varchar2(10),
   safetyStock varchar2(10),
   constraint lsp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products(upc),
-  constraint lsp_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations
+  constraint lsp_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations,
+  constraint lsp_pk PRIMARY KEY (productUpc, locationId, fulfillerId)
 );
