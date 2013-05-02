@@ -23,6 +23,7 @@ create table Fulfillers (
   constraint fulfillers_pk PRIMARY KEY (fulfillerId)
 );
 
+-- locationType is uint in WSDL
 create table Locations (
   locationId varchar2(10) NOT NULL,
   fulfillerId varchar2(10) NOT NULL,
