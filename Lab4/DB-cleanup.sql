@@ -1,0 +1,9 @@
+DROP TABLE StoredIn;
+DROP TABLE HeldAt;
+DROP TABLE FulfillerSpecificProduct;
+DROP TABLE Bin;
+DROP TABLE Product;
+DROP TABLE Catalog;
+DROP TABLE Location;
+DROP TABLE Manufacturer;
+DROP TABLE Fulfiller;
