@@ -6,16 +6,10 @@
 --Matt Schirle
 --Riley Lew
 
-create table Manufacturers (
-  manufacturerId varchar2(10) NOT NULL,
-  constraint manufacturers_pk PRIMARY KEY (manufacturerId)
-);
-
 create table Catalogs (
   catalogId varchar2(10) NOT NULL,
   manufacturerId varchar2(10) NOT NULL,
-  constraint catalogs_pk PRIMARY KEY (catalogId, manufacturerId),
-  constraint catalogs_fk FOREIGN KEY (manufacturerId) REFERENCES Manufacturers
+  constraint catalogs_pk PRIMARY KEY (catalogId, manufacturerId)
 );
 
 create table Fulfillers (
