@@ -37,7 +37,7 @@ CREATE TABLE Items (
 
 CREATE TABLE Bins (
    Name                     VARCHAR2(20),
-   FulfillerId              VARCHAR2(50),
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR2(50),
    PRIMARY KEY(Name, FulfillerId, FulfillerLocationId),
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
@@ -46,7 +46,7 @@ CREATE TABLE Bins (
 
 CREATE TABLE StoredIn (
    UPC                      CHAR(12)     REFERENCES Items,
-   FulfillerId              VARCHAR2(50),
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR2(50),
    Name                     VARCHAR2(20),
    OnHand                   INTEGER,
@@ -58,7 +58,7 @@ CREATE TABLE StoredIn (
 
 CREATE TABLE StoredAt (
    UPC                      CHAR(12)     REFERENCES Items,
-   FulfillerId              VARCHAR2(50),
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR2(50),
    LTD                      FLOAT,
    SafetyStockLimit         INTEGER,
@@ -68,7 +68,7 @@ CREATE TABLE StoredAt (
 ); 
 
 CREATE TABLE SubscribeTo (
-   FulfillerId              VARCHAR2(50),
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR2(50),
    CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
    PRIMARY KEY(FulfillerId, FulfillerLocationId, CatalogueId),
