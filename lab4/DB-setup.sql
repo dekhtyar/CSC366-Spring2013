@@ -9,8 +9,9 @@ CREATE TABLE Manufacturers (
 );
 
 CREATE TABLE Catalogues (
-   CatalogueId              VARCHAR2(50) PRIMARY KEY,
-   ManufacturerId           VARCHAR2(50) REFERENCES Manufacturers
+   ManufacturerId           VARCHAR2(50) REFERENCES Manufacturers,
+   CatalogueId              VARCHAR2(50),
+   PRIMARY KEY (ManufacturerId, CatalogueId)
 );
 
 CREATE TABLE Fulfillers (
@@ -26,34 +27,42 @@ CREATE TABLE Locations (
    Longitude                FLOAT,
    Status                   INTEGER,
    DefaultSafetyStockLimit  INTEGER,
-   PRIMARY KEY(FulfillerId, FulfillerLocationId),
-   UNIQUE(Latitude, Longitude)   
+   PRIMARY KEY (FulfillerId, FulfillerLocationId),
+   UNIQUE (Latitude, Longitude)   
 );
 
 CREATE TABLE Items (
    UPC                      CHAR(12)     PRIMARY KEY, 
-   Name                     VARCHAR2(80) 
+   ManufacturerId           VARCHAR(50),
+   CatalogueId              VARCHAR(50),
+   Name                     VARCHAR2(80),
+   FOREIGN KEY (ManufacturerId, CatalogueId)
+    REFERENCES Catalogues
+   
 );
 
 CREATE TABLE Bins (
-   Name                     VARCHAR2(20),
    FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR2(50),
-   PRIMARY KEY(Name, FulfillerId, FulfillerLocationId),
+   Name                     VARCHAR2(20),
+   BinType                  VARCHAR2(20),
+   PRIMARY KEY (FulfillerId, FulfillerLocationId, Name),
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
-    REFERENCES Locations(FulfillerId, FulfillerLocationId)
+    REFERENCES Locations (FulfillerId, FulfillerLocationId)
 );
 
 CREATE TABLE StoredIn (
-   UPC                      CHAR(12)     REFERENCES Items,
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   UPC                      CHAR(12),
+   FulfillerId              VARCHAR2(50),
    FulfillerLocationId      VARCHAR2(50),
    Name                     VARCHAR2(20),
    OnHand                   INTEGER,
    Allocated                INTEGER,
-   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId, Name),
-   FOREIGN KEY (Name, FulfillerId, FulfillerLocationId)
-    REFERENCES Bins(Name, FulfillerId, FulfillerLocationId)
+   PRIMARY KEY (UPC, FulfillerId, FulfillerLocationId, Name),
+   FOREIGN KEY (UPC, FulfillerId)
+    REFERENCES FulfilledBy,
+   FOREIGN KEY (FulfillerId, FulfillerLocationId, Name)
+    REFERENCES Bins
 );
 
 CREATE TABLE StoredAt (
@@ -62,30 +71,28 @@ CREATE TABLE StoredAt (
    FulfillerLocationId      VARCHAR2(50),
    LTD                      FLOAT,
    SafetyStockLimit         INTEGER,
-   PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId),
+   PRIMARY KEY (UPC, FulfillerId, FulfillerLocationId),
+   FOREIGN KEY (UPC, FulfillerId)
+    REFERENCES FulfilledBy,
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
-    REFERENCES Locations(FulfillerId, FulfillerLocationId)
+    REFERENCES Locations (FulfillerId, FulfillerLocationId)
 ); 
 
 CREATE TABLE SubscribeTo (
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   FulfillerId              VARCHAR2(50),
    FulfillerLocationId      VARCHAR2(50),
-   CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
-   PRIMARY KEY(FulfillerId, FulfillerLocationId, CatalogueId),
+   ManufacturerId           VARCHAR2(50),
+   CatalogueId              VARCHAR2(50),
+   PRIMARY KEY (FulfillerId, FulfillerLocationId, ManufacturerId, CatalogueId),
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
-    REFERENCES Locations(FulfillerId, FulfillerLocationId)
+    REFERENCES Locations (FulfillerId, FulfillerLocationId),
+   FOREIGN KEY (ManufacturerId, CatalogueId)
+    REFERENCES Catalogues
 );
 
 CREATE TABLE FulfilledBy (
    UPC                      CHAR(12)     REFERENCES Items,
    FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    SKU                      VARCHAR2(50),
-   PRIMARY KEY(UPC, FulfillerId)
+   PRIMARY KEY (UPC, FulfillerId)
 );
-
-CREATE TABLE ListedIn (
-   UPC                      CHAR(12)     REFERENCES Items,
-   CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
-   PRIMARY KEY(UPC, CatalogueId)
-);
-
