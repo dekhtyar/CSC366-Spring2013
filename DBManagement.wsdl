@@ -3,7 +3,8 @@
 <wsdl:definitions xmlns:impl="http://v4.core.coexprivate.api.shopatron.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://v4.core.coexprivate.api.shopatron.com">
   <wsdl:types>
       <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://v4.core.coexprivate.api.shopatron.com" elementFormDefault="qualified">
-      <wsdl:message name="empty"></wsdl:message>
+      <message name="empty" />
+      
       <wsdl:operation name="createDatabase">
           <wsdl:input message="tns:empty"/>
           <wsdl:output message="tns:empty"/>
@@ -16,6 +17,37 @@
           <wsdl:input message="tns:empty"/>
           <wsdl:output message="tns:empty"/>
       </wsdl:operation>
+      
+      <wsdl:operation name="ReadStoreCSV">
+          <wsdl:input>
+              <mime:content type="text/csv" />	
+          </wsdl:input>
+          <wsdl:output>
+	      <complexType name="FulfillmentLocation" minOccurs="0" maxOccurs="unbounded"/>
+	  </wsdl:output>
+      </operation>
+      
+      <wsdl:operation name="ReadBinCSV">
+          <wsdl:input>
+              <mime:content type="text/csv" />	
+          </wsdl:input>
+          <wsdl:output>
+	      <complexType name="Bin" minOccurs="0" maxOccurs="unbounded"/>
+	  </wsdl:output>
+      </operation>
+      
+      <wsdl:operation name="ReadInventoryCSV">
+          <wsdl:input>
+              <mime:content type="text/csv" />	
+          </wsdl:input>
+          <wsdl:output>
+	      <xs:element name="UPCs" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+	      <xs:element name="ProductNames" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+	      <complexType name="UpdateItem" minOccurs="0" maxOccurs="unbounded"/>
+	      <complexType name="FulfillmentLocationCatalog"/>
+	  </wsdl:output>
+      </operation>
+</portType>
 	</wsdl:binding>
 	<wsdl:service name="CoreServiceService">
 		<wsdl:port name="CoreService" binding="impl:CoreServiceSoapBinding">
