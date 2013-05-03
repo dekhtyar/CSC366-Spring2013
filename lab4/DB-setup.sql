@@ -37,8 +37,14 @@ CREATE TABLE Items (
    CatalogueId              VARCHAR(50),
    Name                     VARCHAR2(80),
    FOREIGN KEY (ManufacturerId, CatalogueId)
-    REFERENCES Catalogues
-   
+    REFERENCES Catalogues (ManufacturerId, CatalogueId)
+);
+
+CREATE TABLE FulfilledBy (
+   UPC                      CHAR(12)     REFERENCES Items,
+   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   SKU                      VARCHAR2(50),
+   PRIMARY KEY (UPC, FulfillerId)
 );
 
 CREATE TABLE Bins (
@@ -90,9 +96,3 @@ CREATE TABLE SubscribeTo (
     REFERENCES Catalogues
 );
 
-CREATE TABLE FulfilledBy (
-   UPC                      CHAR(12)     REFERENCES Items,
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
-   SKU                      VARCHAR2(50),
-   PRIMARY KEY (UPC, FulfillerId)
-);
