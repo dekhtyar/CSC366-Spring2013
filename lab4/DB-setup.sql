@@ -44,7 +44,8 @@ CREATE TABLE FulfilledBy (
    UPC                      CHAR(12)     REFERENCES Items,
    FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
    SKU                      VARCHAR2(50),
-   PRIMARY KEY (UPC, FulfillerId)
+   PRIMARY KEY (UPC, FulfillerId),
+   UNIQUE (FulfillerId, SKU)
 );
 
 CREATE TABLE Bins (
