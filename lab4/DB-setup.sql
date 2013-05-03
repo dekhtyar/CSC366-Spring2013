@@ -55,15 +55,15 @@ CREATE TABLE StoreBin (
 
 CREATE TABLE Product (
     Name VARCHAR2(25),
-    UPC INT PRIMARY KEY,
+    UPC VARCHAR2(25) PRIMARY KEY,
     ManufacturerId INT REFERENCES Manufacturer(ManufacturerId),
     CatalogId INT REFERENCES Catalog(CatalogId)
     );
-
+ 
 CREATE TABLE RetailerProduct (
     Id INT PRIMARY KEY,
     FulfillerId INT REFERENCES Retailer(FulfillerId),
-    UPC INT REFERENCES Product(UPC),
+    UPC VARCHAR2(25) REFERENCES Product(UPC),
     SKU VARCHAR2(25),
     UNIQUE(FulfillerId, UPC)
     );
