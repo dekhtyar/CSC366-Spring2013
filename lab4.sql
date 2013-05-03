@@ -52,7 +52,7 @@ UPDATE BinContainsProducts
 -- so I just wrote this to deallocate one from first bin. We can call it "quantity" number of 
 -- times to deallocate the correct amount from the given location.
 UPDATE BinContainsProducts 
-	SET FIRST(allocated) = FIRST(allocated - 1)
+	SET FIRST(allocated) = FIRST(allocated) - 1
 	WHERE fulfillerID = __FullFillerID__
 		AND locationID = __LocationId__
 		AND productUpc = __UPC__
