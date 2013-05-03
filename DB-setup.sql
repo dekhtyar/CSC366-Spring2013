@@ -19,13 +19,13 @@ CREATE TABLE Catalogs(
 );
 
 CREATE TABLE Locations(
-    id serial PRIMARY KEY,
+    locationid int PRIMARY KEY,
     name varchar(80),
     fulfillerid int REFERENCES fulfillers,
     extfulfillerid varchar(80),
     type varchar(80),
     coordinates point,
-    status boolean,
+    status varchar(8),
     safetystocklimit int,
     UNIQUE(fulfillerid,extfulfillerid)
 );
@@ -38,7 +38,8 @@ CREATE TABLE LocationsManCats(
 
 CREATE TABLE Products(
     upc varchar(80) PRIMARY KEY,
-    name varchar(80)
+    name varchar(80),
+    mancatid int REFERENCES Catalogs
 );
 
 CREATE TABLE FulfillersProducts(
@@ -58,17 +59,12 @@ CREATE TABLE LocationsProducts(
     PRIMARY KEY(fulfillerid,sku, locationid)
 );
 
-CREATE TABLE ProductsManCats(
-    upc varchar(80) REFERENCES products,
-    mancatid int REFERENCES catalogs,
-    PRIMARY KEY(upc,mancatid)
-);
-
 CREATE TABLE Bins(
     id serial PRIMARY KEY,
     name varchar(80),
     type varchar(50),
     locationid int REFERENCES locations NOT NULL,
+    status varchar(20),
     UNIQUE(name,type,locationid)
 );
 

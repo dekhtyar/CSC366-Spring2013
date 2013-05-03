@@ -7,7 +7,6 @@
 
 DROP TABLE BinsProducts;
 DROP TABLE Bins;
-DROP TABLE ProductsManCats;
 DROP TABLE LocationsProducts;
 DROP TABLE FulfillersProducts;
 DROP TABLE Products;
