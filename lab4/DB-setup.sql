@@ -48,7 +48,7 @@ CREATE TABLE FulfilledBy (
 );
 
 CREATE TABLE Bins (
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   FulfillerId              VARCHAR2(50),
    FulfillerLocationId      VARCHAR2(50),
    Name                     VARCHAR2(20),
    BinType                  VARCHAR2(20),
@@ -72,8 +72,8 @@ CREATE TABLE StoredIn (
 );
 
 CREATE TABLE StoredAt (
-   UPC                      CHAR(12)     REFERENCES Items,
-   FulfillerId              VARCHAR2(50) REFERENCES Fulfillers,
+   UPC                      CHAR(12),
+   FulfillerId              VARCHAR2(50),
    FulfillerLocationId      VARCHAR2(50),
    LTD                      FLOAT,
    SafetyStockLimit         INTEGER,
