@@ -36,5 +36,24 @@ UPDATE LocationSellsProducts ( SafetyStock, LTD )
 		AND LocationID=__LocationID__;
 
 -- GetInventory
+
 -- AllocateInventory
+-- Our server may have to invoke this on multiple bins if any one bin does not
+-- have enough of the product on hand to make the entire allocation.
+UPDATE BinContainsProducts 
+	SET allocated = allocated + __quantity__
+	WHERE binName = BinID
+		AND fulfillerID = __FullFillerID__
+		AND locationID = __LocationId__
+		AND productUpc = __UPC__;
+
 -- De-Allocate Inventory
+-- I couldn't figure out how to handle the case where the product is allocated across multiple bins,
+-- so I just wrote this to deallocate one from first bin. We can call it "quantity" number of 
+-- times to deallocate the correct amount from the given location.
+UPDATE BinContainsProducts 
+	SET FIRST(allocated) = FIRST(allocated - 1)
+	WHERE fulfillerID = __FullFillerID__
+		AND locationID = __LocationId__
+		AND productUpc = __UPC__
+		AND allocated > 0;
