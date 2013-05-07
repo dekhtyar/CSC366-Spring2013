@@ -10,12 +10,15 @@ CREATE TABLE Fulfiller(
 
 CREATE TABLE Locations(
     FulfillerID int REFERENCES Fulfiller,
-    ID          int,
+    ManufacturerLocationID int, 
+    RetailerLocationID int, 
+    ExternalLocationID VARCHAR2(25),
+    --ID          int,
     Name        VARCHAR2(50),
-    Type        VARCHAR2(30),
+    TypeID        VARCHAR2(30),
     Latitude    FLOAT,
     Longitude   FLOAT,
-    Status      VARCHAR2(10),
+    Status      INT,
     SafeStock   int,
     ManufacturerID int,
     CatalogID   int,
