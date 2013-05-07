@@ -20,8 +20,7 @@ conn = mysql.connector.connect(user='root', database='inventory',
 
 insertFulfiller = 'INSERT IGNORE INTO Fulfiller(id) VALUES(?);'
 
-insertManufacturer = ('INSERT IGNORE INTO Manufacturer(id)'
-                      'VALUES(?);')
+insertManufacturer = ('INSERT IGNORE INTO Manufacturer(id) VALUES(?);')
 
 insertLocation = ('INSERT INTO Location(ext_ful_loc_id, int_ful_loc_id,'
                   'fulfiller_id, name, type, latitude, longitude, status)'
