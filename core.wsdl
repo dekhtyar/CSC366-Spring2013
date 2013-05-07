@@ -245,7 +245,7 @@
 					<element name="RetailerLocationID" type="xsd:positiveInteger" nillable="true"/> <!-- internal location ID -->
 					<element name="ExternalLocationID" type="xsd:string" nillable="true"/>
 					<element name="LocationName" type="xsd:string" nillable="true"/>
-					<element name="Type" type="xsd:string"/> <!-- see FulfillmentLocationIdentifierType -->
+					<element name="LocationType" type="xsd:string"/> <!-- see FulfillmentLocationIdentifierType -->
 					<element name="Latitude" type="xsd:double"/>
 					<element name="Longitude" type="xsd:double"/>
 					<element name="Status">
@@ -285,12 +285,7 @@
 			</simpleType>
 			<complexType name="FulfillmentLocationType">
 				<sequence>
-					<element name="FulfillerID" type="xsd:positiveInteger"/>
-					<element name="FulfillmentLocationTypeID" type="xsd:positiveInteger"/>
-					<!-- FulfillmentLocationTypeID has unknown meaning -->
-					<!-- would make sense if this was a FulfillerLocationID -->
-					<!-- however it may refer to a TypeID enum ordinal (which we do not have) -->
-					<element name="Type" type="xsd:string" nillable="true"/>
+					<element name="LocationType" type="xsd:string"/>
 				</sequence>
 			</complexType>
 			<complexType name="InventorySearchRequest">
