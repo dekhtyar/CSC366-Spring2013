@@ -85,26 +85,6 @@
           </sequence>
         </complexType>
       </element>
-      <element name="getSystemStatus">
-        <complexType/>
-      </element>
-      <element name="getSystemStatusResponse">
-        <complexType>
-          <sequence>
-            <element name="getSystemStatusReturn" type="impl:StatusCategory" maxOccurs="unbounded"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="reallocateInventory">
-        <complexType>
-          <sequence>
-            <element name="request" type="impl:UpdateRequest"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="reallocateInventoryResponse">
-        <complexType/>
-      </element>
       <element name="allocateInventory">
         <complexType>
           <sequence>
@@ -183,58 +163,6 @@
           </sequence>
         </complexType>
       </element>
-      <element name="deleteBin">
-        <complexType>
-          <sequence>
-            <element name="request" type="impl:Bin"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="deleteBinResponse">
-        <complexType/>
-      </element>
-      <element name="updateBins">
-        <complexType>
-          <sequence>
-            <element name="request" type="impl:Bin" maxOccurs="unbounded"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="updateBinsResponse">
-        <complexType>
-          <sequence>
-            <element name="updateBinsReturn" type="xsd:int"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="getOrderItemInformation">
-        <complexType>
-          <sequence>
-            <element name="request" type="impl:OrderItemInformationRequest" maxOccurs="unbounded"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="getOrderItemInformationResponse">
-        <complexType>
-          <sequence>
-            <element name="getOrderItemInformationReturn" type="impl:OrderItemInformation" minOccurs="0" maxOccurs="unbounded"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="createReplenishmentReport">
-        <complexType>
-          <sequence>
-            <element name="request" type="impl:ReplenishmentRequest" minOccurs="1" maxOccurs="1"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="createReplenishmentReportResponse">
-        <complexType>
-          <sequence>
-            <element name="createReplenishmentReportReturn" type="xsd:int"/>
-          </sequence>
-        </complexType>
-      </element>
       <element name="refreshInventory">
         <complexType>
           <sequence>
@@ -274,7 +202,7 @@
         <sequence>
           <element name="FulfillerID" type="xsd:positiveInteger"/>
           <element name="BinID" type="xsd:positiveInteger" nillable="true"/>
-          <element name="FulfillerLocationID" type="xsd:positiveInteger"/> <!-- same as InternalLocationID -->
+          <element name="FulfillerLocationID" type="xsd:positiveInteger"/> <!-- internal location ID -->
           <element name="BinType" type="xsd:string"/>
           <element name="BinStatus" type="xsd:string"/>
           <element name="Name" type="xsd:string" nillable="true"/>
@@ -314,10 +242,10 @@
       <complexType name="FulfillmentLocation">
         <sequence>
           <element name="FulfillerID" type="xsd:positiveInteger"/>
-          <element name="RetailerLocationID" type="xsd:positiveInteger" nillable="true"/>
+          <element name="RetailerLocationID" type="xsd:positiveInteger" nillable="true"/> <!-- internal location ID -->
           <element name="ExternalLocationID" type="xsd:string" nillable="true"/>
           <element name="LocationName" type="xsd:string" nillable="true"/>
-          <element name="TypeID" type="xsd:positiveInteger"/>
+          <element name="Type" type="xsd:string"/> <!-- see FulfillmentLocationIdentifierType -->
           <element name="Latitude" type="xsd:double"/>
           <element name="Longitude" type="xsd:double"/>
           <element name="Status">
@@ -345,14 +273,7 @@
           <element name="FulfillerLocationID" type="xsd:positiveInteger"/>
         </sequence>
       </complexType>
-      <complexType name="FulfillmentLocationIdentifier">
-        <sequence>
-          <element name="Type" type="impl:FulfillmentLocationIdentifierType" nillable="false"/>
-          <element name="ID" type="xsd:positiveInteger" nillable="false"/>
-          <element name="LocationID" type="xsd:positiveInteger" nillable="false"/>
-        </sequence>
-      </complexType>
-      <simpleType name="FulfillmentLocationIdentifierType">
+      <simpleType name="FulfillmentLocationIdentifierType"> <!-- not used but documents FulfillmentLocation > Type -->
         <annotation>
           <documentation/>
         </annotation>
@@ -365,7 +286,11 @@
       <complexType name="FulfillmentLocationType">
         <sequence>
           <element name="FulfillerID" type="xsd:positiveInteger"/>
-          <element name="Description" type="xsd:string" nillable="true"/>
+          <element name="FulfillmentLocationTypeID" type="xsd:positiveInteger"/>
+          <!-- FulfillmentLocationTypeID has unknown meaning -->
+          <!-- would make sense if this was a FulfillerLocationID -->
+          <!-- however it may refer to a TypeID enum ordinal (which we do not have) -->
+          <element name="Type" type="xsd:string" nillable="true"/>
         </sequence>
       </complexType>
       <complexType name="InventorySearchRequest">
@@ -373,7 +298,7 @@
           <element name="FulfillerIDs" type="impl:ArrayOf_xsd_FulfillerID"/>
           <element name="LocationID" type="xsd:positiveInteger" nillable="true"/> <!-- internal location ID -->
           <element name="PostalCode" type="xsd:string" nillable="true"/>
-          <element name="PartNumber" type="xsd:string"/>
+          <element name="PartNumber" type="xsd:string"/> <!-- SKU, identical to the now removed LocationUPC -->
           <element name="UPC" type="xsd:string"/>
         </sequence>
       </complexType>
@@ -392,35 +317,15 @@
       </complexType>
       <complexType name="ItemQuantity">
         <sequence>
-          <element name="PartNumber" type="xsd:string" nillable="true"/>
-          <element name="UPC" type="xsd:string" nillable="true"/>
+          <element name="PartNumber" type="xsd:string"/>
+          <element name="UPC" type="xsd:string"/>
           <element name="Quantity" type="xsd:int"/>
-        </sequence>
-      </complexType>
-      <complexType name="OrderItem">
-        <sequence>
-          <element name="OrderItemID" type="xsd:positiveInteger" nillable="true"/>
-          <element name="PartNumber" type="xsd:string" nillable="true"/>
-          <element name="UPC" type="xsd:string" nillable="true"/>
-          <element name="Quantity" type="xsd:int"/>
-        </sequence>
-      </complexType>
-      <complexType name="ItemIdentifier">
-        <sequence>
-          <element name="PartNumber" type="xsd:string" nillable="true"/>
-          <element name="UPC" type="xsd:string" nillable="true"/>
         </sequence>
       </complexType>
       <complexType name="ManufacturerCatalog">
         <sequence>
           <element name="ManufacturerID" type="xsd:positiveInteger"/>
           <element name="CatalogID" type="xsd:positiveInteger"/>
-        </sequence>
-      </complexType>
-      <complexType name="ManufacturerLocation">
-        <sequence>
-          <element name="ManufacturerID" type="xsd:positiveInteger"/>
-          <element name="ManufacturerLocationID" type="xsd:positiveInteger"/>
         </sequence>
       </complexType>
       <complexType name="OrderRequest">
@@ -433,7 +338,7 @@
       </complexType>
       <complexType name="RequestLocation">
         <sequence>
-          <element name="Unit" type="xsd:string" default="MILES" nillable="true"/> <!-- valid values MILES, KILOMETERS -->
+          <element name="Unit" type="xsd:string" default="MILES" nillable="true"/> <!-- see UnitType -->
           <element name="Radius" type="xsd:positiveInteger" nillable="true"/>
           <element name="PostalCode" type="xsd:string" nillable="true"/>
           <element name="Latitude" type="xsd:double" nillable="true"/>
@@ -441,36 +346,15 @@
           <element name="CountryCode" type="xsd:string" nillable="true"/>
         </sequence>
       </complexType>
-      <complexType name="RetailerLocation">
-        <sequence>
-          <element name="RetailerID" type="xsd:positiveInteger"/> <!-- same as FulfillerID -->
-          <element name="RetailerLocationID" type="xsd:positiveInteger"/> <!-- same as InternalLocationID -->
-        </sequence>
-      </complexType>
-      <complexType name="StatusCategory">
-        <sequence>
-          <element name="Name" type="xsd:string" nillable="true"/>
-          <element name="Code" type="xsd:int"/>
-          <element name="Description" type="xsd:string" nillable="true"/>
-          <element name="Results" type="impl:ArrayOf_impl_StatusResult" nillable="true"/>
-        </sequence>
-      </complexType>
-      <complexType name="StatusResult">
-        <sequence>
-          <element name="Name" type="xsd:string" nillable="true"/>
-          <element name="Code" type="xsd:int"/>
-          <element name="Description" type="xsd:string" nillable="true"/>
-          <element name="Result" type="xsd:int"/>
-        </sequence>
-      </complexType>
       <complexType name="UpdateItem">
         <sequence>
-          <element name="PartNumber" type="xsd:string"/> <!-- same as SKU and LocationUPC which was deleted -->
+          <element name="PartNumber" type="xsd:string"/>
           <element name="UPC" type="xsd:string"/>
           <element name="Quantity" type="xsd:int"/>
-          <element name="OrderID" type="xsd:positiveInteger"/> <!-- not required, possibly used for LTD calculation -->
-          <element name="OrderItemID" type="xsd:positiveInteger"/> <!-- ^ditto, ordinal in an Order, yet still a unique ID -->
-          <element name="ShipmentID" type="xsd:positiveInteger"/> <!-- ^more ditto, group of OrderItemIDs -->
+          <!-- these next three items are 100% optional, and may be used for LTD calculation -->
+          <element name="OrderID" type="xsd:positiveInteger"/> <!-- for a single Order -->
+          <element name="OrderItemID" type="xsd:positiveInteger"/> <!-- for a single item in an Order, still globally unique -->
+          <element name="ShipmentID" type="xsd:positiveInteger"/> <!-- group of Order Items -->
           <element name="FulfillerLocationID" type="xsd:positiveInteger" nillable="true"/>
         </sequence>
       </complexType>
@@ -481,54 +365,6 @@
           <element name="Items" type="impl:ArrayOf_impl_UpdateItem"/>
         </sequence>
       </complexType>
-      <complexType name="OrderItemInformation">
-        <sequence>
-          <element name="OrderID" type="xsd:positiveInteger" nillable="true"/>
-          <element name="OrderItemID" type="xsd:positiveInteger" nillable="true"/>
-          <element name="LocationID" type="xsd:positiveInteger"/>
-          <element name="ExtLocationID" type="xsd:string"/>
-          <element name="LocationName" type="xsd:string" nillable="true"/>
-          <element name="PartNumber" type="xsd:string" nillable="true"/>
-          <element name="UPC" type="xsd:string" nillable="true"/>
-          <element name="LTD" type="xsd:double" nillable="true"/>
-          <element name="Floor" type="xsd:int" nillable="true"/>
-          <element name="SafetyStock" type="xsd:int" nillable="true"/>
-          <element name="OnHand" type="xsd:int" nillable="true"/>
-          <element name="Available" type="xsd:int" nillable="true"/>
-          <element name="Allocated" type="xsd:int" nillable="true"/>
-          <element name="Allocates" type="xsd:int" nillable="true"/>
-          <element name="Deallocates" type="xsd:int" nillable="true"/>
-          <element name="Fulfills" type="xsd:int" nillable="true"/>
-          <element name="Code" type="xsd:string" nillable="true"/>
-          <element name="Dates" type="impl:ArrayOf_xsd_Dates" nillable="true"/>
-        </sequence>
-      </complexType>
-      <complexType name="OrderItemInformationRequest">
-        <sequence>
-          <element name="OrderID" type="xsd:positiveInteger"/>
-          <element name="ManufacturerCatalog" type="impl:ManufacturerCatalog" nillable="true"/>
-          <element name="Items" type="impl:ArrayOf_impl_OrderItem" nillable="true"/>
-        </sequence>
-      </complexType>
-      <complexType name="jobs">
-        <sequence>
-          <element name="fulfiller_loc_id" type="xsd:int"/>
-          <element name="type" type="xsd:int"/>
-          <element name="time_added" type="xsd:dateTime" nillable="true"/>
-          <element name="time_started" type="xsd:dateTime" nillable="true"/>
-          <element name="time_finished" type="xsd:dateTime" nillable="true"/>
-          <element name="heartbeat" type="xsd:dateTime" nillable="true"/>
-          <element name="orig_filename" type="xsd:string" nillable="true"/>
-          <element name="filename" type="xsd:string" nillable="true"/>
-          <element name="success" type="xsd:int" nillable="true"/>
-          <element name="item_count" type="xsd:int" nillable="true"/>
-        </sequence>
-      </complexType>
-      <complexType name="ReplenishmentRequest">
-        <sequence>
-          <element name="fulfillerLocationID" type="xsd:int"/>
-        </sequence>
-      </complexType>
       <complexType name="RefreshRequest">
         <sequence>
           <element name="LocationName" type="xsd:string"/>
@@ -537,8 +373,8 @@
       </complexType>
       <complexType name="RefreshItem">
         <sequence>
-          <element name="PartNumber" type="xsd:string" nillable="true"/>
-          <element name="UPC" type="xsd:string" nillable="true"/>
+          <element name="PartNumber" type="xsd:string"/>
+          <element name="UPC" type="xsd:string"/>
           <element name="BinID" type="xsd:int"/>
           <element name="Quantity" type="xsd:int"/>
           <element name="LTD" type="xsd:double"/>
@@ -553,9 +389,9 @@
           <element name="LocationNames" type="impl:ArrayOfLocationNames" nillable="true"/>
           <element name="Location" type="impl:RequestLocation" nillable="true"/>
           <element name="Type" type="impl:InventoryRequestType" nillable="false" minOccurs="1"/>
-          <element name="Limit" type="xsd:int" default="10000"/> <!-- amount of responses -->
+          <element name="Limit" type="xsd:int" default="10000"/> <!-- limit refers to the maximum amount of responses to send -->
           <element name="IgnoreSafetyStock" type="xsd:boolean" default="false" nillable="true"/>
-          <element name="IncludeNegativeInventory" type="xsd:boolean" default="false" nillable="true"/> <!-- #YOLO -->
+          <element name="IncludeNegativeInventory" type="xsd:boolean" default="false" nillable="true"/>
           <element name="OrderByLTD" type="boolean"/>
         </sequence>
       </complexType>
@@ -586,49 +422,14 @@
         </restriction>
       </simpleType>
       <!-- Arrays -->
-      <complexType name="ArrayOf_impl_AssignmentResponse">
-        <sequence>
-          <element name="items" type="impl:AssignmentResponse" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_impl_FulfillmentLocationCatalog">
-        <sequence>
-          <element name="items" type="impl:FulfillmentLocationCatalog" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_xsd_FulfillerLocationID">
-        <sequence>
-          <element name="items" type="xsd:positiveInteger" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
       <complexType name="ArrayOf_xsd_FulfillerID">
         <sequence>
           <element name="items" type="xsd:positiveInteger" minOccurs="1" maxOccurs="unbounded"/>
         </sequence>
       </complexType>
-      <complexType name="ArrayOf_xsd_types">
-        <sequence>
-          <element name="types" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_impl_ItemIdentifier">
-        <sequence>
-          <element name="items" type="impl:ItemIdentifier" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
       <complexType name="ArrayOf_impl_ItemQuantity">
         <sequence>
           <element name="items" type="impl:ItemQuantity" minOccurs="1" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_impl_OrderItem">
-        <sequence>
-          <element name="items" type="impl:OrderItem" minOccurs="1" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_impl_StatusResult">
-        <sequence>
-          <element name="items" type="impl:StatusResult" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </complexType>
       <complexType name="ArrayOf_impl_UpdateItem">
@@ -639,26 +440,6 @@
       <complexType name="ArrayOf_impl_Bin">
         <sequence>
           <element name="items" type="impl:Bin" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_impl_OrderItemInformation">
-        <sequence>
-          <element name="items" type="impl:OrderItemInformation" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_xsd_OrderItemIDs">
-        <sequence>
-          <element name="items" type="xsd:positiveInteger" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_xsd_Dates">
-        <sequence>
-          <element name="items" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
-      <complexType name="ArrayOf_impl_jobs">
-        <sequence>
-          <element name="jobs" type="impl:jobs" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </complexType>
       <complexType name="ArrayOf_impl_RefreshItem">
@@ -676,7 +457,7 @@
       <element name="AdjustRequest">
         <complexType>
           <sequence>
-             <element name="FulfillerID" type="xsd:positiveInteger"/>
+            <element name="FulfillerID" type="xsd:positiveInteger"/>
             <element name="LocationName" type="xsd:string"/>
             <element name="Items" type="impl:ArrayOf_impl_AdjustItem" nillable="true"/>
           </sequence>
@@ -686,7 +467,7 @@
       <element name="RefreshRequest">
         <complexType>
           <sequence>
-             <element name="FulfillerID" type="xsd:positiveInteger"/>
+            <element name="FulfillerID" type="xsd:positiveInteger"/>
             <element name="LocationName" type="xsd:string"/>
             <element name="Items" type="impl:ArrayOf_impl_RefreshItem" nillable="true"/>
           </sequence>
@@ -694,7 +475,7 @@
       </element>
       <element name="RefreshResponse" type="xsd:string"/>
       <!-- types -->
-      <simpleType name="UnitType">
+      <simpleType name="UnitType"> <!-- not used but documents RequestLocation > Unit -->
         <annotation>
           <documentation/>
         </annotation>
@@ -705,18 +486,13 @@
       </simpleType>
       <complexType name="AdjustItem">
         <sequence>
-          <element name="PartNumber" type="xsd:string" nillable="true"/>
-          <element name="UPC" type="xsd:string" nillable="true"/>
+          <element name="PartNumber" type="xsd:string"/>
+          <element name="UPC" type="xsd:string"/>
           <element name="BinID" type="xsd:int"/>
           <element name="Quantity" type="xsd:int"/>
         </sequence>
       </complexType>
       <!-- arrays -->
-      <complexType name="ArrayOf_impl_InventoryResponse">
-        <sequence>
-          <element name="items" type="impl:InventoryResponse" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-      </complexType>
       <complexType name="ArrayOf_impl_AdjustItem">
         <sequence>
           <element name="items" type="impl:AdjustItem" minOccurs="0" maxOccurs="unbounded"/>
@@ -1058,4 +834,3 @@
   <!-- Services -->
   <!-- Soap Binding -->
 </wsdl:definitions>
-
