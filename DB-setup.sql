@@ -3,8 +3,13 @@
 -- Lab 4 (Revised from Lab 3)
 -- Database Setup
 
+CREATE TABLE Fulfiller(
+    ID int PRIMARY KEY,
+    Name VARCHAR2(30)
+);
+
 CREATE TABLE Locations(
-    FulfillerID int,
+    FulfillerID int REFERENCES Fulfiller,
     ID          int,
     Name        VARCHAR2(50),
     Type        VARCHAR2(30),
@@ -19,7 +24,7 @@ CREATE TABLE Locations(
 
 CREATE TABLE Bins(
     BinID       int PRIMARY KEY,
-    FulfillerID int,
+    FulfillerID int REFERENCES Fulfiller,
     LocationID  int,
     BinName     VARCHAR2(20),
     FOREIGN KEY(FulfillerID, LocationID) REFERENCES Locations,
@@ -32,7 +37,7 @@ CREATE TABLE Products(
 );
 
 CREATE TABLE FulfillerProduct(
-    FulfillerID int,
+    FulfillerID int REFERENCES Fulfiller,
     UPC         int REFERENCES Products,
     SKU         VARCHAR2(15),
     PRIMARY KEY(FulfillerID, UPC),
@@ -42,7 +47,7 @@ CREATE TABLE FulfillerProduct(
 CREATE TABLE BinProduct(
     BinID       int REFERENCES Bins,
     UPC         int REFERENCES Products,
-    FulfillerID int, 
+    FulfillerID int REFERENCES Fulfiller, 
     SKU         VARCHAR2(15),
     OnHand      int,
     Allocated   int,
@@ -52,7 +57,7 @@ CREATE TABLE BinProduct(
 );
 
 CREATE TABLE LocationProduct(
-    FulfillerID int,
+    FulfillerID int REFERENCES Fulfiller,
     LocationID  int,
     UPC         int REFERENCES Products,
     SKU         VARCHAR2(15),
