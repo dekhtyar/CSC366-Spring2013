@@ -1,5 +1,5 @@
 7 May 2013
-==========
+----------
 
 Major operation changes:
 
@@ -11,8 +11,9 @@ Major operation changes:
 
 Type changes:
 
-* Bin: Type and Status to string
-* Location: Type changed to string
+* Bin: Type and Status to string. How the Type and Status is stored is up to
+  each group, it will always be passed as a string.
+* Location: Type changed to string. Same as BinType.
 
 Deletions:
 
@@ -27,10 +28,8 @@ Deletions:
 * RetailerLocationID where redundant with FulfillerLocationID
 * ManufacturerID/ManufacturerLocationID (unneeded FKs)
 
-
-
 3 May 2013
-==========
+----------
 
 * Removed the AuthenticationHeader
 * Added FulfillerID to all request complexTypes
