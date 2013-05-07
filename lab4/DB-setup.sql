@@ -59,28 +59,28 @@ CREATE TABLE Bins (
 );
 
 CREATE TABLE StoredIn (
-   UPC                      CHAR(12),
+   SKU                      VARCHAR2(50),
    FulfillerId              VARCHAR2(50),
    FulfillerLocationId      VARCHAR2(50),
    Name                     VARCHAR2(20),
    OnHand                   INTEGER,
    Allocated                INTEGER,
-   PRIMARY KEY (UPC, FulfillerId, FulfillerLocationId, Name),
-   FOREIGN KEY (UPC, FulfillerId)
-    REFERENCES FulfilledBy,
+   PRIMARY KEY (SKU, FulfillerId, FulfillerLocationId, Name),
+   FOREIGN KEY (SKU, FulfillerId)
+    REFERENCES FulfilledBy (SKU, FulfillerId),
    FOREIGN KEY (FulfillerId, FulfillerLocationId, Name)
     REFERENCES Bins
 );
 
 CREATE TABLE StoredAt (
-   UPC                      CHAR(12),
+   SKU                      VARCHAR2(50),
    FulfillerId              VARCHAR2(50),
    FulfillerLocationId      VARCHAR2(50),
    LTD                      FLOAT,
    SafetyStockLimit         INTEGER,
-   PRIMARY KEY (UPC, FulfillerId, FulfillerLocationId),
-   FOREIGN KEY (UPC, FulfillerId)
-    REFERENCES FulfilledBy,
+   PRIMARY KEY (SKU, FulfillerId, FulfillerLocationId),
+   FOREIGN KEY (SKU, FulfillerId)
+    REFERENCES FulfilledBy (SKU, FulfillerId),
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
     REFERENCES Locations (FulfillerId, FulfillerLocationId)
 ); 
