@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:createFulfillerResponse>
+         <v4:createFulfillerReturn>?</v4:createFulfillerReturn>
+      </v4:createFulfillerResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
