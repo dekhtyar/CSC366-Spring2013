@@ -1,7 +1,7 @@
 -- Cait Rahm
--- Chase Ricketts
 -- Peter Faiman
 -- Jessica Cosio
+-- Chase Ricketts
 
 -- PostgreSQL
 
