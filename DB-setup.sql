@@ -2,78 +2,84 @@
 -- Chase Ricketts
 -- Peter Faiman
 -- Jessica Cosio
+
 -- PostgreSQL
 
-CREATE TABLE Fulfillers(
-    fulfillerid int PRIMARY KEY CHECK(fulfillerid > 0)
+CREATE TYPE ActivityStatus AS ENUM ('active', 'inactive');
+CREATE TYPE LocationType AS ENUM ('FULFILLER', 'RETAILER', 'MANUFACTURER');
+
+CREATE TABLE Fulfillers (
+    id INT PRIMARY KEY CHECK (id > 0),
+    status ActivityStatus DEFAULT 'active'
 );
 
-CREATE TABLE Manufacturers(
-    manufacturerid int PRIMARY KEY CHECK(manufacturerid > 0)
+CREATE TABLE Manufacturers (
+    id INT PRIMARY KEY CHECK (id > 0)
 );
 
-CREATE TABLE Catalogs(
-    id serial PRIMARY KEY,
-    catalogid varchar(80) UNIQUE,
-    manufacturerid int REFERENCES manufacturers NOT NULL
+CREATE TABLE Catalogs (
+    id INT PRIMARY KEY CHECK (id > 0),
+    manufacturerId INT REFERENCES Manufacturers,
+    UNIQUE (manufacturerId, id)
 );
 
-CREATE TABLE Locations(
-    locationid int PRIMARY KEY,
-    name varchar(80),
-    fulfillerid int REFERENCES fulfillers,
-    extfulfillerid varchar(80),
-    type varchar(80),
-    coordinates point,
-    status varchar(8),
-    safetystocklimit int,
-    UNIQUE(fulfillerid,extfulfillerid)
+CREATE TABLE Locations (
+    name VARCHAR(126),
+    fulfillerId INT REFERENCES Fulfillers,
+    externalFulfillerId VARCHAR(126),
+    id INT PRIMARY KEY,
+    description VARCHAR(126),
+    type LocationType,
+    coordinates POINT, -- TODO change to GEOGRAPHY(POINT, 4326)
+    status ActivityStatus DEFAULT 'active',
+    UNIQUE (fulfillerId, externalFulfillerId)
 );
 
-CREATE TABLE LocationsManCats(
-    locationid int REFERENCES locations,
-    mancatid int REFERENCES catalogs,
-    PRIMARY KEY(locationid,mancatid)
+CREATE TABLE LocationCatalogs (
+    locationId INT REFERENCES Locations,
+    catalogId INT REFERENCES Catalogs(id),
+    PRIMARY KEY (locationId, catalogId)
 );
 
-CREATE TABLE Products(
-    upc varchar(80) PRIMARY KEY,
-    name varchar(80),
-    mancatid int REFERENCES Catalogs
+CREATE TABLE Products (
+    upc VARCHAR(126) PRIMARY KEY,
+    name VARCHAR(126),
+    catalogId INT REFERENCES Catalogs
 );
 
-CREATE TABLE FulfillersProducts(
-    sku varchar(80),
-    fulfillerid int REFERENCES fulfillers,
-    upc varchar(80) REFERENCES products,
-    PRIMARY KEY(sku,fulfillerid),
-    UNIQUE(fulfillerid,upc)
+CREATE TABLE FulfillerProducts (
+    sku VARCHAR(126),
+    upc VARCHAR(126) REFERENCES Products,
+    fulfillerId INT REFERENCES Fulfillers,
+    PRIMARY KEY (fulfillerId, sku),
+    UNIQUE (fulfillerId, upc)
 );
 
-CREATE TABLE LocationsProducts(
-    ltd real,
-    safetystocklimit int,
-    locationid int REFERENCES locations,
-    fulfillerid int REFERENCES FulfillersProducts(fulfillerid),
-    sku varchar(80) REFERENCES FulfillersProducts(sku),
-    PRIMARY KEY(fulfillerid,sku, locationid)
+CREATE TABLE LocationProducts (
+    locationId INT REFERENCES Locations,
+    fulfillerId INT,
+    sku VARCHAR(126),
+    ltd DOUBLE PRECISION,
+    safetyStock INT,
+    PRIMARY KEY (locationId, sku),
+    FOREIGN KEY (fulfillerId, sku) REFERENCES FulfillerProducts
 );
 
-CREATE TABLE Bins(
-    id serial PRIMARY KEY,
-    name varchar(80),
-    type varchar(50),
-    locationid int REFERENCES locations NOT NULL,
-    status varchar(20),
-    UNIQUE(name,type,locationid)
+CREATE TABLE Bins (
+    id SERIAL PRIMARY KEY,
+    locationId INT REFERENCES Locations NOT NULL,
+    name VARCHAR(126),
+    type VARCHAR(126),
+    status VARCHAR(126),
+    UNIQUE(locationId, type, name)
 );
 
-CREATE TABLE BinsProducts(
-    onhandinventory int CHECK(availableinventory = onhandinventory-allocatedinventory),
-    allocatedinventory int CHECK(availableinventory = onhandinventory-allocatedinventory),
-    availableinventory int CHECK(availableinventory = onhandinventory-allocatedinventory),
-    fulfillerid int REFERENCES FulfillersProducts(fulfillerid),
-    sku varchar(80) REFERENCES FulfillersProducts(sku),
-    binid int REFERENCES bins(id),
-    PRIMARY KEY(fulfillerid,sku, binid)
+CREATE TABLE BinProducts (
+    binId INT REFERENCES bins(id),
+    fulfillerId INT,
+    sku VARCHAR(126),
+    onHand INT,
+    allocated INT,
+    PRIMARY KEY(binId, sku),
+    FOREIGN KEY (fulfillerId, sku) REFERENCES FulfillerProducts
 );
