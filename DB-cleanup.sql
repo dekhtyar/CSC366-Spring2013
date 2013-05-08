@@ -1,4 +1,4 @@
-﻿-- Cait Rahm
+-- Cait Rahm
 -- Peter Faiman
 -- Jessica Cosio
 -- Chase Ricketts
