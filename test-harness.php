@@ -18,6 +18,10 @@ switch ($argv[1]):
     db_destroy_tables($db);
     break;
 
+  case 'empty':
+    db_empty_tables($db);
+    break;
+
   default:
     print "Usage: php test-harness.php create|seed|empty|destroy\n";
     break;
@@ -135,6 +139,25 @@ function db_create_tables($db) {
     print "Tables created.\n";
   } catch (PDOException $e) {
     print "Failed to create tables\n";
+  }
+}
+
+function db_empty_tables($db) {
+  try {
+    $db->exec("DELETE FROM LocationOffersCatalogs;");
+    $db->exec("DELETE FROM FulfillerCarriesProducts;");
+    $db->exec("DELETE FROM BinContainsProducts;");
+    $db->exec("DELETE FROM LocationSellsProducts;");
+    $db->exec("DELETE FROM Products;");
+    $db->exec("DELETE FROM Bins;");
+    $db->exec("DELETE FROM Catalogs;");
+    $db->exec("DELETE FROM Locations;");
+    $db->exec("DELETE FROM Fulfillers;");
+
+    print "Tables emptied.\n";
+  }
+  catch (PDOException $e) {
+    print "Failed to empty tables\n";
   }
 }
 
