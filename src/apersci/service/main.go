@@ -6,5 +6,6 @@ import (
 
 func main() {
 	http.HandleFunc("/createBin/", createBin)
+
 	http.ListenAndServe(":8080", nil)
 }
