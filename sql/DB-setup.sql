@@ -10,6 +10,7 @@ CREATE TYPE LocationType AS ENUM ('FULFILLER', 'RETAILER', 'MANUFACTURER');
 
 CREATE TABLE Fulfillers (
     id INT PRIMARY KEY CHECK (id > 0),
+    name VARCHAR(126),
     status ActivityStatus DEFAULT 'active'
 );
 
