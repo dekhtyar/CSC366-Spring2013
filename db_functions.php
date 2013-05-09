@@ -38,8 +38,6 @@ function createBin($binName, $fulfillerId, $locationId, $binType, $status)
   $stmt->execute();
 }
 
-}
-
 function refreshInventory($fulfillerId, $locationId, $items) {
   $item = {}; // ?
 
