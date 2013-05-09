@@ -20,8 +20,8 @@ CREATE TABLE Fulfillers (
 CREATE TABLE Locations (
    FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      INTEGER,
-   Name                     VARCHAR2(20),
-   Type                     VARCHAR2(20),
+   Name                     VARCHAR2(40),
+   Type                     VARCHAR2(30),
    Latitude                 FLOAT,
    Longitude                FLOAT,
    Status                   Varchar(30),
