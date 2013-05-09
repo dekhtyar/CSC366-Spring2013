@@ -5,12 +5,12 @@
 --Luke Larson  lplarson@calpoly.edu
 
 CREATE TABLE Manufacturers (
-   ManufacturerId           VARCHAR2(50) PRIMARY KEY
+   ManufacturerId           VARCHAR(50) PRIMARY KEY
 );
 
 CREATE TABLE Catalogues (
-   CatalogueId              VARCHAR2(50) PRIMARY KEY,
-   ManufacturerId           VARCHAR2(50) REFERENCES Manufacturers
+   CatalogueId              VARCHAR(50) PRIMARY KEY,
+   ManufacturerId           VARCHAR(50) REFERENCES Manufacturers
 );
 
 CREATE TABLE Fulfillers (
@@ -20,8 +20,8 @@ CREATE TABLE Fulfillers (
 CREATE TABLE Locations (
    FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      INTEGER,
-   Name                     VARCHAR2(40),
-   Type                     VARCHAR2(30),
+   Name                     VARCHAR(40),
+   Type                     VARCHAR(30),
    Latitude                 FLOAT,
    Longitude                FLOAT,
    Status                   Varchar(30),
@@ -36,7 +36,7 @@ CREATE TABLE Items (
 );
 
 CREATE TABLE Bins (
-   Name                     VARCHAR2(20),
+   Name                     VARCHAR(20),
    FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      INTEGER,
    PRIMARY KEY(Name, FulfillerId, FulfillerLocationId),
@@ -48,7 +48,7 @@ CREATE TABLE StoredIn (
    UPC                      CHAR(12)     REFERENCES Items,
    FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      INTEGER,
-   Name                     VARCHAR2(20),
+   Name                     VARCHAR(20),
    OnHand                   INTEGER,
    Allocated                INTEGER,
    PRIMARY KEY(UPC, FulfillerId, FulfillerLocationId, Name),
@@ -70,7 +70,7 @@ CREATE TABLE StoredAt (
 CREATE TABLE SubscribeTo (
    FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      INTEGER,
-   CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
+   CatalogueId              VARCHAR(50) REFERENCES Catalogues,
    PRIMARY KEY(FulfillerId, FulfillerLocationId, CatalogueId),
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
     REFERENCES Locations(FulfillerId, FulfillerLocationId)
@@ -79,13 +79,13 @@ CREATE TABLE SubscribeTo (
 CREATE TABLE FulfilledBy (
    UPC                      CHAR(12)     REFERENCES Items,
    FulfillerId              INTEGER REFERENCES Fulfillers,
-   SKU                      VARCHAR2(50),
+   SKU                      VARCHAR(50),
    PRIMARY KEY(UPC, FulfillerId)
 );
 
 CREATE TABLE ListedIn (
    UPC                      CHAR(12)     REFERENCES Items,
-   CatalogueId              VARCHAR2(50) REFERENCES Catalogues,
+   CatalogueId              VARCHAR(50) REFERENCES Catalogues,
    PRIMARY KEY(UPC, CatalogueId)
 );
 
