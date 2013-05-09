@@ -8,11 +8,11 @@ function createFulfiller( $id, $name ) {
   $stmt->execute();
 }
 
-function createFulfillmentLocation($locationName, $extLID, $intLID, 
+function createFulfillmentLocation($locationName, $extLID, $intLID,
   $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock) {
-    $stmt = $db->prepare(" 
+    $stmt = $db->prepare("
       INSERT INTO Locations
-      (externalLocationID, internalLocationID, fulfillerId, locationType, 
+      (externalLocationID, internalLocationID, fulfillerId, locationType,
       latitude, longitude, status, safetyStockLimitDefault)
       VALUES
       (:extLID, :intLID, :fulfillerId, :locationType, :latitude, :longitude,
@@ -20,7 +20,7 @@ function createFulfillmentLocation($locationName, $extLID, $intLID,
     $stmt->bindValue(':extLID',$extLID);
     $stmt->bindValue(':intLID',$intLID);
     $stmt->bindValue(':fulfillerId',$fulfillerId);
-    $stmt->bindValue(':locationType',$locationType;
+    $stmt->bindValue(':locationType',$locationType);
     $stmt->bindValue(':latitude',$latidude);
     $stmt->bindValue(':longitude',$longintude);
     $stmt->bindValue(':status',$status);
