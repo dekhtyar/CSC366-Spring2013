@@ -1,4 +1,7 @@
 <?php
+  include_once('db.php');
+  include_once('db_functions.php');
+
   $csv = array();
   $csv['locations']           = 'data-csv-rfc/fulfiller_locations.csv';
   $csv['location_bins']       = 'data-csv-rfc/fulfiller_location_bins.csv';
