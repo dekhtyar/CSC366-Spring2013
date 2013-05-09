@@ -24,7 +24,7 @@ CREATE TABLE Locations (
    Type                     VARCHAR2(20),
    Latitude                 FLOAT,
    Longitude                FLOAT,
-   Status                   INTEGER,
+   Status                   Varchar(30),
    DefaultSafetyStockLimit  INTEGER,
    PRIMARY KEY(FulfillerId, FulfillerLocationId),
    UNIQUE(Latitude, Longitude)   
