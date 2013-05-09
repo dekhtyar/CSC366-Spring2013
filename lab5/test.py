@@ -16,7 +16,17 @@ def createFulfillers():
     pass
 
 def createFulfillmentLocations():
-    pass
+   csvFile = open("../data/fulfiller locations.csv", 'r')
+   numAttributes = len(csvFile.readline().split(','))
+   
+   for row in csvFile:
+      tuple = row.split(',')
+      if(len(tuple) > numAttributes):
+         #to fix stores that have a ',' in their name
+         tuple[0] += tuple[1]
+         tuple.pop(1)
+      #send the row from the CSV and the pointer to the open MySQL database
+      createFulfillmentLocation(tuple, db)  
 
 def createManufacturerCatalogs():
     pass
@@ -40,4 +50,3 @@ def clearDatabase():
 
 def destroyDatabase():
     pass
-
