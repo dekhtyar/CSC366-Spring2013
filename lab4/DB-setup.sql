@@ -31,7 +31,7 @@ CREATE TABLE Manufacturer (
 
 CREATE TABLE Catalog (
     CatalogId INT PRIMARY KEY,
-    ManufacturerId INT REFERENCES Manufacturer(ManufacturerId)
+    ManufacturerId INT REFERENCES Manufacturer(ManufacturerId,CatalogId)
     );
 
 CREATE TABLE CatalogServedByLocation (
