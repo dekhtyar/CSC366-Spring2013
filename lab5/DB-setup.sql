@@ -1,11 +1,4 @@
-/* Team GLADE:
-   George Reyes
-   Lauren Thurston
-   Adin Miller
-   Diego Torres
-   Elizabeth Loui
-   Date: 05/09/2013
-   DB-setup.sql */
+/* Team GLADE: George Reyes, Lauren Thurston, Adin Miller, Diego Torres, Elizabeth Loui, Date: 05/09/2013, DB-setup.sql */
 
 CREATE TABLE Retailer (
     FulfillerId INT PRIMARY KEY, 
