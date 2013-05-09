@@ -11,5 +11,6 @@ DROP TABLE IF EXISTS Catalog;
 DROP TABLE IF EXISTS Location;
 DROP TABLE IF EXISTS Manufacturer;
 DROP TABLE IF EXISTS Fulfiller;
+DROP TABLE IF EXISTS FulfillFor;
 
 SET foreign_key_checks = 1;

@@ -1,6 +1,3 @@
-CREATE DATABASE IF NOT EXISTS inventory;
-USE inventory;
-
 CREATE TABLE IF NOT EXISTS Fulfiller (
    id INT,
 
@@ -18,7 +15,7 @@ CREATE TABLE IF NOT EXISTS Location (
    int_ful_loc_id INT,
    fulfiller_id INT,
    name VARCHAR(100),
-   type VARCHAR(100), -- "description" in CSV
+   type VARCHAR(100),
    latitude FLOAT,
    longitude FLOAT, 
    status VARCHAR(100),
@@ -59,8 +56,8 @@ CREATE TABLE IF NOT EXISTS Product (
 
 CREATE TABLE IF NOT EXISTS Bin (
    name VARCHAR(100),
-   fulfiller_id INT, 
    ext_ful_loc_id VARCHAR(100),
+   fulfiller_id INT, 
    type VARCHAR(100),
    status VARCHAR(100),
 

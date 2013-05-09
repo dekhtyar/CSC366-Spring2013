@@ -1,5 +1,4 @@
 external_fulfiller_location_id,internal_fulfiller_location_id,bin_name,bin_type,bin_status
-'NOT USED',17358,'Default','General','Pickable'
 '600',54802,'01010101','General','Pickable'
 '600',54802,'01010102','General','Pickable'
 '600',54802,'01010103','General','Pickable'
