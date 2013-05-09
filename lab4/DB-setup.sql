@@ -4,7 +4,7 @@
    Adin Miller
    Diego Torres
    Elizabeth Loui
-
+   Date: 05/09/2013
    DB-setup.sql */
 
 CREATE TABLE Retailer (
