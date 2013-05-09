@@ -22,7 +22,14 @@ function createFulfillmentLocation($locationId, $fulfillerId, $name, $locationTy
   $stmt->bindValue(':status',$status);
   $stmt->bindValue(':countryCode',$countryCode);
   $stmt->execute();
-  
 } 
+
+function createBin($BinName, $FillerId, $LocationId, $binType, $Status) {
+  
+}
+function refreshInventory( $LocationName, $SKU, $UPC, $BinID, 
+  $Quantity, $LTD, $SafetyStock) {
+
+}
 ?>
 
