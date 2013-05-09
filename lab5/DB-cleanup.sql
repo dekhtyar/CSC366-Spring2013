@@ -1,11 +1,4 @@
-/* Team GLADE:
-   George Reyes
-   Lauren Thurston
-   Adin Miller
-   Diego Torres
-   Elizabeth Loui
-
-   DB-cleanup.sql */
+/* Team GLADE: George Reyes, Lauren Thurston, Adin Miller, Diego Torres, Elizabeth Loui, DB-cleanup.sql */
 
 DROP TABLE ContainedInBin;
 DROP TABLE LocationProduct;
