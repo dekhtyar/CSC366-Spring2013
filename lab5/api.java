@@ -49,8 +49,11 @@ public class api {
       return true;
    }
 
+   public void createFulfiller(int fulfillerId, String locationName) {
+      createNewRetailer(fulfillerId, locationName);
+   }
 
-   public void createFulfiller (String locationName, int fulfillerId,
+   public void createFulfillmentLocation (String locationName, int fulfillerId,
       String externalLocationId, int internalFulfillerLocationId,
       String description, double latitude, double longitude, int status,
       int safetyStockLimit, int manufacturerId, int catalogId)
