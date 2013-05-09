@@ -1,0 +1,7 @@
+INSERT INTO Product VALUES (12345, 'Test');
+INSERT INTO Product VALUES (09876, 'Doll');
+INSERT INTO Product VALUES (12842, 'AnotherTest');
+INSERT INTO FulfillerProduct VALUES (1, 12345, '12Terfe1133');
+INSERT INTO FulfillerProduct VALUES (2, 09876, '12Ferfe1133');
+INSERT INTO BinProduct VALUES (1, 12345, 1, '12Terfe1133', 15, 3);
+INSERT INTO BinProduct VALUES (2, 09876, 2, '12Ferfe1133', 12, 1);
