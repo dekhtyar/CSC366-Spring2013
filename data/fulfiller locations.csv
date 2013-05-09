@@ -28,6 +28,7 @@ name,fulfiller_id,external_fulfiller_location_id,internal_fulfiller_location_id,
 'INTERMIX - Stores',69170,'440028',52153,'General',41.035500,-73.628200,'active',0,11416,0
 'INTERMIX - Stores',69170,'440032',52154,'General',34.096600,-118.412000,'active',0,11416,0
 'INTERMIX Distribution',70125,'440777',38497,'General',40.505700,-74.354200,'active',0,11416,0
+'INTERMIX - Stores',69170,'440034',54760,'General',41.138900,-73.348000,'inactive',0,11416,0
 'INTERMIX - Stores',69170,'440777',54370,'General',40.505700,-74.354200,'inactive',0,11416,0
 'Modell''s Online, Inc.',48590,'NOT USED',17358,'General',40.845000,-73.843300,'active',0,10636,0
 'Modell''s Online, Inc.',48590,'3',54999,'General',40.712800,-74.009500,'active',0,10636,0
