@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"net/http"
+)
 
 func main() {
-	fmt.Println("TODO LOL")
+	http.HandleFunc("/createBin/", createBin)
+	http.ListenAndServe(":8080", nil)
 }
