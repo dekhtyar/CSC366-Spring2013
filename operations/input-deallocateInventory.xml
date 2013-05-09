@@ -1,0 +1,29 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:deallocateInventory>
+         <v4:request>
+            <v4:FulfillerID>?</v4:FulfillerID>
+            <v4:FulfillerLocationCatalog>
+               <v4:ManufacturerCatalog>
+                  <v4:ManufacturerID>?</v4:ManufacturerID>
+                  <v4:CatalogID>?</v4:CatalogID>
+               </v4:ManufacturerCatalog>
+               <v4:FulfillerLocationID>?</v4:FulfillerLocationID>
+            </v4:FulfillerLocationCatalog>
+            <v4:Items>
+               <!--Zero or more repetitions:-->
+               <v4:items>
+                  <v4:PartNumber>?</v4:PartNumber>
+                  <v4:UPC>?</v4:UPC>
+                  <v4:Quantity>?</v4:Quantity>
+                  <v4:OrderID>?</v4:OrderID>
+                  <v4:OrderItemID>?</v4:OrderItemID>
+                  <v4:ShipmentID>?</v4:ShipmentID>
+                  <v4:FulfillerLocationID>?</v4:FulfillerLocationID>
+               </v4:items>
+            </v4:Items>
+         </v4:request>
+      </v4:deallocateInventory>
+   </soapenv:Body>
+</soapenv:Envelope>

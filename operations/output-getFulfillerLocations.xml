@@ -1,0 +1,12 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:getFulfillmentLocationsResponse>
+         <!--1 or more repetitions:-->
+         <v4:getFulfillmentLocationsReturn>
+            <v4:FulfillerID>?</v4:FulfillerID>
+            <v4:FulfillerLocationID>?</v4:FulfillerLocationID>
+         </v4:getFulfillmentLocationsReturn>
+      </v4:getFulfillmentLocationsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
