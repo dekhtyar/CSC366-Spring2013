@@ -1,0 +1,7 @@
+Drop Table Product CASCADE CONSTRAINTS
+Drop Table FulfillerProduct CASCADE CONSTRAINTS
+Drop Table LocationProduct CASCADE CONSTRAINTS
+Drop Table BinProduct CASCADE CONSTRAINTS
+Drop Table Bin CASCADE CONSTRAINTS
+Drop Table Location CASCADE CONSTRAINTS
+Drop Table Fulfiller CASCADE CONSTRAINTS
