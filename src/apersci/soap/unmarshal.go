@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/xml"
 	"errors"
+	"io"
 )
 
-func Unmarshal(data []byte, v interface{}) error {
-	d := xml.NewDecoder(bytes.NewBuffer(data))
+func Unmarshal(r io.Reader, v interface{}) error {
+	d := xml.NewDecoder(r)
 	depth := 0
 	for {
 		token, err := d.Token()

@@ -2,6 +2,7 @@ package input
 
 import (
 	"apersci/soap"
+	"io"
 )
 
 // Request:
@@ -33,14 +34,14 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope
 
-func CreateBinRequest(data []byte) (soap.Bin, error) {
-	var r soap.CreateBin
-	err := soap.Unmarshal(data, &r)
-	return r.Request, err
+func CreateBinRequest(r io.Reader) (soap.Bin, error) {
+	var v soap.CreateBin
+	err := soap.Unmarshal(r, &v)
+	return v.Request, err
 }
 
-func CreateBinResponse(data []byte) (string, error) {
-	var r soap.CreateBinResponse
-	err := soap.Unmarshal(data, &r)
-	return r.CreateBinReturn, err
+func CreateBinResponse(r io.Reader) (string, error) {
+	var v soap.CreateBinResponse
+	err := soap.Unmarshal(r, &v)
+	return v.CreateBinReturn, err
 }

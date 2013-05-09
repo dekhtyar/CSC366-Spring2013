@@ -2,7 +2,7 @@
    <soapenv:Header/>
    <soapenv:Body>
       <v4:createFulfillmentLocationResponse>
-         <v4:createFulfillmentLocationReturn>?</v4:createFulfillmentLocationReturn>
+          <v4:createFulfillmentLocationReturn>{{.CreateFulfillmentLocationReturn}}</v4:createFulfillmentLocationReturn>
       </v4:createFulfillmentLocationResponse>
    </soapenv:Body>
 </soapenv:Envelope>
