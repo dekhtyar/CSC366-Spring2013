@@ -7,20 +7,23 @@ function createFulfiller( $id ) {
   $stmt->execute();
 }
 
-function createFulfillmentLocation($locationId, $fulfillerId, $name, $locationType, $latitude, $longitude, $status, $safetyStockLimitDefault) {
-  $stmt = $db->prepare("INSERT INTO Fulfillers (locationId, fulfillerId, name, 
-    locationType, latitude, longitude, status, safetyStockLimitDefault) 
-    VALUES (:locationId, :fulfillerId, :name, :locationType, :latitude, 
-    :longitude, :status, :safetyStockLimitDefault)");
-  $stmt->bindValue(':fulfillerId',$fulfillerId);
+function createFulfillmentLocation($locationId, $fulfillerId, $locationName, 
+  $locationType, $latitude, $longitude, $status, $safetyStock) {
+    $stmt = $db->prepare("
+      INSERT INTO Fulfillers 
+          (locationId, fulfillerId, name, locationType, latitude, longitude, 
+            status, safetyStockLimitDefault) 
+      VALUES 
+        (:locationId, :fulfillerId, :name, :locationType, :latitude, :longitude,
+    :status, :safetyStock)");
   $stmt->bindValue(':locationId',$locationId);
-  $stmt->bindValue(':retailerId',$retailerId);
+  $stmt->bindValue(':fulfillerId',$fulfillerId);
   $stmt->bindValue(':locationName',$locationName);
-  $stmt->bindValue(':typeId',$typeId;
+  $stmt->bindValue(':locationType',$locationType;
   $stmt->bindValue(':latitude',$latidude);
-  $stmt->bindValue(':longitude',$logintude);
+  $stmt->bindValue(':longitude',$longintude);
   $stmt->bindValue(':status',$status);
-  $stmt->bindValue(':countryCode',$countryCode);
+  $stmt->bindValue(':safeyStock',$safetyStock);
   $stmt->execute();
 } 
 
@@ -29,7 +32,7 @@ function createBin($BinName, $FillerId, $LocationId, $binType, $Status) {
 }
 function refreshInventory( $LocationName, $SKU, $UPC, $BinID, 
   $Quantity, $LTD, $SafetyStock) {
-
+  
 }
 ?>
 
