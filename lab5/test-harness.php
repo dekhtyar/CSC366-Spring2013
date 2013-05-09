@@ -28,6 +28,9 @@ switch ($argv[1]):
 
 endswitch;
 
+// **********************************************************************
+// Create Tables
+// **********************************************************************
 function db_create_tables($db) {
   try {
     $db->exec("
@@ -142,6 +145,9 @@ function db_create_tables($db) {
   }
 }
 
+// **********************************************************************
+// Empty Tables
+// **********************************************************************
 function db_empty_tables($db) {
   try {
     $db->exec("DELETE FROM LocationOffersCatalogs;");
@@ -161,6 +167,9 @@ function db_empty_tables($db) {
   }
 }
 
+// **********************************************************************
+// Destroy Tables
+// **********************************************************************
 function db_destroy_tables($db) {
   try {
     $db->exec("DROP TABLE LocationOffersCatalogs;");
@@ -180,6 +189,9 @@ function db_destroy_tables($db) {
   }
 }
 
+// **********************************************************************
+// Seed data from CSV files
+// **********************************************************************
 function db_seed($db) {
   $csv = array();
   $csv['locations']           = 'data-csv-rfc/fulfiller_locations.csv';
