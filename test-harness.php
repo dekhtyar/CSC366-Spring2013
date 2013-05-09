@@ -18,8 +18,9 @@
   $handle = fopen($csv['locations'], "r");
   if (!$handle) die();
 
+  $header = fgetcsv($handle);
   while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r($line_array);
+    print_r(array_combine($header, $line_array));
   }
   fclose($handle);
 
@@ -29,8 +30,9 @@
   $handle = fopen($csv['location_bins'], "r");
   if (!$handle) die();
 
+  $header = fgetcsv($handle);
   while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r($line_array);
+    print_r(array_combine($header, $line_array));
   }
   fclose($handle);
 
@@ -40,8 +42,9 @@
   $handle = fopen($csv['inv_available_bins'], "r");
   if (!$handle) die();
 
+  $header = fgetcsv($handle);
   while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r($line_array);
+    print_r(array_combine($header, $line_array));
   }
   fclose($handle);
 
@@ -51,8 +54,9 @@
   $handle = fopen($csv['inv_available'], "r");
   if (!$handle) die();
 
+  $header = fgetcsv($handle);
   while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r($line_array);
+    print_r(array_combine($header, $line_array));
   }
   fclose($handle);
 
@@ -62,8 +66,9 @@
   $handle = fopen($csv['inv_not_available'], "r");
   if (!$handle) die();
 
+  $header = fgetcsv($handle);
   while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r($line_array);
+    print_r(array_combine($header, $line_array));
   }
   fclose($handle);
 ?>
