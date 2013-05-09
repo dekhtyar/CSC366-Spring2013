@@ -2,6 +2,7 @@ package input
 
 import (
 	"apersci/soap"
+	"io"
 )
 
 // Request:
@@ -36,13 +37,13 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope>
 
-func RefreshInventoryRequest(data []byte) (r soap.RefreshRequest, err error) {
-	err = soap.Unmarshal(data, &r)
+func RefreshInventoryRequest(r io.Reader) (v soap.RefreshRequest, err error) {
+	err = soap.Unmarshal(r, &v)
 	return
 }
 
-func RefreshInventoryResponse(data []byte) (string, error) {
-	var r soap.RefreshResponse
-	err := soap.Unmarshal(data, &r)
-	return r.Return, err
+func RefreshInventoryResponse(r io.Reader) (string, error) {
+	var v soap.RefreshResponse
+	err := soap.Unmarshal(r, &v)
+	return v.Return, err
 }

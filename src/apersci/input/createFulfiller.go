@@ -2,6 +2,7 @@ package input
 
 import (
 	"apersci/soap"
+	"io"
 )
 
 // Request:
@@ -29,14 +30,14 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope>
 
-func CreateFulfillerRequest(data []byte) (soap.FulfillerRequest, error) {
-	var r soap.CreateFulfiller
-	err := soap.Unmarshal(data, &r)
-	return r.Request, err
+func CreateFulfillerRequest(r io.Reader) (soap.FulfillerRequest, error) {
+	var v soap.CreateFulfiller
+	err := soap.Unmarshal(r, &v)
+	return v.Request, err
 }
 
-func CreateFulfillerResponse(data []byte) (string, error) {
-	var r soap.CreateFulfillerResponse
-	err := soap.Unmarshal(data, &r)
-	return r.CreateFulfillerReturn, err
+func CreateFulfillerResponse(r io.Reader) (string, error) {
+	var v soap.CreateFulfillerResponse
+	err := soap.Unmarshal(r, &v)
+	return v.CreateFulfillerReturn, err
 }
