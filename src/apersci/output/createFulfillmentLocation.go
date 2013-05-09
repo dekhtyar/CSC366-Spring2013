@@ -37,10 +37,10 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope>
 
-func CreateFulfillmentLocationRequest(w io.Writer, r soap.FulfillmentLocation) error {
-	return templates.ExecuteTemplate(w, "request-createFulfillmentLocation.xml", r)
+func CreateFulfillmentLocationRequest(w io.Writer, v soap.FulfillmentLocation) error {
+	return templates.ExecuteTemplate(w, "request-createFulfillmentLocation.xml", v)
 }
 
-func CreateFulfillmentLocationResponse(w io.Writer, r string) error {
-	return templates.ExecuteTemplate(w, "response-createFulfillmentLocation.xml", r)
+func CreateFulfillmentLocationResponse(w io.Writer, v string) error {
+	return templates.ExecuteTemplate(w, "response-createFulfillmentLocation.xml", v)
 }

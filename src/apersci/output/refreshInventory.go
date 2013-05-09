@@ -14,7 +14,7 @@ import (
 //          <v4:FulfillerID>?</v4:FulfillerID>
 //          <v4:LocationName>?</v4:LocationName>
 //          <v4:Items>
-//             <!--Zero or more repetitions:-->
+//             <!--Zero or more vepetitions:-->
 //             <v4:items>
 //                <v4:PartNumber>?</v4:PartNumber>
 //                <v4:UPC>?</v4:UPC>
@@ -37,10 +37,10 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope>
 
-func RefreshInventoryRequest(w io.Writer, r soap.RefreshRequest) error {
-	return templates.ExecuteTemplate(w, "request-refreshRequest.xml", r)
+func RefreshInventoryRequest(w io.Writer, v soap.RefreshRequest) error {
+	return templates.ExecuteTemplate(w, "request-refreshRequest.xml", v)
 }
 
-func RefreshInventoryResponse(w io.Writer, r string) error {
-	return templates.ExecuteTemplate(w, "response-refreshRequest.xml", r)
+func RefreshInventoryResponse(w io.Writer, v string) error {
+	return templates.ExecuteTemplate(w, "response-refreshRequest.xml", v)
 }

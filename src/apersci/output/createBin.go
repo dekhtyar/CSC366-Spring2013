@@ -34,10 +34,10 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope
 
-func CreateBinRequest(w io.Writer, r soap.Bin) error {
-	return templates.ExecuteTemplate(w, "request-createBin.xml", r)
+func CreateBinRequest(w io.Writer, v soap.Bin) error {
+	return templates.ExecuteTemplate(w, "request-createBin.xml", v)
 }
 
-func CreateBinResponse(w io.Writer, r string) error {
-	return templates.ExecuteTemplate(w, "response-createBin.xml", r)
+func CreateBinResponse(w io.Writer, v string) error {
+	return templates.ExecuteTemplate(w, "response-createBin.xml", v)
 }

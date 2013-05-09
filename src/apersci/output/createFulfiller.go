@@ -30,10 +30,10 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope>
 
-func CreateFulfillerRequest(w io.Writer, r soap.FulfillerRequest) error {
-	return templates.ExecuteTemplate(w, "request-createFulfiller.xml", r)
+func CreateFulfillerRequest(w io.Writer, v soap.FulfillerRequest) error {
+	return templates.ExecuteTemplate(w, "request-createFulfiller.xml", v)
 }
 
-func CreateFulfillerResponse(w io.Writer, r string) error {
-	return templates.ExecuteTemplate(w, "response-createFulfiller.xml", r)
+func CreateFulfillerResponse(w io.Writer, v string) error {
+	return templates.ExecuteTemplate(w, "response-createFulfiller.xml", v)
 }
