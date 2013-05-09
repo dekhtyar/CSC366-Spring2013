@@ -49,7 +49,7 @@ CREATE TABLE StoreBin (
     Type VARCHAR2(25),
     Name VARCHAR2(25),
     Description VARCHAR2(50),
-    UNIQUE(InternalFulfillerLocationId, Name)
+    UNIQUE(InternalFulfillerLocationId)
     );
 
 CREATE TABLE Product (
