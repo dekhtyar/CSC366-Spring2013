@@ -1,24 +1,25 @@
 <?php
 include_once("db.php");
 
-function createFulfiller( $id ) {
-  $stmt = $db->prepare("INSERT INTO Fulfillers (fulfillerId) VALUES (:id)");
+function createFulfiller( $id, $name ) {
+  $stmt = $db->prepare("INSERT INTO Fulfillers (fulfillerId, name) VALUES (:id,:name)");
   $stmt->bindValue(':id', $id);
+  $stmt->bindValue(':name',$name);
   $stmt->execute();
 }
 
-function createFulfillmentLocation($locationId, $fulfillerId, $locationName,
-  $locationType, $latitude, $longitude, $status, $safetyStock) {
-    $stmt = $db->prepare("
-      INSERT INTO Fulfillers
-      (locationId, fulfillerId, name, locationType, latitude, longitude,
-      status, safetyStockLimitDefault)
+function createFulfillmentLocation($locationName, $extLID, $intLID, 
+  $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock) {
+    $stmt = $db->prepare(" 
+      INSERT INTO Locations
+      (externalLocationID, internalLocationID, fulfillerId, locationType, 
+      latitude, longitude, status, safetyStockLimitDefault)
       VALUES
-      (:locationId, :fulfillerId, :name, :locationType, :latitude, :longitude,
+      (:extLID, :intLID, :fulfillerId, :locationType, :latitude, :longitude,
       :status, :safetyStock)");
-    $stmt->bindValue(':locationId',$locationId);
+    $stmt->bindValue(':extLID',$extLID);
+    $stmt->bindValue(':intLID',$intLID);
     $stmt->bindValue(':fulfillerId',$fulfillerId);
-    $stmt->bindValue(':locationName',$locationName);
     $stmt->bindValue(':locationType',$locationType;
     $stmt->bindValue(':latitude',$latidude);
     $stmt->bindValue(':longitude',$longintude);
