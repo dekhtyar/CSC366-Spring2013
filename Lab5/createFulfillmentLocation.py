@@ -26,6 +26,12 @@ insertLocation = ('REPLACE INTO Location(ext_ful_loc_id, int_ful_loc_id,'
                   'fulfiller_id, name, type, latitude, longitude, status, default_safety_stock)'
                   'VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);')
 
+INSERT_BIN_STR = ('INSERT IGNORE INTO Bin(name, ext_ful_loc_id, fulfiller_id, type, '
+                  'status) VALUES(%s, %s, %s, %s, %s)')
+
+def insertBin(cursor, name, ext_ful_loc_id, fulfiller_id, typ, status):
+    return cursor.execute(INSERT_BIN_STR, (name, ext_ful_loc_id, fulfiller_id, typ, status))
+
 cursor = conn.cursor()
 
 with open(sys.argv[1], 'r') as csvfile:
@@ -37,6 +43,13 @@ with open(sys.argv[1], 'r') as csvfile:
         cursor.execute(insertLocation, (row[EXT_FUL_LOC_ID],
                 row[INT_FUL_LOC_ID], row[FULFILLER_ID], row[NAME], row[DESC],
                 row[LATITUDE], row[LONGITUDE], row[STATUS], row[SAFETY_STOCK]))
+conn.commit()
+with open(sys.argv[1], 'r') as csvfile:
+    csvreader = csv.reader(csvfile, delimiter=',', quotechar="'")
+    csvreader.next()
+    for row in csvreader:
+	insertBin(cursor, 'Default', row[EXT_FUL_LOC_ID], row[FULFILLER_ID], 
+                  'General', 'Pickable')
 
 conn.commit()
 conn.close()

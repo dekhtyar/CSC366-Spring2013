@@ -4,7 +4,7 @@ import sys
 import os
 import re
 
-conn = mysql.connector.connect(user='root', database='inventory')
+conn = mysql.connector.connect(user='root')
 cursor = conn.cursor()
 
 with open('DB-setup.sql', 'r') as create_db:

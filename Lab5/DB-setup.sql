@@ -1,3 +1,7 @@
+CREATE DATABASE  IF NOT EXISTS inventory;
+
+use inventory;
+
 CREATE TABLE IF NOT EXISTS Fulfiller (
    id INT,
 

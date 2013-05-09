@@ -26,7 +26,7 @@ insertCatalog = 'INSERT IGNORE INTO Catalog(id, manufacturer_id) VALUES(%s, %s);
 
 insertProduct = 'INSERT IGNORE INTO Product(upc, catalog_id, manufacturer_id, name) VALUES(%s, %s, %s, %s);'
 
-insertFulfillerSpecificProduct = 'INSERT INTO FulfillerSpecificProduct(sku, fulfiller_id, upc) VALUES(%s, %s, %s);'
+insertFulfillerSpecificProduct = 'INSERT IGNORE INTO FulfillerSpecificProduct(sku, fulfiller_id, upc) VALUES(%s, %s, %s);'
 
 insertHeldAt = 'REPLACE HeldAt(fulfiller_id, ext_ful_loc_id, sku, ltd, safety_stock) VALUES(%s, %s, %s, %s, %s);'
 
@@ -38,7 +38,6 @@ GET_FULFILLER_ID_STR = ('SELECT fulfiller_id FROM Location WHERE '
 def getFulfillerId(cursor, int_ful_loc_id):
     cursor.execute(GET_FULFILLER_ID_STR, (int_ful_loc_id,))
     return cursor.fetchone()
-
 
 with open(sys.argv[1], 'r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',', quotechar="'")
