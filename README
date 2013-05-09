@@ -1,0 +1,9 @@
+James Aldag
+Raymond Ching
+Jack Henderson
+Aaron Phung
+Brandon Tanaka
+
+TO RUN PROGRAM
+
+java -cp ojdbc14.jar:. Shopatron
