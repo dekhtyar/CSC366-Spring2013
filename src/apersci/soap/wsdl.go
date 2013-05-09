@@ -38,7 +38,10 @@ type RefreshRequest struct {
 	Items        []RefreshItem `xml:">items"`
 }
 
-type RefreshResponse string
+type RefreshResponse struct {
+	XMLName xml.Name `xml:"RefreshResponse"`
+	Return  string   `xml:",chardata"`
+}
 
 type CreateFulfiller struct {
 	XMLName xml.Name         `xml:"createFulfiller"`

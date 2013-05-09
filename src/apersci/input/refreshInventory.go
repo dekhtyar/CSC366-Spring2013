@@ -44,5 +44,5 @@ func RefreshInventoryRequest(data []byte) (r soap.RefreshRequest, err error) {
 func RefreshInventoryResponse(data []byte) (string, error) {
 	var r soap.RefreshResponse
 	err := soap.Unmarshal(data, &r)
-	return string(r), err
+	return r.Return, err
 }
