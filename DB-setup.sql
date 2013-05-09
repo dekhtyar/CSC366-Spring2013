@@ -44,8 +44,7 @@ create table Products (
 );
 
 create table Bins (
-  locationId VARCHAR2(10) NOT NULL,
-  fulfillerId VARCHAR2(10) NOT NULL,
+  internalLocationID VARCHAR2(10) NOT NULL,
   name VARCHAR2(50) NOT NULL,
   binType VARCHAR2(50),
   status VARCHAR2(10),

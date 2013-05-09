@@ -28,14 +28,13 @@ function createFulfillmentLocation($locationName, $extLID, $intLID,
     $stmt->execute();
   }
 
-function createBin($binName, $fulfillerId, $locationId, $binType, $status)
+function createBin($intLID, $name, $binType, $status)
 {
-  $stmt = $db->prepare("INSERT INTO Bins( BinName, FulfillerID, LocationID, binType, Status) VALUES (:BinName, :FulfillerID, :FulfillerLocationID, :BinTypeID, :BinStatusID)");
-  $stmt->bindValue(':BinName', $binName);
-  $stmt->bindValue(':FulfillerId', $fulfillerId);
-  $stmt->bindValue(':FulfillerLocationId', $locationId);
-  $stmt->bindValue(':BinTypeID', $binType);
-  $stmt->bindValue(':BinStatusID', $status);
+  $stmt = $db->prepare("INSERT INTO Bins( internalLocationID, name, binType, status) VALUES (:internalLocationID, :name, :binTypeID, :status)");
+  $stmt->bindValue(':internalLocationId', $intLID);
+  $stmt->bindValue(':name', $name);
+  $stmt->bindValue(':binType', $binType);
+  $stmt->bindValue(':status', $status);
   $stmt->execute();
 }
 
