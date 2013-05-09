@@ -50,7 +50,10 @@ public class api {
    }
 
 
-   public void createFulfiller ()
+   public void createFulfiller (String locationName, int fulfillerId,
+      String externalLocationId, int internalFulfillerLocationId,
+      String description, double latitude, double longitude, int status,
+      int safetyStockLimit, int manufacturerId, int catalogId)
    {
       if(setUpConnection() == false)
          return;
@@ -159,7 +162,8 @@ public class api {
       System.out.println("in createManufacturer Catalog");
    }
 	
-   public int createBin ()
+   public int createBin (int fulfillerId, int binId, int fulfillerLocationId,
+                        String binType, String binStatus, String binName)
    {
       if(fulfillerId < 0 || binId < 0 || fulfillerLocationId < 0) {
          return -1;
