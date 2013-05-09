@@ -9,15 +9,14 @@
 
 CREATE TABLE Retailer (
     FulfillerId INT PRIMARY KEY, 
-    Status VARCHAR2(25) 
+    Name VARCHAR2(25) 
     );
 
 CREATE TABLE Location (
     FulfillerId INT REFERENCES Retailer(FulfillerId),
     ExternalFulfillerLocationId INT,
     InternalFulfillerLocationId INT PRIMARY KEY,
-    Type VARCHAR2(25),
-    Name VARCHAR(25),
+    Type VARCHAR2(25), 
     Description VARCHAR2(50),
     Latitude INT,
     Longitude INT,
