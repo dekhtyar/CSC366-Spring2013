@@ -2,7 +2,6 @@ package input
 
 import (
 	"apersci/soap"
-	"encoding/xml"
 )
 
 // Request:
@@ -37,31 +36,13 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope>
 
-type RefreshItem struct {
-	XMLName     xml.Name `xml:"items"`
-	PartNumber  string
-	UPC         string
-	BinID       int
-	Quantity    int
-	LTD         float64
-	SafetyStock int
-}
-
-type RefreshRequest struct {
-	XMLName      xml.Name `xml:"RefreshRequest"`
-	FulfillerID  uint
-	LocationName string
-	Items        []RefreshItem `xml:">items"`
-}
-
-func RefreshInventoryRequest(data []byte) (r RefreshRequest, err error) {
+func RefreshInventoryRequest(data []byte) (r soap.RefreshRequest, err error) {
 	err = soap.Unmarshal(data, &r)
 	return
 }
 
-type RefreshResponse string
-
-func RefreshInventoryResponse(data []byte) (r RefreshResponse, err error) {
-	err = soap.Unmarshal(data, &r)
-	return
+func RefreshInventoryResponse(data []byte) (string, error) {
+	var r soap.RefreshResponse
+	err := soap.Unmarshal(data, &r)
+	return string(r), err
 }

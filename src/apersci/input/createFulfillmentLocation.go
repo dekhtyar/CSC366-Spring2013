@@ -1,12 +1,8 @@
 package input
 
-/*
 import (
 	"apersci/soap"
-	"errors"
-	"fmt"
 )
-*/
 
 // Request:
 //
@@ -39,3 +35,15 @@ import (
 //       </v4:createFulfillmentLocationResponse>
 //    </soapenv:Body>
 // </soapenv:Envelope>
+
+func CreateFulfillmentLocationRequest(data []byte) (soap.FulfillmentLocation, error) {
+	var r soap.CreateFulfillmentLocation
+	err := soap.Unmarshal(data, &r)
+	return r.Request, err
+}
+
+func CreateFulfillmentLocationResponse(data []byte) (string, error) {
+	var r soap.CreateFulfillmentLocationResponse
+	err := soap.Unmarshal(data, &r)
+	return r.CreateFulfillmentLocationReturn, err
+}

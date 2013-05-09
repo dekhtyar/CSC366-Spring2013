@@ -1,13 +1,9 @@
 package input
 
-/*
 import (
 	"apersci/soap"
-	"errors"
-	"fmt"
 )
 
-*/
 // Request:
 //
 // <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
@@ -32,3 +28,15 @@ import (
 //       </v4:createFulfillerResponse>
 //    </soapenv:Body>
 // </soapenv:Envelope>
+
+func CreateFulfillerRequest(data []byte) (soap.FulfillerRequest, error) {
+	var r soap.CreateFulfiller
+	err := soap.Unmarshal(data, &r)
+	return r.Request, err
+}
+
+func CreateFulfillerResponse(data []byte) (string, error) {
+	var r soap.CreateFulfillerResponse
+	err := soap.Unmarshal(data, &r)
+	return r.CreateFulfillerReturn, err
+}

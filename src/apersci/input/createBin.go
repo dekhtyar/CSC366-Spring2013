@@ -33,13 +33,14 @@ import (
 //    </soapenv:Body>
 // </soapenv:Envelope
 
-//type CreateBin struct
-
-func CreateBinRequest(data []byte) (r RefreshRequest, err error) {
-	err = soap.Unmarshal(data, &r)
-	return
+func CreateBinRequest(data []byte) (soap.Bin, error) {
+	var r soap.CreateBin
+	err := soap.Unmarshal(data, &r)
+	return r.Request, err
 }
 
-func CreateBinResponse(data []byte) (interface{}, error) {
-	return nil, nil
+func CreateBinResponse(data []byte) (string, error) {
+	var r soap.CreateBinResponse
+	err := soap.Unmarshal(data, &r)
+	return r.CreateBinReturn, err
 }
