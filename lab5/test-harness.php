@@ -1,6 +1,6 @@
 <?php
 include_once('db.php');
-include_once('db_functions.php');
+include_once('team-ross-api.php');
 
 // **********************************************************************
 // Route test harness
@@ -193,6 +193,8 @@ function db_destroy_tables($db) {
 // Seed data from CSV files
 // **********************************************************************
 function db_seed($db) {
+  $api = new TeamRossAPI($db);
+
   $csv = array();
   $csv['locations']           = 'data-csv-rfc/fulfiller_locations.csv';
   $csv['location_bins']       = 'data-csv-rfc/fulfiller_location_bins.csv';
