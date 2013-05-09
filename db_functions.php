@@ -19,7 +19,7 @@ function createFulfillmentLocation($locationId, $fulfillerId, $locationName,
     $stmt->bindValue(':locationId',$locationId);
     $stmt->bindValue(':fulfillerId',$fulfillerId);
     $stmt->bindValue(':locationName',$locationName);
-    $stmt->bindValue(':locationType',$locationType;
+    $stmt->bindValue(':locationType',$locationType);
     $stmt->bindValue(':latitude',$latidude);
     $stmt->bindValue(':longitude',$longintude);
     $stmt->bindValue(':status',$status);
@@ -39,7 +39,7 @@ function createBin($binName, $fulfillerId, $locationId, $binType, $status)
 }
 
 function refreshInventory($fulfillerId, $locationId, $items) {
-  $item = {}; // ?
+  $item = array();
 
   $stmt1 = $db->prepare("INSERT INTO BinContainsProducts(BinId, FulfillerId, LocationId, UPC, Allocated, OnHand)
     VALUES(:binId, :fulfillerId, :locationId, :UPC, :allocated, :onHand)");
