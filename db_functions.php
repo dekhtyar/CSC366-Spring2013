@@ -40,7 +40,7 @@ function createBin($binName, $fulfillerId, $locationId, $binType, $status)
 }
 
 function refreshInventory($fulfillerId, $locationId, $items) {
-  $item = {}; // ?
+  $item = array();
 
   $stmt1 = $db->prepare("INSERT INTO BinContainsProducts(BinId, FulfillerId, LocationId, UPC, Allocated, OnHand)
     VALUES(:binId, :fulfillerId, :locationId, :UPC, :allocated, :onHand)");
