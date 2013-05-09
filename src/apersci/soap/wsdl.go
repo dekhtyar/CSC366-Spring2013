@@ -72,6 +72,7 @@ type FulfillmentLocation struct {
 	Latitude           float64
 	Longitude          float64
 	Status             int
+	CountryCode		   string
 }
 
 type CreateFulfillmentLocationResponse struct {
