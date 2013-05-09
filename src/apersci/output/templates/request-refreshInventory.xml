@@ -2,19 +2,21 @@
    <soapenv:Header/>
    <soapenv:Body>
       <v4:RefreshRequest>
-         <v4:FulfillerID>?</v4:FulfillerID>
-         <v4:LocationName>?</v4:LocationName>
-         <v4:Items>
+          <v4:FulfillerID>{{.FulfillerID}}</v4:FulfillerID>
+          <v4:LocationName>{{.LocationName}}</v4:LocationName>
+          <v4:Items>
             <!--Zero or more repetitions:-->
+            {{range pipeline}}
             <v4:items>
-               <v4:PartNumber>?</v4:PartNumber>
-               <v4:UPC>?</v4:UPC>
-               <v4:BinID>?</v4:BinID>
-               <v4:Quantity>?</v4:Quantity>
-               <v4:LTD>?</v4:LTD>
-               <v4:SafetyStock>?</v4:SafetyStock>
+                <v4:PartNumber>{{.PartNumber}}</v4:PartNumber>
+                <v4:UPC>{{.UPC}}</v4:UPC>
+                <v4:BinID>{{.BinID}</v4:BinID>
+                <v4:Quantity>{{.Quantity}}</v4:Quantity>
+                <v4:LTD>{{.LTD}}</v4:LTD>
+                <v4:SafetyStock>{{.SafetyStock}}</v4:SafetyStock>
             </v4:items>
-         </v4:Items>
+            {{end}}
+          </v4:Items>
       </v4:RefreshRequest>
    </soapenv:Body>
 </soapenv:Envelope>
