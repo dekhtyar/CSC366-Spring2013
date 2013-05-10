@@ -235,6 +235,15 @@ function db_seed($db) {
   // **********************************************************************
   $data = get_csv_data($csv['location_bins']);
 
+  foreach($data as &$bin) {
+    $api->createBin(
+      $bin['internal_fulfiller_location_id'],
+      $bin['bin_name'],
+      $bin['bin_type'],
+      $bin['bin_status']
+    );
+  }
+
   // **********************************************************************
   // Inventory Available Bins
   // **********************************************************************

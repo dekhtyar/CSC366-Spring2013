@@ -21,7 +21,8 @@ class TeamRossAPI {
           latitude, longitude, status, safetyStockLimitDefault)
         VALUES
           (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
-           :latitude, :longitude, :status, :safetyStockLimitDefault)");
+           :latitude, :longitude, :status, :safetyStockLimitDefault);
+      ");
       $stmt->bindValue(':externalLocationId', $extLID);
       $stmt->bindValue(':internalLocationId', $intLID);
       $stmt->bindValue(':fulfillerId', $fulfillerId);
@@ -34,8 +35,13 @@ class TeamRossAPI {
     }
 
   public function createBin($intLID, $name, $binType, $status) {
-    $stmt = $this->db->prepare("INSERT INTO Bins( internalLocationID, name, binType, status) VALUES (:internalLocationID, :name, :binTypeID, :status)");
-    $stmt->bindValue(':internalLocationId', $intLID);
+    $stmt = $this->db->prepare("
+      INSERT INTO Bins
+        (locationId, binName, binType, status)
+      VALUES
+        (:locationId, :name, :binTypeID, :status);
+    ");
+    $stmt->bindValue(':locationId', $intLID);
     $stmt->bindValue(':name', $name);
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
