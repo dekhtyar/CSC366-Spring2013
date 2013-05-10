@@ -68,5 +68,3 @@ def clearDatabase():
 
 def destroyDatabase():
     pass
-
-refreshInventories()
