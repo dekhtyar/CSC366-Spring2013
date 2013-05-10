@@ -32,7 +32,7 @@ CREATE TABLE Locations (
 
 CREATE TABLE Items (
    UPC                      CHAR(12)     PRIMARY KEY, 
-   Name                     VARCHAR2(80) 
+   Name                     VARCHAR(80) 
 );
 
 CREATE TABLE Bins (
