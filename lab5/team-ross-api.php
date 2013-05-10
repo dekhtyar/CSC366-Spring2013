@@ -39,10 +39,10 @@ class TeamRossAPI {
       INSERT INTO Bins
         (locationId, binName, binType, status)
       VALUES
-        (:locationId, :name, :binTypeID, :status);
+        (:locationId, :binName, :binType, :status);
     ");
     $stmt->bindValue(':locationId', $intLID);
-    $stmt->bindValue(':name', $name);
+    $stmt->bindValue(':binName', $name);
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
     $stmt->execute();

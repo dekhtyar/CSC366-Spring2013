@@ -22,8 +22,14 @@ switch ($argv[1]):
     db_empty_tables($db);
     break;
 
+  case 'reset':
+    db_empty_tables($db);
+    db_create_tables($db);
+    db_seed($db);
+    break;
+
   default:
-    print "Usage: php test-harness.php create|seed|empty|destroy\n";
+    print "Usage: php test-harness.php create|seed|empty|destroy|reset\n";
     break;
 
 endswitch;
@@ -59,7 +65,7 @@ function db_create_tables($db) {
         longitude decimal(9,6),
         status VARCHAR(50),
         safetyStockLimitDefault VARCHAR(10),
-        constraint locations_pk PRIMARY KEY (internalLocationId, fulfillerId),
+        constraint locations_pk PRIMARY KEY (internalLocationId),
         constraint locations_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers (fulfillerId)
       );
     ");
@@ -78,12 +84,12 @@ function db_create_tables($db) {
     $db->exec("
       create table Bins (
         locationId VARCHAR(10) NOT NULL,
-        fulfillerId VARCHAR(10) NOT NULL,
+        fulfillerId VARCHAR(10),
         binName VARCHAR(50) NOT NULL,
         binType VARCHAR(50),
         status VARCHAR(10),
         constraint bins_pk PRIMARY KEY (locationId, fulfillerId, binName),
-        constraint bins_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations (internalLocationId, fulfillerId)
+        constraint bins_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId)
       );
     ");
 
@@ -92,9 +98,9 @@ function db_create_tables($db) {
         catalogId VARCHAR(10) NOT NULL,
         manufacturerId VARCHAR(10) NOT NULL,
         locationId VARCHAR(10) NOT NULL,
-        fulfillerId VARCHAR(10) NOT NULL,
+        fulfillerId VARCHAR(10),
         constraint loc_catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs (catalogId, manufacturerId),
-        constraint loc_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations (internalLocationId, fulfillerId),
+        constraint loc_location_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId),
         constraint loc_pk PRIMARY KEY (catalogId, manufacturerId, locationId, fulfillerId)
       );
     ");
@@ -120,7 +126,7 @@ function db_create_tables($db) {
         onHand VARCHAR(6),
         constraint bcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
         constraint bcp_binname_fk FOREIGN KEY (locationId, fulfillerId, binName) REFERENCES Bins (locationId, fulfillerId, binName),
-        constraint bcp_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations (internalLocationId, fulfillerId),
+        constraint bcp_location_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId),
         constraint bcp_pk PRIMARY KEY (productUpc, locationId, fulfillerId, binName)
       );
     ");
@@ -134,7 +140,7 @@ function db_create_tables($db) {
         storeSku VARCHAR(10),
         safetyStock VARCHAR(10),
         constraint lsp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
-        constraint lsp_location_fk FOREIGN KEY (locationId, fulfillerId) REFERENCES Locations (internalLocationId, fulfillerId),
+        constraint lsp_location_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId),
         constraint lsp_pk PRIMARY KEY (productUpc, locationId, fulfillerId)
       );
     ");
