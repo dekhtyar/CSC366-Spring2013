@@ -30,7 +30,7 @@ def createFulfillmentLocation(tuple, db):
 
    cursor = db.cursor()
 
-   insertStatement = "INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name, Type, Latitude, Longitude, Status, DefaultSafetyStockLimit) VALUES (%d, %d, %s, %s, %f, %f, %s, %d);" % (int(tuple[FulfillerId]), int(tuple[FulfillerLocationId]), tuple[Name], tuple[Type], float(tuple[Latitude]), float(tuple[Longitude]), tuple[Status], int(tuple[DefaultSafetyStock]))
+   insertStatement = "INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name, Type, Latitude, Longitude, Status, DefaultSafetyStockLimit) VALUES (%d, %d, %s, %s, %f, %f, %s, %d)" % (int(tuple[FulfillerId]), int(tuple[FulfillerLocationId]), tuple[Name], tuple[Type], float(tuple[Latitude]), float(tuple[Longitude]), tuple[Status], int(tuple[DefaultSafetyStock]))
 
    try:
       cursor.execute(insertStatement)

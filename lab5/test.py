@@ -7,6 +7,7 @@
 
 import MySQLdb
 import api
+import time
 from subprocess import Popen, PIPE
 
 # Each of these testing functions calls the appropriate API function
@@ -104,16 +105,16 @@ def createDatabase(db):
 
 def clearDatabase(db):
     cur = db.cursor()
-    cur.execute('DELETE FROM Bins;')
-    cur.execute('DELETE FROM Catalogues;')
-    cur.execute('DELETE FROM FulfilledBy;')
-    cur.execute('DELETE FROM Fulfillers;')
-    cur.execute('DELETE FROM Items;')
-    cur.execute('DELETE FROM Locations;')
-    cur.execute('DELETE FROM Manufacturers;')
-    cur.execute('DELETE FROM StoredAt;')
-    cur.execute('DELETE FROM StoredIn;')
-    cur.execute('DELETE FROM SubscribeTo;')
+    cur.execute('DELETE FROM Bins')
+    cur.execute('DELETE FROM Catalogues')
+    cur.execute('DELETE FROM FulfilledBy')
+    cur.execute('DELETE FROM Fulfillers')
+    cur.execute('DELETE FROM Items')
+    cur.execute('DELETE FROM Locations')
+    cur.execute('DELETE FROM Manufacturers')
+    cur.execute('DELETE FROM StoredAt')
+    cur.execute('DELETE FROM StoredIn')
+    cur.execute('DELETE FROM SubscribeTo')
     db.commit()
 
 def destroyDatabase(db):
@@ -123,15 +124,20 @@ def destroyDatabase(db):
 
 if __name__ == '__main__':
     db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
-    clearDatabase(db)
+
     destroyDatabase(db)
+    time.sleep(.5)
 
     createDatabase(db)
+    time.sleep(.5)
+
+    clearDatabase(db)
+
     createFulfillers(db)
     createFulfillmentLocations(db)
     createManufacturerCatalogs(db)
+    createBins(db)
 
-    #createBins(db)
     #refreshInventories(db)
 
     db.close()
