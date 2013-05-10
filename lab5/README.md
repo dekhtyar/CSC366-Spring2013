@@ -29,7 +29,7 @@ Usage: ``php test-harness.php <command>``
    </tr>
    <tr>
      <td><code>reset</code></td>
-     <td>runs <code>destroy</code> and <code>create</code></td>
+     <td>runs <code>destroy</code>, <code>create</code> and <code>seed</code></td>
    </tr>
   </tbody>
 </table>
