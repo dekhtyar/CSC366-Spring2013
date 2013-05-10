@@ -202,67 +202,48 @@ function db_seed($db) {
   $csv['inv_available']       = 'data-csv-rfc/fulfiller_inventory_available.csv';
   $csv['inv_not_available']   = 'data-csv-rfc/fulfiller_inventory_not_available.csv';
 
-  // Comma separated values
-  $delimiter = ',';
-
   // **********************************************************************
   // Locations
   // **********************************************************************
-  $handle = fopen($csv['locations'], "r");
-  if (!$handle) die();
-
-  $header = fgetcsv($handle);
-  while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r(array_combine($header, $line_array));
-  }
-  fclose($handle);
+  $data = get_csv_data($csv['locations']));
 
   // **********************************************************************
   // Bins
   // **********************************************************************
-  $handle = fopen($csv['location_bins'], "r");
-  if (!$handle) die();
-
-  $header = fgetcsv($handle);
-  while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r(array_combine($header, $line_array));
-  }
-  fclose($handle);
+  $data = get_csv_data($csv['location_bins']);
 
   // **********************************************************************
   // Inventory Available Bins
   // **********************************************************************
-  $handle = fopen($csv['inv_available_bins'], "r");
-  if (!$handle) die();
-
-  $header = fgetcsv($handle);
-  while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r(array_combine($header, $line_array));
-  }
-  fclose($handle);
+  $data = get_csv_data($csv['inv_available_bins']);
 
   // **********************************************************************
   // Inventory Available
   // **********************************************************************
-  $handle = fopen($csv['inv_available'], "r");
-  if (!$handle) die();
-
-  $header = fgetcsv($handle);
-  while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r(array_combine($header, $line_array));
-  }
-  fclose($handle);
+  $data = get_csv_data($csv['inv_available']);
 
   // **********************************************************************
   // Inventory Not Available
   // **********************************************************************
-  $handle = fopen($csv['inv_not_available'], "r");
+  $data = get_csv_data($csv['inv_not_available']);
+}
+
+// **********************************************************************
+// Read data from CSV file and return array
+// **********************************************************************
+function get_csv_data($csv_file) {
+  $delimiter = ',';
+  $data = array();
+  $handle = fopen($csv_file, "r");
+
   if (!$handle) die();
 
   $header = fgetcsv($handle);
   while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
-    print_r(array_combine($header, $line_array));
+    $data[] = array_combine($header, $line_array);
   }
+
   fclose($handle);
+  return $data;
 }
 ?>
