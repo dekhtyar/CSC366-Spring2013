@@ -258,11 +258,8 @@ function db_seed($db) {
   $data[] = get_csv_data($csv['inv_not_available']);
   $i = 0;
 
-  foreach($data as &$data_chunk) {
-    print "\n\n reFRESHING INVENTORY " . ++$i . "\n\n";
+  foreach($data as &$data_chunk)
     $api->refreshInventory($data_chunk);
-  }
-  $api->refreshInventory(0, 0);
 
   print "Data seeded.\n";
 }

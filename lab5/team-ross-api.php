@@ -124,15 +124,10 @@ class TeamRossAPI {
       if (!$this->getBin($item['bin_name'], $fulfillerId, $item['internal_fulfiller_location_id']))
         $this->createBin($item['internal_fulfiller_location_id'], $item['bin_name'], '', '');
 
+      // execute queries
       $stmt1->execute();
-      print $fulfillerId . "\n";
-      print_r($item);
-      print_r($this->db->errorInfo());
-
       $stmt2->execute();
-      print_r($this->db->errorInfo());
       $stmt3->execute();
-      print_r($this->db->errorInfo());
     }
   }
 
