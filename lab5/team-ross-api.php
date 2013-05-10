@@ -53,6 +53,23 @@ class TeamRossAPI {
     $stmt->execute();
   }
 
+  private function getBin($binName, $fulfillerId, $internalLocationId) {
+    $stmt = $this->db->prepare("
+      SELECT * FROM Bins
+      WHERE binName = :binName
+      AND fulfillerId = :fulfillerId
+      AND locationId = :locationId
+    ");
+
+    $stmt->bindValue(':binName', $binName);
+    $stmt->bindValue(':fulfillerId', $fulfillerId);
+    $stmt->bindValue(':locationId', $internalLocationId);
+
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
   private function getFulfillerIdFromLocationId($internalLocationId) {
     $stmt = $this->db->prepare("SELECT fulfillerId FROM Locations WHERE internalLocationId = :internalLocationId");
     $stmt->bindParam(':internalLocationId', $internalLocationId);
@@ -97,8 +114,13 @@ class TeamRossAPI {
     foreach ($items as $item) {
       $fulfillerId = $this->getFulfillerIdFromLocationId($item['internal_fulfiller_location_id']);
 
+      // create product if missing
       if (!$this->getProductFromUpc($item['UPC']))
         $this->createProduct($item);
+
+      // create bin if missing
+      if (!$this->getBin($item['bin_name'], $fulfillerId, $item['internal_fulfiller_location_id']))
+        $this->createBin($item['internal_fulfiller_location_id'], $item['bin_name'], '', '');
 
       $stmt1->execute();
       //print $fulfillerId . "\n";
