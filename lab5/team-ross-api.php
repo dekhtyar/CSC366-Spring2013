@@ -17,19 +17,19 @@ class TeamRossAPI {
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock) {
       $stmt = $this->db->prepare("
         INSERT INTO Locations
-        (externalLocationID, internalLocationID, fulfillerId, locationType,
-        latitude, longitude, status, safetyStockLimitDefault)
+          (externalLocationId, internalLocationId, fulfillerId, locationType,
+          latitude, longitude, status, safetyStockLimitDefault)
         VALUES
-        (:extLID, :intLID, :fulfillerId, :locationType, :latitude, :longitude,
-        :status, :safetyStock)");
-      $stmt->bindValue(':extLID',$extLID);
-      $stmt->bindValue(':intLID',$intLID);
-      $stmt->bindValue(':fulfillerId',$fulfillerId);
-      $stmt->bindValue(':locationType',$locationType);
-      $stmt->bindValue(':latitude',$latidude);
-      $stmt->bindValue(':longitude',$longintude);
-      $stmt->bindValue(':status',$status);
-      $stmt->bindValue(':safeyStock',$safetyStock);
+          (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
+           :latitude, :longitude, :status, :safetyStockLimitDefault)");
+      $stmt->bindValue(':externalLocationId', $extLID);
+      $stmt->bindValue(':internalLocationId', $intLID);
+      $stmt->bindValue(':fulfillerId', $fulfillerId);
+      $stmt->bindValue(':locationType', $locationType);
+      $stmt->bindValue(':latitude', strval($latitude));
+      $stmt->bindValue(':longitude', strval($longitude));
+      $stmt->bindValue(':status', $status);
+      $stmt->bindValue(':safetyStockLimitDefault', $safetyStock);
       $stmt->execute();
     }
 

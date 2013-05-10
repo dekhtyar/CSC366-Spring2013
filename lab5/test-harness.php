@@ -205,7 +205,30 @@ function db_seed($db) {
   // **********************************************************************
   // Locations
   // **********************************************************************
-  $data = get_csv_data($csv['locations']));
+  $data = get_csv_data($csv['locations']);
+  $stmt = $db->prepare("SELECT * FROM Fulfillers WHERE fulfillerId = :id");
+
+  foreach($data as &$location) {
+    $stmt->bindValue(':id', $location['fulfiller_id']);
+    $stmt->execute();
+
+    // Create new fulfiller if we need to
+    if (!$stmt->fetch(PDO::FETCH_ASSOC))
+      $api->createFulfiller($location['fulfiller_id'], $location['name']);
+
+    // Create Fulfiller location
+    $api->createFulfillmentLocation(
+      $location['name'],
+      $location['external_fulfiller_location_id'],
+      $location['internal_fulfiller_location_id'],
+      $location['fulfiller_id'],
+      $location['description'],
+      $location['latitude'],
+      $location['longitude'],
+      $location['status'],
+      $location['safety_stock']
+    );
+  }
 
   // **********************************************************************
   // Bins
