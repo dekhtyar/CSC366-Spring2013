@@ -3,9 +3,7 @@ package output
 import (
 	"apersci/soap"
 	"testing"
-
-//	"log"
-//	"bytes"
+	"bytes"
 )
 
 var createBinRequestTests = []struct {
@@ -91,7 +89,7 @@ var createFulfillmentLocationTests = []struct {
 	Output string
 }{
 	{
-		Input: soap.FulfillmentLocation{42, 43, 44, "abc", "def", "ghi", 1.234, 5.678, 45, "JK"},
+		Input: soap.FulfillmentLocation{42, 43, "abc", "def", "ghi", 1.234, 5.678, 45, "JK"},
 		Output: `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
    <soapenv:Header/>
    <soapenv:Body>
@@ -128,26 +126,26 @@ func CreateBinResponse(w io.Writer, v string) error {
 
 */
 
-func errorMismatch(expOutput string, actOutput string) {
-	t.ErrorF("Expected output did not match the actual output.\n" +
+func errorMismatch(t *testing.T, expOutput string, actOutput string) {
+	t.Errorf("Expected output did not match the actual output.\n" +
 		"Expected:\n" + expOutput + "\nActual:\n" + actOutput)
 }
 
 // TODO merge code in functions below
 
-func TestCreateBinRequests(t *testing.T) {
+func TestCreateBinRequest(t *testing.T) {
 	for _, strct := range createBinRequestTests {
 		input := strct.Input
-		actOutput := make([]byte, 0, bufferSize)
-		w := bytes.NewBuffer(actOutput)
+		var actOutput string
+		w := bytes.NewBuffer([]byte(actOutput))
 
 		err := CreateBinRequest(w, input)
 		if err != nil {
-			t.ErrorF(err.Error())
+			t.Errorf(err.Error())
 		}
 
 		if expOutput := strct.Output; expOutput != string(actOutput) {
-			errorMismatch(expOutput, actOutput)
+			errorMismatch(t, expOutput, actOutput)
 		}
 	}
 }
@@ -155,17 +153,16 @@ func TestCreateBinRequests(t *testing.T) {
 func TestCreateBinResponse(t *testing.T) {
 	for _, strct := range createBinResponseTests {
 		input := strct.Input
+		var actOutput string
+		w := bytes.NewBuffer([]byte(actOutput))
 
-		actOutput := make([]byte, 0, bufferSize)
-		w := bytes.NewBuffer(actOutput)
-
-		err := CreateBinRequest(w, input)
+		err := CreateBinResponse(w, input)
 		if err != nil {
-			t.ErrorF(err.Error())
+			t.Errorf(err.Error())
 		}
-
+		
 		if expOutput := strct.Output; expOutput != string(actOutput) {
-			errorMismatch(expOutput, actOutput)
+			errorMismatch(t, expOutput, actOutput)
 		}
 	}
 }
