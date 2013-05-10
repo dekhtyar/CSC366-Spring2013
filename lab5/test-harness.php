@@ -83,13 +83,13 @@ function db_create_tables($db) {
 
     $db->exec("
       create table Bins (
-        locationId VARCHAR(11) NOT NULL,
+        internalLocationId VARCHAR(11) NOT NULL,
         fulfillerId VARCHAR(11),
         binName VARCHAR(50) NOT NULL,
         binType VARCHAR(50),
         status VARCHAR(10),
-        constraint bins_pk PRIMARY KEY (locationId, binName),
-        constraint bins_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId)
+        constraint bins_pk PRIMARY KEY (internalLocationId, binName),
+        constraint bins_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId)
       );
     ");
 
@@ -125,7 +125,7 @@ function db_create_tables($db) {
         onHand VARCHAR(6),
         fulfillerId VARCHAR(11),
         constraint bcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
-        constraint bcp_binname_fk FOREIGN KEY (internalLocationId, binName) REFERENCES Bins (locationId, binName),
+        constraint bcp_binname_fk FOREIGN KEY (internalLocationId, binName) REFERENCES Bins (internalLocationId, binName),
         constraint bcp_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),
         constraint bcp_pk PRIMARY KEY (productUpc, internalLocationId, binName)
       );
@@ -134,13 +134,13 @@ function db_create_tables($db) {
     $db->exec("
       create table LocationSellsProducts (
         productUpc VARCHAR(10) NOT NULL,
-        interalLocationId VARCHAR(10) NOT NULL,
+        internalLocationId VARCHAR(10) NOT NULL,
         ltd VARCHAR(10),
         storeSku VARCHAR(10),
         safetyStock VARCHAR(10),
         constraint lsp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
-        constraint lsp_location_fk FOREIGN KEY (interalLocationId) REFERENCES Locations (internalLocationId),
-        constraint lsp_pk PRIMARY KEY (productUpc, interalLocationId)
+        constraint lsp_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),
+        constraint lsp_pk PRIMARY KEY (productUpc, internalLocationId)
       );
     ");
 
