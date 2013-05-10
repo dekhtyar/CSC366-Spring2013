@@ -256,7 +256,6 @@ function db_seed($db) {
   $data[] = get_csv_data($csv['inv_available_bins']);
   $data[] = get_csv_data($csv['inv_available']);
   $data[] = get_csv_data($csv['inv_not_available']);
-  $i = 0;
 
   foreach($data as &$data_chunk)
     $api->refreshInventory($data_chunk);
