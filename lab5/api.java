@@ -227,16 +227,6 @@ public class api {
       }
    }
 	
-   public void createFullfillmentLocation ()
-   {
-      System.out.println("in create Fulfillment Location");
-   }
-	
-   public void createManufacturerCatalog ()
-   {
-      System.out.println("in createManufacturer Catalog");
-   }
-	
    public int createBin (int fulfillerId, int binId, int fulfillerLocationId,
                         String binType, String binStatus, String binName)
    {
@@ -366,8 +356,3 @@ public class api {
         return 1;
     } 
 }
-
-
-
-
-
