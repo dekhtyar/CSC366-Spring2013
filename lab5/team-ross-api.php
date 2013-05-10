@@ -123,8 +123,8 @@ class TeamRossAPI {
         $this->createBin($item['internal_fulfiller_location_id'], $item['bin_name'], '', '');
 
       $stmt1->execute();
-      //print $fulfillerId . "\n";
-      //print_r($item);
+      print $fulfillerId . "\n";
+      print_r($item);
 
       $stmt2->execute();
       $stmt3->execute();
