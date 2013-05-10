@@ -1,4 +1,9 @@
-# API functions
+# Kevin Stein  kestein@calpoly.edu
+# Alex Spotnitz  aspotnitz@gmail.com
+# Stephen Calabrese  sccalabr@calpoly.edu
+# Alex Boltunov  aboltunov@gmail.com
+# Luke Larson  lplarson@calpoly.edu
+
 
 import MySQLdb
 

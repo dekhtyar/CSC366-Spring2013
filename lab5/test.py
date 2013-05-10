@@ -1,12 +1,9 @@
-# Testing Operations
-# createDatabase (runs destroyDatabase then DB-create.sql)
-# createFulfillers (Stephen)
-# createFulfillmentLocations (Kevin)
-# createManufacturerCatalogs (Luke)
-# createBins (Alex S.)
-# refreshInventories (Alex B.)
-# destroyDatabase (runs DB-clean.sql)
-# clearDatabase (removes data from all tables without destroying the tables)
+# Kevin Stein  kestein@calpoly.edu
+# Alex Spotnitz  aspotnitz@gmail.com
+# Stephen Calabrese  sccalabr@calpoly.edu
+# Alex Boltunov  aboltunov@gmail.com
+# Luke Larson  lplarson@calpoly.edu
+
 
 import MySQLdb
 import api
