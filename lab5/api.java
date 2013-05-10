@@ -1,3 +1,9 @@
+/*
+ * Team GLADE
+ * Lab 5
+ * api.java
+ */
+
 import java.sql.*;
 import java.io.*;
 import java.util.*;
@@ -227,6 +233,16 @@ public class api {
       }
    }
 	
+   public void createFullfillmentLocation ()
+   {
+      System.out.println("in create Fulfillment Location");
+   }
+	
+   public void createManufacturerCatalog ()
+   {
+      System.out.println("in createManufacturer Catalog");
+   }
+	
    public int createBin (int fulfillerId, int binId, int fulfillerLocationId,
                         String binType, String binStatus, String binName)
    {
@@ -305,14 +321,14 @@ public class api {
         for (i = 0; i < item.length; i++) {
             if (InternalFulfillerId == -1) { // not there, so use INSERT
                 try {
-                    String RP = "INSERT INTO RetailerProduct (FulfillerId, UPC) VALUES(?, ?)"; //, SKU) VALUES(?, ?, ?)";
+                    String RP = "INSERT INTO RetailerProduct (FulfillerId, UPC, SKU) VALUES(?, ?, ?)";
                     String LP = "INSERT INTO LocationProduct (InternalFulfillerLocationId, LTD, SafeStockLimit) VALUES(?, ?, ?)";
                     String CIB = "INSERT INTO ContainedInBin (BinId, OnHand, Allocated) VALUES(?, ?, ?)";
                 
                     PreparedStatement ps1 = conn.prepareStatement(RP);
                     ps1.setInt(1, FulfillerId);
                     ps1.setString(2, item[i].UPC);
-                  //  ps1.setString(3, 0);
+                    ps1.setString(3, item[i].partNumber);
                 
                     PreparedStatement ps2 = conn.prepareStatement(LP);
                     ps2.setInt(1, InternalFulfillerId);
@@ -356,3 +372,8 @@ public class api {
         return 1;
     } 
 }
+
+
+
+
+
