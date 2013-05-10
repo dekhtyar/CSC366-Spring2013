@@ -8,7 +8,7 @@ import (
 )
 
 func createFulfiller(w http.ResponseWriter, r *http.Request) {
-	data, err := input.FulfillerRequest(r.Body)
+	data, err := input.CreateFulfillerRequest(r.Body)
 	fmt.Println(err)
 	fmt.Println(data)
 	output.CreateFulfillerResponse(w, "BLAHHHH!")

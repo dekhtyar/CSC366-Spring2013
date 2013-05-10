@@ -8,8 +8,8 @@ import (
 )
 
 func refreshInventory(w http.ResponseWriter, r *http.Request) {
-	data, err := input.RefreshRequest(r.Body)
+	data, err := input.RefreshInventoryRequest(r.Body)
 	fmt.Println(err)
 	fmt.Println(data)
-	output.RefreshResponse(w, ":-D")
+	output.RefreshInventoryResponse(w, ":-D")
 }
