@@ -2,7 +2,7 @@
 
 CREATE TABLE Retailer (
     FulfillerId INT PRIMARY KEY, 
-    Name VARCHAR2(25) 
+    Name VARCHAR2(75) 
     );
 
 CREATE TABLE Location (
@@ -14,8 +14,7 @@ CREATE TABLE Location (
     Latitude INT,
     Longitude INT,
     Status VARCHAR(25),
-    SafetyStockLimit INT,
-    UNIQUE(FulfillerId, ExternalFulfillerLocationId)
+    SafetyStockLimit INT
     );
 
 CREATE TABLE Manufacturer (
