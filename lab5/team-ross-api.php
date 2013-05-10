@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ERROR);
+
 class TeamRossAPI {
   private $db;
 
@@ -99,8 +101,8 @@ class TeamRossAPI {
         $this->createProduct($item);
 
       $stmt1->execute();
-      print $fulfillerId . "\n";
-      print_r($item);
+      //print $fulfillerId . "\n";
+      //print_r($item);
 
       $stmt2->execute();
       $stmt3->execute();

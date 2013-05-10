@@ -263,6 +263,8 @@ function db_seed($db) {
     $api->refreshInventory($data_chunk);
   }
   $api->refreshInventory(0, 0);
+
+  print "Data seeded.\n";
 }
 
 // **********************************************************************
