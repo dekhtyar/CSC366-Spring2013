@@ -31,7 +31,7 @@ CREATE TABLE Locations (
     id INT PRIMARY KEY,
     description VARCHAR(126),
     type LocationType,
-    coordinates POINT, -- TODO change to GEOGRAPHY(POINT, 4326)
+    coordinates GEOGRAPHY(POINT, 4326),
     status ActivityStatus DEFAULT 'active',
     UNIQUE (fulfillerId, externalFulfillerId)
 );

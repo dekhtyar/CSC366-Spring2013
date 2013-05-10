@@ -1,18 +1,18 @@
 package main
 
 import (
-	"apersci/input"
-	"apersci/output"
+	"apersci/soap"
+	"database/sql"
 	"fmt"
-	"net/http"
+	_ "github.com/bmizerany/pq"
 )
 
-func createBin(w http.ResponseWriter, r *http.Request) {
+/*func createBin(w http.ResponseWriter, r *http.Request) {
 	data, err := input.CreateBinRequest(r.Body)
 	fmt.Println(err)
 	fmt.Println(data)
 	output.CreateBinResponse(w, "Hi everyone!")
-}
+}*/
 
 func dbConn(b soap.Bin) error {
 	conn, err := sql.Open("postgres", "dbname=cait password=cait")
@@ -26,5 +26,19 @@ func dbConn(b soap.Bin) error {
 		return err
 	}
 
+	/*rows, err := conn.Query("SELECT * FROM cait")
+	var i uint
+
+	for rows.Next() {
+		err = rows.Scan(&i)
+		if err != nil {
+			return err
+		}
+		fmt.Println(i)
+	}*/
 	return nil
+}
+
+func main() {
+
 }
