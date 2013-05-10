@@ -38,9 +38,9 @@ import (
 // </soapenv:Envelope>
 
 func RefreshInventoryRequest(w io.Writer, v soap.RefreshRequest) error {
-	return templates.ExecuteTemplate(w, "request-refreshRequest.xml", v)
+	return templates.ExecuteTemplate(w, "request-refreshInventory.xml", v)
 }
 
 func RefreshInventoryResponse(w io.Writer, v string) error {
-	return templates.ExecuteTemplate(w, "response-refreshRequest.xml", v)
+	return templates.ExecuteTemplate(w, "response-refreshInventory.xml", v)
 }
