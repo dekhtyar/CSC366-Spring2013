@@ -16,7 +16,8 @@ class TeamRossAPI {
   }
 
   public function createFulfillmentLocation($locationName, $extLID, $intLID,
-    $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock) {
+    $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock, $mfgId, $catalogId) {
+      // Create Location
       $stmt = $this->db->prepare("
         INSERT INTO Locations
           (externalLocationId, internalLocationId, fulfillerId, locationType,
@@ -25,6 +26,7 @@ class TeamRossAPI {
           (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
            :latitude, :longitude, :status, :safetyStockLimitDefault);
       ");
+
       $stmt->bindValue(':externalLocationId', $extLID);
       $stmt->bindValue(':internalLocationId', $intLID);
       $stmt->bindValue(':fulfillerId', $fulfillerId);
@@ -33,7 +35,21 @@ class TeamRossAPI {
       $stmt->bindValue(':longitude', strval($longitude));
       $stmt->bindValue(':status', $status);
       $stmt->bindValue(':safetyStockLimitDefault', $safetyStock);
+
       $stmt->execute();
+
+      // Create LocationOffersCatalog
+      $relational = $this->db->prepare("
+        INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId, fulfillerId)
+        VALUES (:catalogId, :manufacturerId, :internalLocationId, :fulfillerId);
+      ");
+
+      $relational->bindParam(':catalogId', $catalogId);
+      $relational->bindParam(':manufacturerId', $mfgId);
+      $relational->bindParam(':internalLocationId', $intLID);
+      $relational->bindParam(':fulfillerId', $fulfillerId);
+
+      $relational->execute();
     }
 
   public function createBin($intLID, $name, $binType, $status) {

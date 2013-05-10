@@ -97,11 +97,11 @@ function db_create_tables($db) {
       create table LocationOffersCatalogs (
         catalogId VARCHAR(11) NOT NULL,
         manufacturerId VARCHAR(11) NOT NULL,
-        locationId VARCHAR(11) NOT NULL,
+        internalLocationId VARCHAR(11) NOT NULL,
         fulfillerId VARCHAR(11),
         constraint loc_catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs (catalogId, manufacturerId),
-        constraint loc_location_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId),
-        constraint loc_pk PRIMARY KEY (catalogId, manufacturerId, locationId)
+        constraint loc_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),
+        constraint loc_pk PRIMARY KEY (catalogId, manufacturerId, internalLocationId)
       );
     ");
 
@@ -231,7 +231,9 @@ function db_seed($db) {
       $location['latitude'],
       $location['longitude'],
       $location['status'],
-      $location['safety_stock']
+      $location['safety_stock'],
+      $location['mfg_id'],
+      $location['catalog_id']
     );
   }
 
