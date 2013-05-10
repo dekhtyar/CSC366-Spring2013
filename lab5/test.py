@@ -34,8 +34,26 @@ def createManufacturerCatalogs():
 def createBins():
     pass
 
+def refreshInventoryWithFile(file_name):
+    csv_file = open(file_name, 'r')
+    csv_file.readline()
+    for row in csv_file:
+        tuple = row.split(',')
+        item = {
+            'upc': tuple[2],
+            'name': tuple[0],
+            'binname': tuple[8],
+            'onhand': tuple[7],
+            'safety': tuple[3],
+            'ltd': tuple[4]
+        }
+        api.refreshInventory(0, tuple[10], item)
+    csv_file.close()
+
 def refreshInventories():
-    pass
+    refreshInventoryWithFile("../data/fulfiller inventory available.csv")
+    refreshInventoryWithFile("../data/fulfiller inventory available bins.csv")
+    refreshInventoryWithFile("../data/fulfiller inventory not available.csv")
 
 # Initiates everything
 def createDatabase():
@@ -50,3 +68,5 @@ def clearDatabase():
 
 def destroyDatabase():
     pass
+
+refreshInventories()

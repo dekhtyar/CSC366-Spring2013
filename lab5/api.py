@@ -42,10 +42,10 @@ def refreshInventory(fulfiller_id, location_id, item):
                 args_stored_in_where)
     if not cur.fetchone():
         cur.execute('INSERT INTO StoredIn VALUES (%s, %s, %s, %s, %s, %s)',
-                    args_stored_in_where+(item['quantity'], 0))
+                    args_stored_in_where+(item['onhand'], 0))
     else:
         cur.execute('UPDATE StoredIn SET OnHand = %s ' + sql_stored_in_where,
-                    (item['quantity'],)+args_stored_in_where)
+                    (item['onhand'],)+args_stored_in_where)
 
     # Update 'StoredAt' table
     cur.execute('SELECT UPC FROM StoredAt '+sql_stored_at_where,
