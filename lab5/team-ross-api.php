@@ -37,48 +37,129 @@ class TeamRossAPI {
   public function createBin($intLID, $name, $binType, $status) {
     $stmt = $this->db->prepare("
       INSERT INTO Bins
-        (locationId, binName, binType, status)
+        (locationId, binName, binType, status, fulfillerId)
       VALUES
-        (:locationId, :binName, :binType, :status);
+        (:locationId, :binName, :binType, :status, :fulfillerId);
     ");
+
     $stmt->bindValue(':locationId', $intLID);
     $stmt->bindValue(':binName', $name);
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
+    $stmt->bindValue(':fulfillerId', $this->getFulfillerIdFromLocationId($intLID));
+
     $stmt->execute();
   }
 
-  public function refreshInventory($fulfillerId, $locationId, $items) {
+  private function getFulfillerIdFromLocationId($internalLocationId) {
+    $stmt = $this->db->prepare("SELECT fulfillerId FROM Locations WHERE internalLocationId = :internalLocationId");
+    $stmt->bindParam(':internalLocationId', $internalLocationId);
+    $stmt->execute();
+
+    $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $fetch['fulfillerId'];
+  }
+
+  public function refreshInventory($items) {
     $item = array();
+    $fulfillerId = 0;
 
-    $stmt1 = $this->db->prepare("INSERT INTO BinContainsProducts(BinId, FulfillerId, LocationId, UPC, Allocated, OnHand)
-      VALUES(:binId, :fulfillerId, :locationId, :UPC, :allocated, :onHand)");
-    $stmt1->bindParam(':binId', $item['BinId']);
-    $stmt1->bindParam(':fulfillerId', $item['FulfillerId']);
-    $stmt1->bindParam(':locationId', $item['LocationId']);
-    $stmt1->bindParam(':UPC', $item['UPC']);
-    $stmt1->bindParam(':allocated', $item['Allocated']);
-    $stmt1->bindParam(':onHand', $item['Onhand']);
+    $stmt1 = $this->db->prepare("
+      INSERT INTO BinContainsProducts
+        (binName, fulfillerId, internalLocationId, productUpc, allocated, onHand)
+      VALUES
+        (:binName, :fulfillerId, :internalLocationId, :productUpc, '0', :onHand)
+    ");
+    $stmt1->bindParam(':binName', $item['bin_name']);
+    $stmt1->bindParam(':fulfillerId', $fulfillerId);
+    $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+    $stmt1->bindParam(':productUpc', $item['UPC']);
+    $stmt1->bindParam(':onHand', $item['onhand']);
 
-    $stmt2 = $this->db->prepare("INSERT INTO FulfillerCarriesProducts(FulfillerId, UPC, SKU)
-      VALUES(:fulfillerId, :UPC, :SKU)");
-    $stmt2->bindParam(':fulfillerId', $item['FulfillerId']);
-    $stmt2->bindParam(':UPC', $item['UPC']);
-    $stmt2->bindParam(':SKU', $item['SKU']);
+    $stmt2 = $this->db->prepare("INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
+      VALUES(:fulfillerId, :productUpc, :sku)");
+    $stmt2->bindParam(':fulfillerId', $fulfillerId);
+    $stmt2->bindParam(':productUpc', $item['UPC']);
+    $stmt2->bindParam(':sku', $item['SKU']);
 
-    $stmt3 = $this->db->prepare("INSERT INTO LocationSellsProducts(FulfillerId, LocationId, UPC, SafetyStock, LTD)
-      VALUES(:fulfillerId, :locationId, :UPC, :safetyStock, :LTD)");
-    $stmt3->bindParam(':fulfillerId', $item['FulfillerId']);
-    $stmt3->bindParam(':locationId', $item['LocationId']);
-    $stmt3->bindParam(':UPC', $item['UPC']);
-    $stmt3->bindParam(':safetyStock', $item['SafetyStock']);
-    $stmt3->bindParam(':LTD', $item['LTD']);
+    $stmt3 = $this->db->prepare("
+      INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd)
+      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd)
+    ");
+    $stmt3->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+    $stmt3->bindParam(':productUpc', $item['UPC']);
+    $stmt3->bindParam(':storeSku', $item['SKU']);
+    $stmt3->bindParam(':safetyStock', $item['safety_stock']);
+    $stmt3->bindParam(':ltd', $item['ltd']);
 
-    foreach($items as $item) {
+    foreach ($items as $item) {
+      $fulfillerId = $this->getFulfillerIdFromLocationId($item['internal_fulfiller_location_id']);
+
+      if (!$this->getProductFromUpc($item['UPC']))
+        $this->createProduct($item);
+
       $stmt1->execute();
+      print $fulfillerId . "\n";
+      print_r($item);
+
       $stmt2->execute();
       $stmt3->execute();
     }
+  }
+
+  public function createProduct($product) {
+    if (!$this->getCatalog($product['catalog_id']))
+      $this->createCatalog($product['catalog_id'], $product['mfg_id']);
+
+    $stmt = $this->db->prepare("
+      INSERT INTO Products
+        (upc, catalogId, manufacturerId, name)
+      VALUES
+        (:upc, :catalogId, :manufacturerId, :name);
+    ");
+
+    $stmt->bindParam(':upc', $product['UPC']);
+    $stmt->bindParam(':catalogId', $product['catalog_id']);
+    $stmt->bindParam(':manufacturerId', $product['mfg_id']);
+    $stmt->bindParam(':name', $product['product_name']);
+
+    $stmt->execute();
+  }
+
+  public function createCatalog($catalog_id, $mfg_id) {
+    $stmt = $this->db->prepare("
+      INSERT INTO Catalogs
+        (catalogId, manufacturerId)
+      VALUES
+        (:catalogId, :manufacturerId)
+    ");
+
+    $stmt->bindParam(':catalogId', $catalog_id);
+    $stmt->bindParam(':manufacturerId', $mfg_id);
+
+    $stmt->execute();
+  }
+
+  private function getProductFromUpc($upc) {
+    $stmt = $this->db->prepare("
+      SELECT * FROM Products
+      WHERE upc = :upc
+    ");
+    $stmt->bindParam(':upc', $upc);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
+  private function getCatalog($catalog_id) {
+    $stmt = $this->db->prepare("
+      SELECT * FROM Catalogs
+      WHERE catalogId = :catalogId
+    ");
+    $stmt->bindParam(':catalogId', $catalogId);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 }
 ?>

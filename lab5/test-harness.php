@@ -23,7 +23,7 @@ switch ($argv[1]):
     break;
 
   case 'reset':
-    db_empty_tables($db);
+    db_destroy_tables($db);
     db_create_tables($db);
     db_seed($db);
     break;
@@ -72,9 +72,9 @@ function db_create_tables($db) {
 
     $db->exec("
       create table Products (
-        upc VARCHAR(10) NOT NULL,
-        catalogId VARCHAR(10) NOT NULL,
-        manufacturerId VARCHAR(10) NOT NULL,
+        upc VARCHAR(11) NOT NULL,
+        catalogId VARCHAR(11) NOT NULL,
+        manufacturerId VARCHAR(11) NOT NULL,
         name VARCHAR(50),
         constraint products_pk PRIMARY KEY (upc),
         constraint products_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs (catalogId, manufacturerId)
@@ -84,7 +84,7 @@ function db_create_tables($db) {
     $db->exec("
       create table Bins (
         locationId VARCHAR(10) NOT NULL,
-        fulfillerId VARCHAR(10),
+        fulfillerId VARCHAR(10) NOT NULL,
         binName VARCHAR(50) NOT NULL,
         binType VARCHAR(50),
         status VARCHAR(10),
@@ -120,28 +120,27 @@ function db_create_tables($db) {
       create table BinContainsProducts (
         productUpc VARCHAR(10) NOT NULL,
         binName VARCHAR(10) NOT NULL,
-        fulfillerId VARCHAR(10) NOT NULL,
-        locationId VARCHAR(10) NOT NULL,
-        allocated VARCHAR(6),
+        internalLocationId VARCHAR(10) NOT NULL,
+        allocated VARCHAR(6) DEFAULT '0',
         onHand VARCHAR(6),
+        fulfillerId VARCHAR(10) NOT NULL,
         constraint bcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
-        constraint bcp_binname_fk FOREIGN KEY (locationId, fulfillerId, binName) REFERENCES Bins (locationId, fulfillerId, binName),
-        constraint bcp_location_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId),
-        constraint bcp_pk PRIMARY KEY (productUpc, locationId, fulfillerId, binName)
+        constraint bcp_binname_fk FOREIGN KEY (internalLocationId, fulfillerId, binName) REFERENCES Bins (locationId, fulfillerId, binName),
+        constraint bcp_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),
+        constraint bcp_pk PRIMARY KEY (productUpc, internalLocationId, binName)
       );
     ");
 
     $db->exec("
       create table LocationSellsProducts (
         productUpc VARCHAR(10) NOT NULL,
-        fulfillerId VARCHAR(10) NOT NULL,
-        locationId VARCHAR(10) NOT NULL,
+        interalLocationId VARCHAR(10) NOT NULL,
         ltd VARCHAR(10),
         storeSku VARCHAR(10),
         safetyStock VARCHAR(10),
         constraint lsp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
-        constraint lsp_location_fk FOREIGN KEY (locationId) REFERENCES Locations (internalLocationId),
-        constraint lsp_pk PRIMARY KEY (productUpc, locationId, fulfillerId)
+        constraint lsp_location_fk FOREIGN KEY (interalLocationId) REFERENCES Locations (internalLocationId),
+        constraint lsp_pk PRIMARY KEY (productUpc, interalLocationId)
       );
     ");
 
@@ -251,19 +250,19 @@ function db_seed($db) {
   }
 
   // **********************************************************************
-  // Inventory Available Bins
+  // Inventory
   // **********************************************************************
-  $data = get_csv_data($csv['inv_available_bins']);
+  $data = array();
+  $data[] = get_csv_data($csv['inv_available_bins']);
+  $data[] = get_csv_data($csv['inv_available']);
+  $data[] = get_csv_data($csv['inv_not_available']);
+  $i = 0;
 
-  // **********************************************************************
-  // Inventory Available
-  // **********************************************************************
-  $data = get_csv_data($csv['inv_available']);
-
-  // **********************************************************************
-  // Inventory Not Available
-  // **********************************************************************
-  $data = get_csv_data($csv['inv_not_available']);
+  foreach($data as &$data_chunk) {
+    print "\n\n reFRESHING INVENTORY " . ++$i . "\n\n";
+    $api->refreshInventory($data_chunk);
+  }
+  $api->refreshInventory(0, 0);
 }
 
 // **********************************************************************
