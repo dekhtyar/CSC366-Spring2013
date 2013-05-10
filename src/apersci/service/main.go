@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/bmizerany/pq"
 	"net/http"
 )
 
