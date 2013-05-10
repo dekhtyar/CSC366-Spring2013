@@ -80,8 +80,26 @@ def createManufacturerCatalogs(db):
 def createBins(db):
     pass
 
-def refreshInventories(db):
-    pass
+def refreshInventoryWithFile(file_name):
+    csv_file = open(file_name, 'r')
+    csv_file.readline()
+    for row in csv_file:
+        tuple = row.split(',')
+        item = {
+            'upc': tuple[2],
+            'name': tuple[0],
+            'binname': tuple[8],
+            'onhand': tuple[7],
+            'safety': tuple[3],
+            'ltd': tuple[4]
+        }
+        api.refreshInventory(0, tuple[10], item)
+    csv_file.close()
+
+def refreshInventories():
+    refreshInventoryWithFile("../data/fulfiller inventory available.csv")
+    refreshInventoryWithFile("../data/fulfiller inventory available bins.csv")
+    refreshInventoryWithFile("../data/fulfiller inventory not available.csv")
 
 def createDatabase(db):
     process = Popen('mysql %s -u%s -p%s < DB-setup.sql' % ('inventory', 'root', 'busmajorz'),

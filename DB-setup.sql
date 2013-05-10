@@ -1,8 +1,8 @@
---Kevin Stein  kestein@calpoly.edu
---Alex Spotnitz  aspotnitz@gmail.com
---Stephen Calabrese  sccalabr@calpoly.edu
---Alex Boltunov  aboltunov@gmail.com
---Luke Larson  lplarson@calpoly.edu
+-- Kevin Stein  kestein@calpoly.edu
+-- Alex Spotnitz  aspotnitz@gmail.com
+-- Stephen Calabrese  sccalabr@calpoly.edu
+-- Alex Boltunov  aboltunov@gmail.com
+-- Luke Larson  lplarson@calpoly.edu
 
 CREATE TABLE Manufacturers (
    ManufacturerId           VARCHAR(50) PRIMARY KEY
@@ -31,7 +31,7 @@ CREATE TABLE Locations (
 );
 
 CREATE TABLE Items (
-   UPC                      CHAR(12)     PRIMARY KEY, 
+   UPC                      CHAR(14)     PRIMARY KEY, 
    Name                     VARCHAR(80) 
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE Bins (
 );
 
 CREATE TABLE StoredIn (
-   UPC                      CHAR(12)     REFERENCES Items,
+   UPC                      CHAR(14)     REFERENCES Items,
    FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      INTEGER,
    Name                     VARCHAR(20),
@@ -57,7 +57,7 @@ CREATE TABLE StoredIn (
 );
 
 CREATE TABLE StoredAt (
-   UPC                      CHAR(12)     REFERENCES Items,
+   UPC                      CHAR(14)     REFERENCES Items,
    FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      INTEGER,
    LTD                      FLOAT,
@@ -77,14 +77,14 @@ CREATE TABLE SubscribeTo (
 );
 
 CREATE TABLE FulfilledBy (
-   UPC                      CHAR(12)     REFERENCES Items,
+   UPC                      CHAR(14)     REFERENCES Items,
    FulfillerId              INTEGER REFERENCES Fulfillers,
    SKU                      VARCHAR(50),
    PRIMARY KEY(UPC, FulfillerId)
 );
 
 CREATE TABLE ListedIn (
-   UPC                      CHAR(12)     REFERENCES Items,
+   UPC                      CHAR(14)     REFERENCES Items,
    CatalogueId              VARCHAR(50) REFERENCES Catalogues,
    PRIMARY KEY(UPC, CatalogueId)
 );
