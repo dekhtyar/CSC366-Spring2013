@@ -57,8 +57,8 @@ create table LocationOffersCatalogs (
   manufacturerId VARCHAR(11) NOT NULL,
   internalLocationId VARCHAR(11) NOT NULL,
   fulfillerId VARCHAR(11),
-  constraint loc_catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs (catalogId, manufacturerId),
-  constraint loc_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),
+  constraint loc_catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs (catalogId, manufacturerId) ON UPDATE CASCADE,
+  constraint loc_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId) ON UPDATE CASCADE,
   constraint loc_pk PRIMARY KEY (catalogId, manufacturerId, internalLocationId)
 );
 
