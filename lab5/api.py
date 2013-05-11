@@ -52,10 +52,10 @@ def createManufacturerCatalog(manufacturer_id, catalogue_id, db):
        db.rollback()
 
 def createBin(tuple, db):
-   FulfillerId = 1
-   FulfillerLocationId = 2
-   Name = 3
-   BinType = 4
+   FulfillerId = 0
+   FulfillerLocationId = 1
+   Name = 2
+   BinType = 3
    
    cursor = db.cursor()
 
