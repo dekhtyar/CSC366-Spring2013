@@ -76,7 +76,17 @@ def createManufacturerCatalogs(db):
     csvFile.close()
 
 def createBins(db):
-    pass
+    csvFile = open("../data/fulfiller location_bins.csv", 'r')
+    numAttributes = len(csvFile.readline().split(','))
+
+    for row in csvFile:
+       tuple = row.split(',')
+       if(len(tuple) > numAttributes):
+          # to fix stores that have a ',' in their name
+          tuple[0] += tuple[1]
+          tuple.pop(1)
+       # send the row from the CSV and the pointer to the open MySQL database
+       api.createFulfiller(tuple, db) 
 
 def refreshInventoryWithFile(file_name):
     csv_file = open(file_name, 'r')
