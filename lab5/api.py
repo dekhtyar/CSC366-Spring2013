@@ -51,7 +51,20 @@ def createManufacturerCatalog(manufacturer_id, catalogue_id, db):
        print e
        db.rollback()
 
-def createBin():
+def createBin(tuple, db):
+   FulfillerId = 1
+   FulfillerLocationId = 2
+   Name = 3
+   BinType = 4
+   
+   cursor = db.cursor()
+
+   try:
+      cursor.execute("INSERT INTO Bins (FulfillerId, FulfillerLocationId, Name, BinType) VALUES (%s, %s, %s, %s)", (tuple[FulfillerId], tuple[FulfillerLocationId], tuple[Name], tuple[BinType]))
+      db.commit()
+   except Exception, e:
+      print e
+      db.rollback()   
     pass
 
 def refreshInventory(fulfiller_id, location_id, item, db):
