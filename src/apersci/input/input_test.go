@@ -2,9 +2,9 @@ package input
 
 import (
 	"apersci/soap"
-	"testing"
 	"bytes"
 	"encoding/xml"
+	"testing"
 )
 
 var createBinRequestTests = []struct {
@@ -28,7 +28,7 @@ var createBinRequestTests = []struct {
       </v4:createBin>
    </soapenv:Body>
 </soapenv:Envelope>
-`	},
+`},
 }
 
 var createBinResponseTests = []struct {
@@ -45,12 +45,12 @@ var createBinResponseTests = []struct {
       </v4:createBinResponse>
    </soapenv:Body>
 </soapenv:Envelope>
-`	},
+`},
 }
 
 var createFulfillerRequestTests = []struct {
-	Output  soap.FulfillerRequest
-	Input string
+	Output soap.FulfillerRequest
+	Input  string
 }{
 	{
 		Output: soap.FulfillerRequest{42, "abc"},
@@ -86,8 +86,8 @@ var createFulfillerResponseTests = []struct {
 }
 
 var createFulfillmentLocationRequestTests = []struct {
-	Output  soap.FulfillmentLocation
-	Input string
+	Output soap.FulfillmentLocation
+	Input  string
 }{
 	{
 		Output: soap.FulfillmentLocation{42, 43, "abc", "def", "ghi", 1.234, 5.678, 45, "JK"},
@@ -130,12 +130,12 @@ var createFulfillmentLocationResponseTests = []struct {
 }
 
 var refreshInventoryRequestTests = []struct {
-	Output  soap.RefreshRequest
-	Input string
+	Output soap.RefreshRequest
+	Input  string
 }{
 	{
 		Output: soap.RefreshRequest{xml.Name{}, 12, "ab", []soap.RefreshItem{
-			{xml.Name{}, "DIFFERENT", "ef", 34, 56, 7.8, 90}, 
+			{xml.Name{}, "DIFFERENT", "ef", 34, 56, 7.8, 90},
 			{xml.Name{}, "cd", "ef", 34, 56, 7.8, 90}}},
 		Input: `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
    <soapenv:Header/>
@@ -179,13 +179,13 @@ var refreshInventoryResponseTests = []struct {
        <v4:RefreshResponse>abc</v4:RefreshResponse>
    </soapenv:Body>
 </soapenv:Envelope>
-`	},
+`},
 }
 
 func assertString(t *testing.T, actOutput string, expOutput string) {
 	if expOutput != actOutput {
 		t.Errorf("Expected output did not match the actual output.\n" +
-				 "Expected:\n" + expOutput + "\nActual:\n" + actOutput)
+			"Expected:\n" + expOutput + "\nActual:\n" + actOutput)
 	}
 }
 
@@ -287,7 +287,7 @@ func TestRefreshInventoryRequest(t *testing.T) {
 			}
 		}
 	}
-} 
+}
 
 func TestRefreshInventoryResponse(t *testing.T) {
 	for _, strct := range refreshInventoryResponseTests {
@@ -300,4 +300,3 @@ func TestRefreshInventoryResponse(t *testing.T) {
 		assertString(t, value, strct.Output)
 	}
 }
-

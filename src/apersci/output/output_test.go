@@ -2,9 +2,9 @@ package output
 
 import (
 	"apersci/soap"
-	"testing"
 	"bytes"
 	"encoding/xml"
+	"testing"
 )
 
 var createBinRequestTests = []struct {
@@ -135,7 +135,7 @@ var refreshInventoryRequestTests = []struct {
 }{
 	{
 		Input: soap.RefreshRequest{xml.Name{}, 12, "ab", []soap.RefreshItem{
-			{xml.Name{}, "cd", "ef", 34, 56, 7.8, 90}, 
+			{xml.Name{}, "cd", "ef", 34, 56, 7.8, 90},
 			{xml.Name{}, "cd", "ef", 34, 56, 7.8, 90}}},
 		Output: `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
    <soapenv:Header/>
@@ -182,11 +182,10 @@ var refreshInventoryResponseTests = []struct {
 `},
 }
 
-
 func assertString(t *testing.T, expOutput string, actOutput string) {
 	if expOutput != actOutput {
 		t.Errorf("Expected output did not match the actual output.\n" +
-				 "Expected:\n" + expOutput + "\nActual:\n" + actOutput)
+			"Expected:\n" + expOutput + "\nActual:\n" + actOutput)
 	}
 }
 
@@ -311,4 +310,3 @@ func TestRefreshInventoryResponse(t *testing.T) {
 		assertString(t, strct.Output, actOutput)
 	}
 }
-
