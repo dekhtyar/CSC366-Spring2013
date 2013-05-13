@@ -8,15 +8,33 @@ import (
 )
 
 func refreshInventory(w http.ResponseWriter, r *http.Request) {
-	data, err := input.RefreshInventoryRequest(r.Body)
-	fmt.Println(err)
-	fmt.Println(data)
-	output.RefreshInventoryResponse(w, "Inventory Updated yo!")
+	b, err := input.RefreshInventoryRequest(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	conn, err := getDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	defer conn.Close()
+
+	fmt.Println(b)
+	res, err := conn.Exec("--TODO")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	rows, _ := res.RowsAffected()
+	err = output.RefreshInventoryResponse(w, fmt.Sprint(rows))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
+/*
 func dbConn(i soap.RefreshItem) error {
-	conn, err := sql.Open("postgres", "dbname=cait password=cait")
-	if err != nil {
+	conn, err := getDBConnection()
 		return err
 	}
 	defer conn.Close()
@@ -41,3 +59,4 @@ func dbConn(i soap.RefreshItem) error {
 
 	return nil
 }
+*/

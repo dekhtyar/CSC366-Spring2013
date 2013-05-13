@@ -3,29 +3,35 @@ package main
 import (
 	"apersci/input"
 	"apersci/output"
-	"apersci/soap"
 	"fmt"
 	"net/http"
 )
 
 func createFulfillmentLocation(w http.ResponseWriter, r *http.Request) {
-	data, err := input.CreateFulfillmentLocationRequest(r.Body)
-	fmt.Println(err)
-	fmt.Println(data)
-	output.CreateFulfillmentLocationResponse(w, "lalalala")
-}
-
-func dbConn(l soap.FulfillmentLocation) error {
-	conn, err := sql.Open("postgres", "dbname=cait password=cait")
+	l, err := input.CreateFulfillmentLocationRequest(r.Body)
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	conn, err := getDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	defer conn.Close()
 
-	res, err := conn.Exec("INSERT INTO Locations VALUES(" + l.LocationName + "," + l.FulfillerID + "," + l.ExternalLocationID + "," + l.RetailerLocationID + "," + l.LocationType + "," + l.LocationType + ",ST_MakePoint(" + l.Longitude + "," + l.Latitude + ")," + l.Status + ")")
+	res, err := conn.Exec("INSERT INTO Locations VALUES($1,$2,$3,$4,$5,$6,ST_SetSRID(ST_MakePoint($7,$8),4326),$9)",
+		l.LocationName, l.FulfillerID, l.ExternalLocationID, l.RetailerLocationID,
+		l.LocationType, l.LocationType, l.Longitude, l.Latitude, l.Status)
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	return nil
+	rows, _ := res.RowsAffected()
+	err = output.CreateFulfillmentLocationResponse(w, fmt.Sprint(rows))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

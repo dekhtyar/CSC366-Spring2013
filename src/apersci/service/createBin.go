@@ -8,23 +8,29 @@ import (
 )
 
 func createBin(w http.ResponseWriter, r *http.Request) {
-	data, err := input.CreateBinRequest(r.Body)
-	fmt.Println(err)
-	fmt.Println(data)
-	output.CreateBinResponse(w, "Hi everyone!")
-}
-
-func dbConn(b soap.Bin) error {
-	conn, err := sql.Open("postgres", "dbname=cait password=cait")
+	b, err := input.CreateBinRequest(r.Body)
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	conn, err := getDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	defer conn.Close()
 
-	res, err := conn.Exec("INSERT INTO Bins VALUES(" + b.BinID + "," + b.FulfillerLocationID + "," + b.Name + "," + b.BinType + "," + b.BinStatus + ")")
+	res, err := conn.Exec("INSERT INTO Bins VALUES($1,$2,$3,$4,$5)",
+		b.BinID, b.FulfillerLocationID, b.Name, b.BinType, b.BinStatus)
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	return nil
+	rows, _ := res.RowsAffected()
+	err = output.CreateBinResponse(w, fmt.Sprint(rows))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

@@ -3,29 +3,34 @@ package main
 import (
 	"apersci/input"
 	"apersci/output"
-	"apersci/soap"
 	"fmt"
 	"net/http"
 )
 
 func createFulfiller(w http.ResponseWriter, r *http.Request) {
-	data, err := input.CreateFulfillerRequest(r.Body)
-	fmt.Println(err)
-	fmt.Println(data)
-	output.CreateFulfillerResponse(w, "BLAHHHH!")
-}
-
-func dbConn(f soap.FulfillerRequest) error {
-	conn, err := sql.Open("postgres", "dbname=cait password=cait")
+	f, err := input.CreateFulfillerRequest(r.Body)
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	conn, err := getDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	defer conn.Close()
 
-	res, err := conn.Exec("INSERT INTO Fulfillers VALUES(" + f.FulfillerID + "," + f.Name + ")")
+	res, err := conn.Exec("INSERT INTO Fulfillers VALUES($1,$2)",
+		f.FulfillerID, f.Name)
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	return nil
+	rows, _ := res.RowsAffected()
+	err = output.CreateFulfillerResponse(w, fmt.Sprint(rows))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
