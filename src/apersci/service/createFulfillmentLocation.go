@@ -32,6 +32,8 @@ func createFulfillmentLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//res, err := conn.Exec("INSERT INTO LocationsProducts VALUES($1, $2)", l.RetailerLocationID
+
 	rows, _ := res.RowsAffected()
 	err = output.CreateFulfillmentLocationResponse(w, fmt.Sprint(rows))
 	if err != nil {
