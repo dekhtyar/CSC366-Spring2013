@@ -16,8 +16,6 @@ def exists(conn, sql, params):
 
 def insert(conn, sql, params):
     cur = conn.cursor()
-    print sql
-    print params
     cur.execute(sql, params)
 
 def ful_row(row):
