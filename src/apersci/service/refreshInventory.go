@@ -91,13 +91,14 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 		rows.Close()
 
 		if count == 0 {
-			_, err = tx.Exec("INSERT INTO LocationsProducts VALUES($1, $2, $3, $4, $5)", locationid, rr.FulfillerID, i.PartNumber,
-				i.LTD, i.SafetyStock)
+			_, err = tx.Exec("INSERT INTO LocationsProducts VALUES($1, $2, $3, $4, $5)",
+				locationid, rr.FulfillerID, i.PartNumber, i.LTD, i.SafetyStock)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		} else {
-			_, err = tx.Exec(`UPDATE LocationsProducts SET ltd = $1, safetyStock = $2 WHERE locationid = $4 AND sku = $3`, i.LTD, i.SafetyStock, i.PartNumber, locationid)
+			_, err = tx.Exec(`UPDATE LocationsProducts SET ltd = $1, safetyStock = $2 WHERE locationid = $4 AND sku = $3`,
+				i.LTD, i.SafetyStock, i.PartNumber, locationid)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
