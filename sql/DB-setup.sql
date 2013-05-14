@@ -6,7 +6,7 @@
 -- PostgreSQL
 
 CREATE TYPE ActivityStatus AS ENUM ('active', 'inactive');
-CREATE TYPE LocationType AS ENUM ('FULFILLER', 'RETAILER', 'MANUFACTURER');
+--CREATE TYPE LocationType AS ENUM ('FULFILLER', 'RETAILER', 'MANUFACTURER');
 
 CREATE TABLE Fulfillers (
     id INT PRIMARY KEY CHECK (id > 0),
@@ -30,7 +30,7 @@ CREATE TABLE Locations (
     externalFulfillerId VARCHAR(126),
     id INT PRIMARY KEY,
     description VARCHAR(126),
-    type LocationType,
+    type VARCHAR(126),
     coordinates GEOGRAPHY(POINT, 4326),
     status ActivityStatus DEFAULT 'active',
     UNIQUE (fulfillerId, externalFulfillerId)

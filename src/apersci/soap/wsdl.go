@@ -71,7 +71,7 @@ type FulfillmentLocation struct {
 	LocationType       string
 	Latitude           float64
 	Longitude          float64
-	Status             int
+	Status             string
 	CountryCode        string
 }
 

@@ -15,5 +15,5 @@ DROP TABLE Locations;
 DROP TABLE Catalogs;
 DROP TABLE Manufacturers;
 DROP TABLE Fulfillers;
-DROP TYPE LocationType;
+--DROP TYPE LocationType;
 DROP TYPE ActivityStatus;

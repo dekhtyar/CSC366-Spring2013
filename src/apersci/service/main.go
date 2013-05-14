@@ -49,23 +49,24 @@ func execFile(fileName string) http.HandlerFunc {
 	})
 }
 
-func onlyPost(h http.HandlerFunc) http.HandlerFunc {
+func onlyPostAndCORS(h http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		} else {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 			h(w, r)
 		}
 	})
 }
 
 func main() {
-	http.HandleFunc("/createBin/", onlyPost(createBin))
-	http.HandleFunc("/createFulfiller/", onlyPost(createFulfiller))
-	http.HandleFunc("/createFulfillmentLocation/", onlyPost(createFulfillmentLocation))
-	http.HandleFunc("/refreshInventory/", onlyPost(refreshInventory))
-	http.HandleFunc("/createDatabase/", onlyPost(execFile("sql/DB-setup.sql")))
-	http.HandleFunc("/clearDatabase/", onlyPost(execFile("sql/DB-clear.sql")))
-	http.HandleFunc("/destroyDatabase/", onlyPost(execFile("sql/DB-cleanup.sql")))
+	http.HandleFunc("/createBin/", onlyPostAndCORS(createBin))
+	http.HandleFunc("/createFulfiller/", onlyPostAndCORS(createFulfiller))
+	http.HandleFunc("/createFulfillmentLocation/", onlyPostAndCORS(createFulfillmentLocation))
+	http.HandleFunc("/refreshInventory/", onlyPostAndCORS(refreshInventory))
+	http.HandleFunc("/createDatabase/", onlyPostAndCORS(execFile("sql/DB-setup.sql")))
+	http.HandleFunc("/clearDatabase/", onlyPostAndCORS(execFile("sql/DB-clear.sql")))
+	http.HandleFunc("/destroyDatabase/", onlyPostAndCORS(execFile("sql/DB-cleanup.sql")))
 	http.ListenAndServe(":8080", nil)
 }
