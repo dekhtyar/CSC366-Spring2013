@@ -61,9 +61,8 @@ def locations(filename):
         loc_reader = DictReader(loc_file)
         return [(int(row['internal_fulfiller_location_id']), loc_row(row), sell_row(row)) for row in loc_reader]
 
-CREATE_LOC="INSERT INTO Location VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-
 def createLocation(conn, loc_id, loc):
+    CREATE_LOC="INSERT INTO Location VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
     if not exists (conn, "SELECT * FROM Location WHERE InternalID = ?", (loc_id,)):
         insert(conn, CREATE_LOC, loc)
 
@@ -93,10 +92,13 @@ def destroyDatabase(conn):
 def clearDatabase(conn):
     run_sql_file(conn, "sql/clear.sql")
 
-# Refresh Invetory will access the csv defined in argv[2], connect to the DB and then 
-# for every row in that csv it will query the DB to find if the item exists and update the qty, 
-# or it will insert the item into the DB with the values that are in the CSV. 
 def refreshInventory(conn, filename):
+    """
+    Refresh Invetory will access the csv defined in argv[2], connect to the DB 
+    and then for every row in that csv it will query the DB to find if the 
+    item exists and update the qty, or it will insert the item into the DB with
+    the values that are in the CSV. 
+    """
     cur = conn.cursor()
     invUpdate = [line.strip() for line in open(filename)]
     for row in invUpdate:
@@ -122,7 +124,7 @@ def createFulfillers(conn, filename):
         createFulfiller(conn, f)
 
 def catalogs(filename):
-    with open (filename) as cat_csv:
+    with open(filename) as cat_csv:
         cat_reader = DictReader(cat_csv)
         return [cat_row(row) for row in cat_reader]
 
