@@ -20,26 +20,8 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	fmt.Println(b)
-	res, err := conn.Exec("--TODO")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	rows, _ := res.RowsAffected()
-	err = output.RefreshInventoryResponse(w, fmt.Sprint(rows))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-/*
-func dbConn(i soap.RefreshItem) error {
-	conn, err := getDBConnection()
-		return err
-	}
-	defer conn.Close()
-
-	rows, err := conn.Exec("SELECT COUNT(*) FROM BinsProducts WHERE binId =" + i.BinID + " AND sku =" + i.PartNumber)
+	
+	rows, err := conn.Exec("SELECT COUNT(*) FROM BinsProducts WHERE binId = $1 AND sku = $2", i.BinID, i.PartNumber)
 	if err != nil {
 		return err
 	}
@@ -53,10 +35,25 @@ func dbConn(i soap.RefreshItem) error {
 		}
 	}
 
-	if iv > 0 {
-		s, err := conn.Prepare("UPDATE BinsProducts SET onhandinventory = onhandinventory +" + i.Quantity + " WHERE sku = " + i.PartNumber + " AND binId = " + i.BinID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	return nil
+	if iv > 0 {
+		rows, err := conn.Exec("UPDATE BinsProducts SET onhandinventory = onhandinventory + $1 
+	    WHERE sku = $2 AND binId = $3)", i.Quantity, i.PartNumber, i.BinID)
+	    if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		rows, err := conn.Exec("UPDATE LocationsProducts SET ltd = $1, safetyStock = $2 
+		                        WHERE locationid = (SELECT DISTINCT b.locationid 
+								FROM BinsProducts bp, Bins b WHERE bp.sku = $3 AND 
+								binID = $4 AND bp.binID = b.id)" , i.LTD, i.SafetyStock, i.PartNumber, i.BinID)
+	}
+
+	rows, _ := res.RowsAffected()
+	err = output.RefreshInventoryResponse(w, fmt.Sprint(rows))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
-*/
