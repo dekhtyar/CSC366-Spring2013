@@ -60,12 +60,12 @@ def createBin(tuple, db):
    cursor = db.cursor()
 
    try:
-      cursor.execute("INSERT INTO Bins (FulfillerId, FulfillerLocationId, Name, BinType) VALUES (%s, %s, %s, %s)", (tuple[FulfillerId], tuple[FulfillerLocationId], tuple[Name], tuple[BinType]))
+      cursor.execute("INSERT INTO Bins (FulfillerId, FulfillerLocationId, Name, BinType) VALUES (%s, %s, %s, %s)", 
+                     (tuple[FulfillerId], tuple[FulfillerLocationId], tuple[Name], tuple[BinType]))
       db.commit()
    except Exception, e:
       print e
       db.rollback()   
-    pass
 
 def refreshInventory(fulfiller_id, location_id, item, db):
     sql_stored_at_where = 'WHERE UPC = %s AND FulfillerId = %s AND FulfillerLocationId = %s'

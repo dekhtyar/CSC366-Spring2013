@@ -86,7 +86,7 @@ def createBins(db):
           tuple[0] += tuple[1]
           tuple.pop(1)
        # send the row from the CSV and the pointer to the open MySQL database
-       api.createFulfiller(tuple, db) 
+       api.createBin(tuple, db) 
 
 def refreshInventoryWithFile(file_name):
     csv_file = open(file_name, 'r')
