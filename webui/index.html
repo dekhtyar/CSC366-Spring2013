@@ -110,7 +110,7 @@
                     if (xhr.readyState === 4) {
                         finishedRequests++;
                         activeRequests--;
-                        if (finishedRequests % 100 == 0) {
+                        if (finishedRequests % 100 === 0 || finishedRequests === totalRequests) {
                             Notify(finishedRequests + ' / ' + totalRequests);
                         }
                         if (xhr.status === 200) {
