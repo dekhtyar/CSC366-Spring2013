@@ -1,3 +1,4 @@
+// Pretty Okay CSV Parser, RFC compliant
 var CSV = (function() {
     "use strict";
     return {
