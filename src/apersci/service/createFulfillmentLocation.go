@@ -7,6 +7,9 @@ import (
 	"net/http"
 )
 
+// INSERT into Manufacturers values (manufacturerId);
+// INSERT into Catalogs values (catalogId, manufacturerId);
+
 func createFulfillmentLocation(w http.ResponseWriter, r *http.Request) {
 	l, err := input.CreateFulfillmentLocationRequest(r.Body)
 	if err != nil {
