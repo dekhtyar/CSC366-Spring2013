@@ -48,7 +48,7 @@ with open(sys.argv[1], 'r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',', quotechar="'")
     csvreader.next()
     for row in csvreader:
-	insertBin(cursor, 'Default', row[EXT_FUL_LOC_ID], row[FULFILLER_ID], 
+	insertBin(cursor, 'Default', row[EXT_FUL_LOC_ID], row[FULFILLER_ID],
                   'General', 'Pickable')
 
 conn.commit()
