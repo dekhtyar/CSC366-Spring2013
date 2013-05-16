@@ -32,7 +32,7 @@ CREATE TABLE Locations (
 );
 
 CREATE TABLE Items (
-   UPC                      CHAR(12)     PRIMARY KEY, 
+   UPC                      CHAR(14)     PRIMARY KEY, 
    ManufacturerId           VARCHAR(50),
    CatalogueId              VARCHAR(50),
    Name                     VARCHAR(80),
@@ -41,7 +41,7 @@ CREATE TABLE Items (
 );
 
 CREATE TABLE FulfilledBy (
-   UPC                      CHAR(12)     REFERENCES Items,
+   UPC                      CHAR(14)     REFERENCES Items,
    FulfillerId              VARCHAR(50) REFERENCES Fulfillers,
    SKU                      VARCHAR(50),
    PRIMARY KEY (UPC, FulfillerId),

@@ -95,13 +95,16 @@ def refreshInventoryWithFile(file_name, db):
         tuple = row.split(',')
         item = {
             'upc': tuple[2],
+            'sku': tuple[1],
             'name': tuple[0],
             'binname': tuple[8],
             'onhand': tuple[7],
             'safety': tuple[3],
-            'ltd': tuple[4]
+            'ltd': tuple[4],
+            'mfg_id': tuple[5],
+            'catalog_id': tuple[6]
         }
-        api.refreshInventory(0, tuple[10], item, db)
+        api.refreshInventory(tuple[10], item, db)
     csv_file.close()
 
 def refreshInventories(db):

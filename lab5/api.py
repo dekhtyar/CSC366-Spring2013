@@ -76,25 +76,29 @@ def createBin(tuple, db):
       print e
       db.rollback()   
 
-def refreshInventory(fulfiller_id, location_id, item, db):
-    sql_stored_at_where = 'WHERE UPC = %s AND FulfillerId = %s AND FulfillerLocationId = %s'
-    sql_stored_in_where = sql_stored_at_where+' AND Name = %s' 
-    args_stored_at_where = (item['upc'], fulfiller_id, location_id)
-    args_stored_in_where = args_stored_at_where + (item['binname'],)
-
+def refreshInventory(location_id, item, db):
     cur = db.cursor()
+
+    #cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s', (location_id,))
+    #fulfiller_id = cur.fetchone()[0]
+    fulfiller_id = 0
+
+    sql_stored_at_where = 'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s'
+    sql_stored_in_where = sql_stored_at_where+' AND Name = %s' 
+    args_stored_at_where = (item['sku'], fulfiller_id, location_id)
+    args_stored_in_where = args_stored_at_where + (item['binname'],)
 
     # Update 'Items' table
     cur.execute('SELECT UPC FROM Items WHERE UPC = %s', (item['upc'],)) 
     if not cur.fetchone():
-        cur.execute('INSERT INTO Items VALUES (%s, %s)',
-                    (item['upc'], item['name']))
+        cur.execute('INSERT INTO Items VALUES (%s, %s, %s, %s)',
+                    (item['upc'], item['mfg_id'], item['catalog_id'], item['name']))
     else:
-        cur.execute('UPDATE Items SET Name = %s WHERE UPC = %s',
-                    (item['name'], item['upc']))
+        cur.execute('UPDATE Items SET Name = %s, ManufacturerId = %s, CatalogueId = %s WHERE UPC = %s',
+                    (item['name'], item['mfg_id'], item['catalog_id'], item['upc']))
 
     # Update 'StoredIn' table
-    cur.execute('SELECT UPC FROM StoredIn '+sql_stored_in_where,
+    cur.execute('SELECT SKU FROM StoredIn '+sql_stored_in_where,
                 args_stored_in_where)
     if not cur.fetchone():
         cur.execute('INSERT INTO StoredIn VALUES (%s, %s, %s, %s, %s, %s)',
@@ -104,7 +108,7 @@ def refreshInventory(fulfiller_id, location_id, item, db):
                     (item['onhand'],)+args_stored_in_where)
 
     # Update 'StoredAt' table
-    cur.execute('SELECT UPC FROM StoredAt '+sql_stored_at_where,
+    cur.execute('SELECT SKU FROM StoredAt '+sql_stored_at_where,
                 args_stored_at_where)
     if not cur.fetchone():
         cur.execute('INSERT INTO StoredAt VALUES (%s, %s, %s, %s, %s)',
