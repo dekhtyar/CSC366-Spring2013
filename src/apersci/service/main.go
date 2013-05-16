@@ -7,6 +7,7 @@ import (
 	_ "github.com/bmizerany/pq"
 	"net/http"
 	"os"
+	"runtime"
 )
 
 var dbConnType = "postgres"
@@ -61,6 +62,7 @@ func onlyPostAndCORS(h http.HandlerFunc) http.HandlerFunc {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	http.HandleFunc("/createBin/", onlyPostAndCORS(createBin))
 	http.HandleFunc("/createFulfiller/", onlyPostAndCORS(createFulfiller))
 	http.HandleFunc("/createFulfillmentLocation/", onlyPostAndCORS(createFulfillmentLocation))
