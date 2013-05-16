@@ -12,7 +12,7 @@ class TeamRossAPI {
     $stmt = $this->db->prepare("INSERT INTO Fulfillers (fulfillerId, name) VALUES (:id,:name)");
     $stmt->bindValue(':id', $id);
     $stmt->bindValue(':name',$name);
-    $stmt->execute();
+    return $stmt->execute();
   }
 
   public function createFulfillmentLocation($locationName, $extLID, $intLID,
