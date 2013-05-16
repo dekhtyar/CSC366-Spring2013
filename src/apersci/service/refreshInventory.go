@@ -63,6 +63,22 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 		}
 		rows.Close()
 
+		rows, err = tx.Query("SELECT DISTINCT fulfillerId FROM Locations WHERE id = $1", locationid)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var fulfillerid uint
+
+		rows.Next()
+		err = rows.Scan(&fulfillerid)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rows.Close()
+
 		rows, err = tx.Query("SELECT COUNT(*) FROM BinProducts WHERE binId = $1 AND sku = $2",
 			binid, i.PartNumber)
 		if err != nil {
@@ -110,7 +126,7 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 			}
 
 			rows, err = tx.Query("SELECT COUNT(*) FROM FulfillerProducts WHERE upc = $1 AND sku = $2 AND fulfillerId = $3",
-				i.UPC, i.PartNumber, rr.FulfillerID)
+				i.UPC, i.PartNumber, fulfillerid)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -125,7 +141,7 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 
 			if count == 0 {
 				_, err = tx.Exec("INSERT INTO FulfillerProducts VALUES($1, $2, $3)",
-					i.PartNumber, i.UPC, rr.FulfillerID)
+					i.PartNumber, i.UPC, fulfillerid)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
@@ -133,7 +149,7 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 			}
 
 			_, err = tx.Exec("INSERT INTO BinProducts VALUES($1, $2, $3, $4, 0)",
-				binid, rr.FulfillerID, i.PartNumber, i.Quantity)
+				binid, fulfillerid, i.PartNumber, i.Quantity)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -158,7 +174,7 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 
 		if count == 0 {
 			_, err = tx.Exec("INSERT INTO LocationProducts VALUES($1, $2, $3, $4, $5)",
-				locationid, rr.FulfillerID, i.PartNumber, i.LTD, i.SafetyStock)
+				locationid, fulfillerid, i.PartNumber, i.LTD, i.SafetyStock)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
