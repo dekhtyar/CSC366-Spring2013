@@ -5,8 +5,9 @@ class TeamRossSOAP {
   // **********************************************************************
   //
   // **********************************************************************
-  function createFulfiller() {
-
+  function createFulfiller($FulfillerRequest) {
+    return TeamRossAPI::createFulfiller($FulfillerRequest['FullfillerID'],
+      $Fulfillerrequest['Name']) ? 0 : -1;
   }
 
   // **********************************************************************
