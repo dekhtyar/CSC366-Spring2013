@@ -32,6 +32,11 @@ func createFulfillmentLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = conn.Exec("INSERT INTO Bins(locationid, name, type) VALUES($1, 'Default', 'General')", l.RetailerLocationID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	//res, err := conn.Exec("INSERT INTO LocationsProducts VALUES($1, $2)", l.RetailerLocationID
 
 	rows, _ := res.RowsAffected()
