@@ -1,12 +1,23 @@
 <?php
 include_once("team-ross-api.php");
-include_once("db.php");
 
 class TeamRossSOAP {
   private $api;
 
   function __construct() {
-    $this->api = new TeamRossAPI($db);
+    $hostname = 'localhost';
+    $username = 'root';
+    $password = 'password';
+    $database = 'team_ross';
+
+    try {
+      $db = new PDO("mysql:host=$hostname;dbname=$database", $username, $password);
+      $this->api = new TeamRossAPI($db);
+    }
+    catch (PDOException $e) {
+      echo $e->getMessage();
+      die();
+    }
   }
 
   // **********************************************************************
