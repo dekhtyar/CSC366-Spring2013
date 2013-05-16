@@ -13,7 +13,7 @@ class TeamRossSOAP {
   //
   // **********************************************************************
   function createFulfiller($FulfillerRequest) {
-    return TeamRossAPI::createFulfiller($FulfillerRequest['FullfillerID'],
+    return $this->api->createFulfiller($FulfillerRequest['FullfillerID'],
       $Fulfillerrequest['Name']) ? 0 : -1;
   }
 
