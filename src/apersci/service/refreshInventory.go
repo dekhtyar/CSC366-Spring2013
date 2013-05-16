@@ -55,6 +55,10 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			rows, err = tx.Query("SELECT COUNT(*) FROM Products WHERE upc = $1", i.UPC)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 			rows.Next()
 			err = rows.Scan(&count)
 			if err != nil {
@@ -80,6 +84,11 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 		rows, err = tx.Query(`SELECT DISTINCT b.locationid
 							  FROM BinProducts bp, Bins b WHERE bp.sku = $1 AND
 				              bp.binID = $2 AND bp.binID = b.id`, i.PartNumber, i.BinID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		var locationid uint
 
 		rows.Next()
@@ -93,6 +102,11 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 		rows, err = tx.Query(`SELECT COUNT(*) FROM LocationProducts
 							  WHERE locationid = $2
 							  AND sku = $1`, i.PartNumber, locationid)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		rows.Next()
 		err = rows.Scan(&count)
 		if err != nil {
