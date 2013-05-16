@@ -79,14 +79,22 @@ def createBin(tuple, db):
 def refreshInventory(location_id, item, db):
     cur = db.cursor()
 
-    #cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s', (location_id,))
-    #fulfiller_id = cur.fetchone()[0]
-    fulfiller_id = 0
+    cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s', (location_id,))
+    location = cur.fetchone()
+    if location is not None:
+        fulfiller_id = location[0]
+    else:
+        fulfiller_id = 0
 
     sql_stored_at_where = 'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s'
     sql_stored_in_where = sql_stored_at_where+' AND Name = %s' 
     args_stored_at_where = (item['sku'], fulfiller_id, location_id)
     args_stored_in_where = args_stored_at_where + (item['binname'],)
+
+    try:
+        cur.execute('INSERT INTO FulfilledBy VALUES (%s, %s, %s)', (item['upc'], fulfiller_id, item['sku']))
+    except Exception, e:
+        print e
 
     # Update 'Items' table
     cur.execute('SELECT UPC FROM Items WHERE UPC = %s', (item['upc'],)) 
