@@ -37,8 +37,20 @@ class TeamRossSOAP {
   // **********************************************************************
   // RILEY
   // **********************************************************************
-  function createFulfillmentLocation() {
+  function createFulfillmentLocation($fulfillerId, $retailerLocationId, $externalLocationId, $locationName,
+				     $locationType, $latitude, $longitude, $status, $countryCode) {
 
+	$safetyStockLimitDefault = 10; // FIXME
+	// check if FulfillmentLocation exists!
+	// if location exists {
+	//	return false;
+	//}
+	else {
+		TeamRossAPI::createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
+						       $fufillerId, $locationType, $latitude, $longitutde, $status,
+						       $safetyStockLimitDefault, NULL, NULL);
+	}
+	return true; // Successfully created new FulfillmentLocation
   }
 
   // **********************************************************************
