@@ -144,8 +144,8 @@ if __name__ == '__main__':
     clearDatabase(db)
 
     createFulfillers(db)
-    createFulfillmentLocations(db)
     createManufacturerCatalogs(db)
+    createFulfillmentLocations(db)
     createBins(db)
 
     refreshInventories(db)
