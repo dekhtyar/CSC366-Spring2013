@@ -88,7 +88,7 @@ def createBins(db):
        # send the row from the CSV and the pointer to the open MySQL database
        api.createBin(tuple, db) 
 
-def refreshInventoryWithFile(file_name):
+def refreshInventoryWithFile(file_name, db):
     csv_file = open(file_name, 'r')
     csv_file.readline()
     for row in csv_file:
@@ -101,13 +101,13 @@ def refreshInventoryWithFile(file_name):
             'safety': tuple[3],
             'ltd': tuple[4]
         }
-        api.refreshInventory(0, tuple[10], item)
+        api.refreshInventory(0, tuple[10], item, db)
     csv_file.close()
 
-def refreshInventories():
-    refreshInventoryWithFile("../data/fulfiller inventory available.csv")
-    refreshInventoryWithFile("../data/fulfiller inventory available bins.csv")
-    refreshInventoryWithFile("../data/fulfiller inventory not available.csv")
+def refreshInventories(db):
+    refreshInventoryWithFile("../data/fulfiller inventory available.csv", db)
+    refreshInventoryWithFile("../data/fulfiller inventory available bins.csv", db)
+    refreshInventoryWithFile("../data/fulfiller inventory not available.csv", db)
 
 def createDatabase(db):
     process = Popen('mysql %s -u%s -p%s < DB-setup.sql' % ('inventory', 'root', 'busmajorz'),
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     createManufacturerCatalogs(db)
     createBins(db)
 
-    #refreshInventories(db)
+    refreshInventories(db)
 
     db.close()
     
