@@ -74,7 +74,8 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
-			rows, err = tx.Query("SELECT COUNT(*) FROM FulfillerProducts WHERE upc = $1 AND sku = $2 AND fulfillerId = $3", i.UPC, i.PartNumber, rr.FulfillerID)
+			rows, err = tx.Query("SELECT COUNT(*) FROM FulfillerProducts WHERE upc = $1 AND sku = $2 AND fulfillerId = $3",
+				i.UPC, i.PartNumber, rr.FulfillerID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -88,15 +89,16 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 			rows.Close()
 
 			if count == 0 {
-				_, err = tx.Exec("INSERT INTO FulfillerProducts VALUES($1, $2, $3)", i.PartNumber, i.UPC, rr.FulfillerID)
+				_, err = tx.Exec("INSERT INTO FulfillerProducts VALUES($1, $2, $3)",
+					i.PartNumber, i.UPC, rr.FulfillerID)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
 			}
 
-			_, err = tx.Exec("INSERT INTO BinProducts VALUES($1, $2, $3, $4, 0)", i.BinID, rr.FulfillerID, i.PartNumber, i.Quantity)
-			fmt.Println(err)
+			_, err = tx.Exec("INSERT INTO BinProducts VALUES($1, $2, $3, $4, 0)",
+				i.BinID, rr.FulfillerID, i.PartNumber, i.Quantity)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
