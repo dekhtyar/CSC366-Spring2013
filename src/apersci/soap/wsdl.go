@@ -25,7 +25,7 @@ type RefreshItem struct {
 	XMLName     xml.Name `xml:"items"`
 	PartNumber  string
 	UPC         string
-	BinID       int
+	BinID       string //BinID really bin name
 	Quantity    int
 	LTD         float64
 	SafetyStock int
@@ -34,7 +34,7 @@ type RefreshItem struct {
 type RefreshRequest struct {
 	XMLName      xml.Name `xml:"RefreshRequest"`
 	FulfillerID  uint
-	LocationName string
+	LocationName uint          //LocationName is really location id
 	Items        []RefreshItem `xml:">items"`
 }
 
