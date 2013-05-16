@@ -38,12 +38,15 @@ class TeamRossAPI {
 
       $stmt->execute();
 
+      // Create catalog if missing
+      if (!$this->getCatalog($catalogId)
+	    $this->createCatalog($catalogId, $mfgId);
+
+
       // Create LocationOffersCatalog
       $relational = $this->db->prepare("
-	SET foreign_key_checks=0;
         INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId, fulfillerId)
         VALUES (:catalogId, :manufacturerId, :internalLocationId, :fulfillerId);
-	SET foreign_key_checks=1;
       ");
 
       $relational->bindParam(':catalogId', $catalogId);
