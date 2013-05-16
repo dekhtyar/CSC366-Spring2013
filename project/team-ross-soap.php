@@ -46,11 +46,11 @@ class TeamRossSOAP {
 	// if location exists {
 	//	return false;
 	//}
-	else {
-		TeamRossAPI::createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
+	//else {
+		$this->api->createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
 						       $fufillerId, $locationType, $latitude, $longitutde, $status,
 						       $safetyStockLimitDefault, NULL, NULL);
-	}
+	//}
 	return true; // Successfully created new FulfillmentLocation
   }
 

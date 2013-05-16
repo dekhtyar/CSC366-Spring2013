@@ -39,9 +39,8 @@ class TeamRossAPI {
       $stmt->execute();
 
       // Create catalog if missing
-      if (!$this->getCatalog($catalogId)
-	    $this->createCatalog($catalogId, $mfgId);
-
+      if (!$this->getCatalog($catalogId))
+        $this->createCatalog($catalogId, $mfgId);
 
       // Create LocationOffersCatalog
       $relational = $this->db->prepare("
