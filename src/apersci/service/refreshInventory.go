@@ -28,8 +28,43 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 		}
 		defer tx.Rollback()
 
-		rows, err := tx.Query("SELECT COUNT(*) FROM BinProducts WHERE binId = $1 AND sku = $2",
-			i.BinID, i.PartNumber)
+		/*rows, err := tx.Query(`SELECT DISTINCT b.locationid
+							  FROM BinProducts bp, Bins b WHERE bp.sku = $1 AND
+				              bp.binID = $2 AND bp.binID = b.id`, i.PartNumber, binid)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var locationid uint
+
+		rows.Next()
+		err = rows.Scan(&locationid)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rows.Close()*/
+		locationid := rr.LocationName
+
+		rows, err := tx.Query("SELECT id FROM Bins WHERE name = $1 AND locationId = $2", i.BinID, locationid)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var binid uint
+
+		rows.Next()
+		err = rows.Scan(&binid)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		rows.Close()
+
+		rows, err = tx.Query("SELECT COUNT(*) FROM BinProducts WHERE binId = $1 AND sku = $2",
+			binid, i.PartNumber)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -47,7 +82,7 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 
 		if count > 0 {
 			_, err = tx.Exec("UPDATE BinProducts SET onhandinventory = $1 WHERE sku = $2 AND binId = $3",
-				i.Quantity, i.PartNumber, i.BinID)
+				i.Quantity, i.PartNumber, binid)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -98,30 +133,12 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) {
 			}
 
 			_, err = tx.Exec("INSERT INTO BinProducts VALUES($1, $2, $3, $4, 0)",
-				i.BinID, rr.FulfillerID, i.PartNumber, i.Quantity)
+				binid, rr.FulfillerID, i.PartNumber, i.Quantity)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		}
-
-		rows, err = tx.Query(`SELECT DISTINCT b.locationid
-							  FROM BinProducts bp, Bins b WHERE bp.sku = $1 AND
-				              bp.binID = $2 AND bp.binID = b.id`, i.PartNumber, i.BinID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		var locationid uint
-
-		rows.Next()
-		err = rows.Scan(&locationid)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		rows.Close()
 
 		rows, err = tx.Query(`SELECT COUNT(*) FROM LocationProducts
 							  WHERE locationid = $2
