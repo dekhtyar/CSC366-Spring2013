@@ -32,7 +32,7 @@ CREATE TABLE Locations (
 );
 
 CREATE TABLE Items (
-   UPC                      CHAR(14)     PRIMARY KEY, 
+   UPC                      CHAR(14) PRIMARY KEY, 
    ManufacturerId           VARCHAR(50),
    CatalogueId              VARCHAR(50),
    Name                     VARCHAR(80),
@@ -41,11 +41,11 @@ CREATE TABLE Items (
 );
 
 CREATE TABLE FulfilledBy (
-   UPC                      CHAR(14)     REFERENCES Items,
+   UPC                      CHAR(14) REFERENCES Items,
    FulfillerId              VARCHAR(50) REFERENCES Fulfillers,
    SKU                      VARCHAR(50),
    PRIMARY KEY (UPC, FulfillerId),
-   UNIQUE (FulfillerId, SKU)
+   UNIQUE (SKU, FulfillerId)
 );
 
 CREATE TABLE Bins (
@@ -69,7 +69,7 @@ CREATE TABLE StoredIn (
    FOREIGN KEY (SKU, FulfillerId)
     REFERENCES FulfilledBy (SKU, FulfillerId),
    FOREIGN KEY (FulfillerId, FulfillerLocationId, Name)
-    REFERENCES Bins
+    REFERENCES Bins (FulfillerId, FulfillerLocationId, Name)
 );
 
 CREATE TABLE StoredAt (
@@ -94,6 +94,6 @@ CREATE TABLE SubscribeTo (
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
     REFERENCES Locations (FulfillerId, FulfillerLocationId),
    FOREIGN KEY (ManufacturerId, CatalogueId)
-    REFERENCES Catalogues
+    REFERENCES Catalogues (ManufacturerId, CatalogueId)
 );
 
