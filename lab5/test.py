@@ -98,13 +98,13 @@ def refreshInventoryWithFile(file_name, db):
             'sku': tuple[1],
             'name': tuple[0],
             'binname': tuple[8],
-            'onhand': tuple[7],
-            'safety': tuple[3],
-            'ltd': tuple[4],
-            'mfg_id': tuple[5],
-            'catalog_id': tuple[6]
+            'onhand': int(tuple[7]),
+            'safety': int(tuple[3]),
+            'ltd': float(tuple[4]),
+            'mfg_id': int(tuple[5]),
+            'catalog_id': int(tuple[6])
         }
-        api.refreshInventory(tuple[10], item, db)
+        api.refreshInventory(int(tuple[10]), item, db)
     csv_file.close()
 
 def refreshInventories(db):
@@ -118,22 +118,24 @@ def createDatabase(db):
 
 def clearDatabase(db):
     cur = db.cursor()
-    cur.execute('DELETE FROM Bins')
-    cur.execute('DELETE FROM Catalogues')
-    cur.execute('DELETE FROM FulfilledBy')
-    cur.execute('DELETE FROM Fulfillers')
-    cur.execute('DELETE FROM Items')
-    cur.execute('DELETE FROM Locations')
-    cur.execute('DELETE FROM Manufacturers')
-    cur.execute('DELETE FROM StoredAt')
-    cur.execute('DELETE FROM StoredIn')
-    cur.execute('DELETE FROM SubscribeTo')
-    db.commit()
+    try:
+        cur.execute('DELETE FROM Bins')
+        cur.execute('DELETE FROM Catalogues')
+        cur.execute('DELETE FROM FulfilledBy')
+        cur.execute('DELETE FROM Fulfillers')
+        cur.execute('DELETE FROM Items')
+        cur.execute('DELETE FROM Locations')
+        cur.execute('DELETE FROM Manufacturers')
+        cur.execute('DELETE FROM StoredAt')
+        cur.execute('DELETE FROM StoredIn')
+        cur.execute('DELETE FROM SubscribeTo')
+        db.commit()
+    except Exception, e:
+        print e
 
 def destroyDatabase(db):
     process = Popen('mysql %s -u%s -p%s < DB-cleanup.sql' % ('inventory', 'root', 'busmajorz'),
                     stdout=PIPE, stdin=PIPE, shell=True)
-	
 
 if __name__ == '__main__':
     db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
@@ -150,8 +152,6 @@ if __name__ == '__main__':
     createManufacturerCatalogs(db)
     createFulfillmentLocations(db)
     createBins(db)
-
     refreshInventories(db)
 
     db.close()
-    

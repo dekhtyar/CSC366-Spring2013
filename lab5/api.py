@@ -79,12 +79,11 @@ def createBin(tuple, db):
 def refreshInventory(location_id, item, db):
     cur = db.cursor()
 
-    cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s', (location_id,))
+    # Find the fulfiller_id
+    cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s',
+                (location_id,))
     location = cur.fetchone()
-    if location is not None:
-        fulfiller_id = location[0]
-    else:
-        fulfiller_id = 0
+    fulfiller_id = 0 if location is None else location[0]
 
     sql_stored_at_where = 'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s'
     sql_stored_in_where = sql_stored_at_where+' AND Name = %s' 
@@ -92,39 +91,41 @@ def refreshInventory(location_id, item, db):
     args_stored_in_where = args_stored_at_where + (item['binname'],)
 
     try:
-        cur.execute('INSERT INTO FulfilledBy VALUES (%s, %s, %s)', (item['upc'], fulfiller_id, item['sku']))
+        cur.execute('INSERT INTO FulfilledBy VALUES (%s, %s, %s)',
+                    (item['upc'], fulfiller_id, item['sku']))
+
+        # Update 'Items' table
+        cur.execute('SELECT UPC FROM Items WHERE UPC = %s', (item['upc'],)) 
+        if not cur.fetchone():
+            cur.execute('INSERT INTO Items VALUES (%s, %s, %s, %s)',
+                        (item['upc'], item['mfg_id'], item['catalog_id'], item['name']))
+        else:
+            cur.execute('UPDATE Items SET Name = %s, ManufacturerId = %s, CatalogueId = %s WHERE UPC = %s',
+                        (item['name'], item['mfg_id'], item['catalog_id'], item['upc']))
+
+        # Update 'StoredIn' table
+        cur.execute('SELECT SKU FROM StoredIn '+sql_stored_in_where,
+                    args_stored_in_where)
+        if not cur.fetchone():
+            cur.execute('INSERT INTO StoredIn VALUES (%s, %s, %s, %s, %s, %s)',
+                        args_stored_in_where+(item['onhand'], 0))
+        else:
+            cur.execute('UPDATE StoredIn SET OnHand = %s ' + sql_stored_in_where,
+                        (item['onhand'],)+args_stored_in_where)
+
+        # Update 'StoredAt' table
+        cur.execute('SELECT SKU FROM StoredAt '+sql_stored_at_where,
+                    args_stored_at_where)
+        if not cur.fetchone():
+            cur.execute('INSERT INTO StoredAt VALUES (%s, %s, %s, %s, %s)',
+                        args_stored_at_where+(item['ltd'], item['safety']))
+        else:
+            cur.execute('UPDATE StoredAt SET LTD = %s, SafetyStockLimit = %s '+
+                        sql_stored_at_where,
+                        (item['ltd'], item['safety'])+args_stored_at_where)
+        db.commit()
     except Exception, e:
         print e
-
-    # Update 'Items' table
-    cur.execute('SELECT UPC FROM Items WHERE UPC = %s', (item['upc'],)) 
-    if not cur.fetchone():
-        cur.execute('INSERT INTO Items VALUES (%s, %s, %s, %s)',
-                    (item['upc'], item['mfg_id'], item['catalog_id'], item['name']))
-    else:
-        cur.execute('UPDATE Items SET Name = %s, ManufacturerId = %s, CatalogueId = %s WHERE UPC = %s',
-                    (item['name'], item['mfg_id'], item['catalog_id'], item['upc']))
-
-    # Update 'StoredIn' table
-    cur.execute('SELECT SKU FROM StoredIn '+sql_stored_in_where,
-                args_stored_in_where)
-    if not cur.fetchone():
-        cur.execute('INSERT INTO StoredIn VALUES (%s, %s, %s, %s, %s, %s)',
-                    args_stored_in_where+(item['onhand'], 0))
-    else:
-        cur.execute('UPDATE StoredIn SET OnHand = %s ' + sql_stored_in_where,
-                    (item['onhand'],)+args_stored_in_where)
-
-    # Update 'StoredAt' table
-    cur.execute('SELECT SKU FROM StoredAt '+sql_stored_at_where,
-                args_stored_at_where)
-    if not cur.fetchone():
-        cur.execute('INSERT INTO StoredAt VALUES (%s, %s, %s, %s, %s)',
-                    args_stored_at_where+(item['ltd'], item['safety']))
-    else:
-        cur.execute('UPDATE StoredAt SET LTD = %s, SafetyStockLimit = %s '+
-                    sql_stored_at_where,
-                    (item['ltd'], item['safety'])+args_stored_at_where)
-
-    db.commit()
-
+        db.rollback()
+    finally:
+        cur.close()
