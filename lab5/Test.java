@@ -13,19 +13,22 @@ public class Test {
       
       setupConnection();
       
-      createDatabase();
+      //createDatabase();
       
-      parseFulfillerLocations("fulfiller locations.csv");
-      parseLocationBins("fulfiller location_bins.csv");
-      parseFulfillerInventory("fulfiller inventory available bins.csv");
-      parseFulfillerInventory("fulfiller inventory available.csv");
-      parseFulfillerInventory("fulfiller inventory not available.csv");
+      //parseFulfillerLocations("fulfiller locations.csv");
+      //parseLocationBins("fulfiller location_bins.csv");
+      //parseFulfillerInventory("fulfiller inventory available bins.csv");
+      //parseFulfillerInventory("fulfiller inventory available.csv");
+      //parseFulfillerInventory("fulfiller inventory not available.csv");
       
-      clearDatabase();
-      destroyDatabase();
+      testGetBinTypes(48590);
+      testGetBinStatuses(48590);
+
+      //clearDatabase();
+      //destroyDatabase();
       
       closeConnection();
-	}
+   }
 
    public static void createDatabase() {
       Scanner in = null;
@@ -299,7 +302,49 @@ public class Test {
                   safetyStock);
      	}
 	}
-   
+
+   public static void testGetBinTypes(int fulfillerId) {
+      ArrayList<Object[]> binTypes = apiCall.getBinTypes(fulfillerId);
+
+      if(binTypes == null) {
+         System.out.println("getBinTypes: Query failed");
+         return;
+      }
+
+      System.out.println("\nTesting api call: getBinTypes("+fulfillerId+")");
+
+      /*for(int ndx = 0; ndx < binTypes.size(); ndx++) {
+         String description = binTypes.get(ndx)[1].toString();
+         if(description.equals("")) {
+            description = "<No description provided>";
+         }
+
+         System.out.println(binTypes.get(ndx)[0] + " " + description);
+      }*/
+      System.out.println(binTypes.size() + " rows selected");
+   }
+
+   public static void testGetBinStatuses(int fulfillerId) {
+      ArrayList<Object[]> binTypes = apiCall.getBinStatuses(fulfillerId);
+
+      if(binTypes == null) {
+         System.out.println("getBinStatuses: Query failed");
+         return;
+      }
+
+      System.out.println("\nTesting api call: getBinStatuses("+fulfillerId+")");
+
+      /*for(int ndx = 0; ndx < binTypes.size(); ndx++) {
+         String description = binTypes.get(ndx)[1].toString();
+         if(description.equals("")) {
+            description = "<No description provided>";
+         }
+
+         System.out.println(binTypes.get(ndx)[0] + " " + description);
+      }*/
+      System.out.println(binTypes.size() + " rows selected");
+   }
+ 
    public static boolean setupConnection() {
       try
       {
