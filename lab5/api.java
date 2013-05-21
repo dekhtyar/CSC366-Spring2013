@@ -273,20 +273,16 @@ public class api {
       return 1;
    }
 
-   public ArrayList<Object[]> getBinTypes(int fulfillerId)
+   public ArrayList<Object[]> getBinAttributes(String query, int fulfillerId)
    {
-      ArrayList<Object[]> bins = new ArrayList<Object[]>();
+      ArrayList<Object[]> binTypes = new ArrayList<Object[]>();
 
       if(setUpConnection() == false) {
+         System.out.println("Connection failed");
          return null;
       }
 
       try {
-         String query = "SELECT b.Type, b.Description " +
-                      "FROM StoreBin b, Location l " +
-                      "WHERE l.FulfillerId = ? AND " +
-                      "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
-
          PreparedStatement ps = conn.prepareStatement(query);
          ps.setInt(1, fulfillerId);
          ResultSet r = ps.executeQuery();
@@ -296,53 +292,38 @@ public class api {
             String type = r.getString(1);
             String description = r.getString(2);
             Object[] returnObj = {type, description};
-            bins.add(returnObj);
+            binTypes.add(returnObj);
             hasNext = r.next();
          }
       }
       catch (Exception e) {
+         System.out.println("Query failed");
          return null;
       }
 
       closeConnection();
 
-      return bins;
+      return binTypes;
+   }
+
+   public ArrayList<Object[]> getBinTypes(int fulfillerId)
+   {
+      String query = "SELECT b.Type, b.Description " +
+                     "FROM StoreBin b, Location l " +
+                     "WHERE l.FulfillerId = ? AND " +
+                     "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
+
+      return getBinAttributes(query, fulfillerId);
    }
 
    public ArrayList<Object[]> getBinStatuses(int fulfillerId)
    {
-      ArrayList<Object[]> bins = new ArrayList<Object[]>();
+      String query = "SELECT b.Status, b.Description " +
+                     "FROM StoreBin b, Location l " +
+                     "WHERE l.FulfillerId = ? AND " +
+                     "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
 
-      if(setUpConnection() == false) {
-         return null;
-      }
-
-      try {
-         String query = "SELECT b.Status, b.Description " +
-                      "FROM StoreBin b, Location l " +
-                      "WHERE l.FulfillerId = ? AND " +
-                      "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
-
-         PreparedStatement ps = conn.prepareStatement(query);
-         ps.setInt(1, fulfillerId);
-         ResultSet r = ps.executeQuery();
-         boolean hasNext = r.next();
-
-         while(hasNext) {
-            String status = r.getString(1);
-            String description = r.getString(2);
-            Object[] returnObj = {status, description};
-            bins.add(returnObj);
-            hasNext = r.next();
-         }
-      }
-      catch (Exception e) {
-         return null;
-      }
-
-      closeConnection();
-
-      return bins;
+      return getBinAttributes(query, fulfillerId);
    }
 	
    public int refreshInventory(int internalFulfillerLocationId, String LocationName, String SKU, String UPC,
