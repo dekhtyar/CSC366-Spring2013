@@ -21,8 +21,9 @@ public class Test {
       //parseFulfillerInventory("fulfiller inventory available.csv");
       //parseFulfillerInventory("fulfiller inventory not available.csv");
       
-      testGetBinTypes(48590);
-      testGetBinStatuses(48590);
+      testGetBins(54802, "", 100000, 10);
+      //testGetBinTypes(48590);
+      //testGetBinStatuses(48590);
 
       //clearDatabase();
       //destroyDatabase();
@@ -302,6 +303,15 @@ public class Test {
                   safetyStock);
      	}
 	}
+
+   public static void testGetBins(int fulfillerLocationId, String searchTerm, int numResults, int resultsStart) {
+      ArrayList<Object[]> bins = apiCall.getBins(fulfillerLocationId, searchTerm, numResults, resultsStart);
+
+      /*(for(int ndx = 0; ndx < bins.size(); ndx++) {
+           
+      }*/
+      System.out.println(bins.size() + " rows selected");
+   }
 
    public static void testGetBinTypes(int fulfillerId) {
       ArrayList<Object[]> binTypes = apiCall.getBinTypes(fulfillerId);

@@ -273,6 +273,50 @@ public class api {
       return 1;
    }
 
+   public ArrayList<Object[]> getBins (int fulfillerLocationId, String searchTerm, int numResults, int resultsStart)
+   {
+      ArrayList<Object[]> bins = new ArrayList<Object[]>();
+
+      if(numResults < 0 || resultsStart < 0) {
+         return null;
+      }
+
+      if(setUpConnection() == false)
+         return null;
+
+      try {
+         String query = "SELECT Id, InternalFulfillerLocationId, Status, Type, Name " +
+                        "FROM StoreBin " +
+                        "WHERE InternalFulfillerLocationId = " + fulfillerLocationId;
+         if(!searchTerm.equals(null) && searchTerm.length() > 0) {
+            query += " AND Name = '" + searchTerm + "'";
+         }
+
+         Statement s = conn.createStatement();
+         ResultSet r = s.executeQuery(query);
+         boolean hasNext = r.next();
+         int ndx = 0;
+
+         while(hasNext && ndx < resultsStart + numResults) {
+            Object[] returnObj = {r.getInt(1), r.getString(2), r.getString(3), r.getString(4)};
+
+            if(ndx >= resultsStart) {
+               bins.add(returnObj);
+            }
+
+            hasNext = r.next();
+            ndx++;
+         }
+      }
+      catch (Exception e) {
+         return null;
+      }
+
+      closeConnection();
+
+      return bins;
+   }
+
    public ArrayList<Object[]> getBinAttributes(String query, int fulfillerId)
    {
       ArrayList<Object[]> binTypes = new ArrayList<Object[]>();
