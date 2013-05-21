@@ -275,7 +275,7 @@ public class api {
 
    public ArrayList<Object[]> getBinTypes(int fulfillerId)
    {
-      ArrayList<Object[]> binTypes = new ArrayList<Object[]>();
+      ArrayList<Object[]> bins = new ArrayList<Object[]>();
 
       if(setUpConnection() == false) {
          return null;
@@ -296,7 +296,7 @@ public class api {
             String type = r.getString(1);
             String description = r.getString(2);
             Object[] returnObj = {type, description};
-            binTypes.add(returnObj);
+            bins.add(returnObj);
             hasNext = r.next();
          }
       }
@@ -306,12 +306,12 @@ public class api {
 
       closeConnection();
 
-      return binTypes;
+      return bins;
    }
 
    public ArrayList<Object[]> getBinStatuses(int fulfillerId)
    {
-      ArrayList<Object[]> binTypes = new ArrayList<Object[]>();
+      ArrayList<Object[]> bins = new ArrayList<Object[]>();
 
       if(setUpConnection() == false) {
          return null;
@@ -332,7 +332,7 @@ public class api {
             String status = r.getString(1);
             String description = r.getString(2);
             Object[] returnObj = {status, description};
-            binTypes.add(returnObj);
+            bins.add(returnObj);
             hasNext = r.next();
          }
       }
@@ -342,7 +342,7 @@ public class api {
 
       closeConnection();
 
-      return binTypes;
+      return bins;
    }
 	
    public int refreshInventory(int internalFulfillerLocationId, String LocationName, String SKU, String UPC,
