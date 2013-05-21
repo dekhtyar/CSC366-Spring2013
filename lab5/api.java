@@ -272,6 +272,78 @@ public class api {
       		
       return 1;
    }
+
+   public ArrayList<Object[]> getBinTypes(int fulfillerId)
+   {
+      ArrayList<Object[]> binTypes = new ArrayList<Object[]>();
+
+      if(setUpConnection() == false) {
+         return null;
+      }
+
+      try {
+         String query = "SELECT b.Type, b.Description " +
+                      "FROM StoreBin b, Location l " +
+                      "WHERE l.FulfillerId = ? AND " +
+                      "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
+
+         PreparedStatement ps = conn.prepareStatement(query);
+         ps.setInt(1, fulfillerId);
+         ResultSet r = ps.executeQuery();
+         boolean hasNext = r.next();
+
+         while(hasNext) {
+            String type = r.getString(1);
+            String description = r.getString(2);
+            Object[] returnObj = {type, description};
+            binTypes.add(returnObj);
+            hasNext = r.next();
+         }
+      }
+      catch (Exception e) {
+         return null;
+      }
+
+      closeConnection();
+
+      return binTypes;
+   }
+
+   public ArrayList<Object[]> getBinStatuses(int fulfillerId)
+   {
+      ArrayList<Object[]> binTypes = new ArrayList<Object[]>();
+
+      if(setUpConnection() == false) {
+         return null;
+      }
+
+      try {
+         String query = "SELECT b.Status, b.Description " +
+                      "FROM StoreBin b, Location l " +
+                      "WHERE l.FulfillerId = ? AND " +
+                      "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
+
+         PreparedStatement ps = conn.prepareStatement(query);
+         ps.setInt(1, fulfillerId);
+         ResultSet r = ps.executeQuery();
+         boolean hasNext = r.next();
+
+         while(hasNext) {
+            String status = r.getString(1);
+            String description = r.getString(2);
+            Object[] returnObj = {status, description};
+            binTypes.add(returnObj);
+            hasNext = r.next();
+         }
+      }
+      catch (Exception e) {
+         return null;
+      }
+
+      closeConnection();
+
+      return binTypes;
+   }
 	
    public int refreshInventory(int internalFulfillerLocationId, String LocationName, String SKU, String UPC,
       int binId, int onhand, double ltd, int safetyStock)
