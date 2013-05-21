@@ -1,23 +1,13 @@
 Create Table Locations(
-   ExtFulfillerId INT,
+   ExtFulfillerID VARCHAR(15),
    FulfillerID INT,
-   Name Char(100),
-   Type Char(100),
-   Latitude Char(10),
-   Longitude Char(10),
-   Status Char(15),
+   Name VARCHAR(100),
+   Type VARCHAR(100),
+   Latitude double,
+   Longitude double,
+   Status INT,
    SafetyStock INT CHECK (SafetyStock >=0),
-   Primary Key (ExtFulfillerId, FulfillerID)
-);
-
-Create Table Serves(
-   CatID INT,
-   ManID INT,
-   ExtFulfillerId INT,
-   FulfillerID INT,
-   Primary Key (CatID, ManID, ExtFulfillerId, FulfillerID),
-   Foreign Key (ExtFulfillerId, FulfillerID) References Locations(ExtFulfillerId, FulfillerID) ON DELETE CASCADE
-
+   Primary Key (ExtFulfillerID, FulfillerID)
 );
 
 Create Table Clients(
@@ -26,14 +16,26 @@ Create Table Clients(
    Primary Key (CatID, ManID)
 );
 
+Create Table Serves(
+   CatID INT,
+   ManID INT,
+   ExtFulfillerID INT,
+   FulfillerID INT,
+   Primary Key (CatID, ManID, ExtFulfillerID, FulfillerID),
+   Foreign Key (ExtFulfillerID, FulfillerID) References Locations(ExtFulfillerID, FulfillerID) ON DELETE CASCADE,
+   Foreign Key (CatID,ManID) references Clients(CatID, ManID) ON DELETE CASCADE
+
+);
+
 CREATE TABLE Bins(
-	Name VARCHAR2(30),
+	BinID int AUTO_INCREMENT,
+	Name VARCHAR(30),
 	ExtFulfillerID INT,
 	FulfillerID INT,
-	status VARCHAR2(30),
-	type VARCHAR2(30),
-	PRIMARY KEY (Name, ExtFulfillerID, FulfillerID)
-	FOREIGN KEY (ExtFulfillerID, FulfillerID) references Locations(ExtFulfillerId, FulfillerID)
+	status VARCHAR(30),
+	type VARCHAR(30),
+	PRIMARY KEY (BinID),
+	FOREIGN KEY (ExtFulfillerID, FulfillerID) references Locations(ExtFulfillerID, FulfillerID) ON DELETE CASCADE
 );
 
 Create Table Products(
@@ -48,36 +50,32 @@ Create Table Inventory(
    UPC INT,
    SKU INT,
    FulfillerID INT,
-   Primary Key (UPC, SKU, FulfillerID),
-   Foreign Key (UPC) References Products(UPC),
-   Foreign key (FulfillerID) References Locations(FulfillerID)
+   Primary Key (SKU, FulfillerID),
+   Foreign Key (UPC) References Products(UPC)
 );
 
 CREATE TABLE Holds(
-	Name VARCHAR2(30),
-	FulfillerID INT,
-	ExtFulfillerID INT,
+	BinID INT,
 	SKU INT,
 	UPC INT,
 	Allocation INT,
 	OnHand INT,
-	PRIMARY KEY (Name, FulfillerID, ExtFulfillerID, SKU, UPC),
-	FOREIGN KEY (Name) references Bins(Name),
+	PRIMARY KEY (BinID, SKU),
+	FOREIGN KEY (BinID) references Bins(BinID),
 	FOREIGN KEY (SKU) references Inventory(SKU),
-	FOREIGN KEY (UPC) references Products(UPC),
-	FOREIGN KEY (ExtFulfillerID, FulfillerID) references Locations(ExtFulfillerId, FulfillerID)
+	FOREIGN KEY (UPC) references Products(UPC)
 );
 
 Create Table Stocks(
-   ExtFulfillerId INT,
+   ExtFulfillerID INT,
    FulfillerID INT,
    SKU INT,
    UPC INT,
    LTD INT,
    SafetyStock Int,
-   Primary Key (ExtFulfillerId, FulfillerID, SKU, UPC),
-   Foreign Key (ExtFulfillerId, FulfillerID) References Locations(ExtFulfillerId, FulfillerID) ON DELETE CASCADE,
+   Primary Key (ExtFulfillerID, FulfillerID, SKU),
+   Foreign Key (ExtFulfillerID, FulfillerID) References Locations(ExtFulfillerID, FulfillerID) ON DELETE CASCADE,
    Foreign Key (UPC) References Products(UPC) ON DELETE CASCADE,
-   Foreign Key (UPC, SKU) References Inventory(UPC, SKU) ON DELETE CASCADE
+   Foreign Key (FulfillerID, SKU) References Inventory(FulfillerID, SKU) ON DELETE CASCADE
 );
 

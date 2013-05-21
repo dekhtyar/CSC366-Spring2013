@@ -1,0 +1,41 @@
+<project>
+
+	<property name="user" value="dguastaf"/>
+	<property name = "pw" value="channel4Doug!"/>
+	<property name = "libfiles" value = "./lib/super-csv-2.1.0.jar:./lib/mysql-connector-java.jar" />
+	
+    <target name="clean">
+    	<delete dir = "./bin/"/>
+    	<mkdir dir="./bin"/>
+    </target>
+
+    <target name="build" depends="clean">
+    	
+    	<javac includeantruntime="false"
+        	srcdir="./src"
+        	classpath="${libfiles}"
+        	destdir="./bin/" />
+    </target>
+	
+	<target name = "cpy">
+		<scp todir="${user}:${pw}@cslvm56.csc.calpoly.edu:/home/dguastaf/cpe366/lab5/InventorySystem/src">
+			<fileset dir="./src"/>
+		</scp>
+		
+	</target>
+
+    <target name="run">
+        <java classname="Main"
+        classpath = "./bin/:${libfiles}"
+        />
+    </target>
+	
+	<target name="cslrun" depends="cpy	">
+		<sshexec host="cslvm56.csc.calpoly.edu"
+			username="${user}"
+			password="${pw}"
+			command="cd /home/dguastaf/cpe366/lab5/InventorySystem; ant build run"/>
+
+	 </target>
+
+</project>
