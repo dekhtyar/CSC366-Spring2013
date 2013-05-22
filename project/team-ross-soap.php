@@ -150,7 +150,7 @@ class TeamRossSOAP {
   // **********************************************************************
   // MATT T
   // **********************************************************************
-  function refreshInventory() {
-
+  function refreshInventory( $RefreshRequest ) {
+    return $this->api->refreshInventory($RefreshRequest['items']);
   }
 }
