@@ -70,7 +70,7 @@ class TeamRossAPI {
     $stmt->bindValue(':status', $status);
     $stmt->bindValue(':fulfillerId', $this->getFulfillerIdFromLocationId($intLID));
 
-    $stmt->execute();
+    return $stmt->execute();
   }
 
   private function getBin($binName, $fulfillerId, $internalLocationId) {
