@@ -1,6 +1,21 @@
 <?php
-include_once('db.php');
 include_once('team-ross-api.php');
+
+// **********************************************************************
+// Set up mysql pdo handle
+// **********************************************************************
+$hostname = 'localhost';
+$username = 'root';
+$password = 'password';
+$database = 'team_ross';
+$db = null;
+
+try {
+  $db = new PDO("mysql:host=$hostname;dbname=$database", $username, $password);
+}
+catch (PDOException $e) {
+  echo 'Connection failed: ' . $e->getMessage();
+}
 
 // **********************************************************************
 // Route test harness
@@ -201,15 +216,17 @@ function db_seed($db) {
   $api = new TeamRossAPI($db);
 
   $csv = array();
-  $csv['locations']           = 'data-csv-rfc/fulfiller_locations.csv';
-  $csv['location_bins']       = 'data-csv-rfc/fulfiller_location_bins.csv';
-  $csv['inv_available_bins']  = 'data-csv-rfc/fulfiller_inventory_available_bins.csv';
-  $csv['inv_available']       = 'data-csv-rfc/fulfiller_inventory_available.csv';
-  $csv['inv_not_available']   = 'data-csv-rfc/fulfiller_inventory_not_available.csv';
+  $csv['locations']           = 'csv_data/fulfiller_locations.csv';
+  $csv['location_bins']       = 'csv_data/fulfiller_location_bins.csv';
+  $csv['inv_available_bins']  = 'csv_data/fulfiller_inventory_available_bins.csv';
+  $csv['inv_available']       = 'csv_data/fulfiller_inventory_available.csv';
+  $csv['inv_not_available']   = 'csv_data/fulfiller_inventory_not_available.csv';
+
 
   // **********************************************************************
   // Locations
   // **********************************************************************
+  print "Seeding Locations";
   $data = get_csv_data($csv['locations']);
   $fulfillerCheckStmt = $db->prepare("SELECT * FROM Fulfillers WHERE fulfillerId = :id");
 
@@ -235,12 +252,16 @@ function db_seed($db) {
       $location['mfg_id'],
       $location['catalog_id']
     );
+
+    if (++$count % 50 == 0) print ".";
   }
 
   // **********************************************************************
   // Bins
   // **********************************************************************
+  print "\nSeeding Bins";
   $data = get_csv_data($csv['location_bins']);
+  $count = 0;
 
   foreach($data as &$bin) {
     $api->createBin(
@@ -249,20 +270,26 @@ function db_seed($db) {
       $bin['bin_type'],
       $bin['bin_status']
     );
+
+    if (++$count % 150 == 0) print ".";
   }
 
   // **********************************************************************
   // Inventory
   // **********************************************************************
+  print "\nSeeding Inventory.";
   $data = array();
   $data[] = get_csv_data($csv['inv_available_bins']);
   $data[] = get_csv_data($csv['inv_available']);
   $data[] = get_csv_data($csv['inv_not_available']);
 
-  foreach($data as &$data_chunk)
+  print ".";
+  foreach($data as &$data_chunk) {
     $api->refreshInventory($data_chunk);
+    print ".";
+  }
 
-  print "Data seeded.\n";
+  print "\nData seeded.\n";
 }
 
 // **********************************************************************
@@ -273,7 +300,10 @@ function get_csv_data($csv_file) {
   $data = array();
   $handle = fopen($csv_file, "r");
 
-  if (!$handle) die();
+  if (!$handle) {
+    print "Failed to open CSV: " . $csv_file . "\n";
+    die();
+  }
 
   $header = fgetcsv($handle);
   while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {

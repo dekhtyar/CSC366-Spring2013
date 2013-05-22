@@ -38,8 +38,20 @@ class TeamRossSOAP {
   // **********************************************************************
   // RILEY
   // **********************************************************************
-  function createFulfillmentLocation() {
+  function createFulfillmentLocation($fulfillerId, $retailerLocationId, $externalLocationId, $locationName,
+				     $locationType, $latitude, $longitude, $status, $countryCode) {
 
+	$safetyStockLimitDefault = 10; // FIXME
+	// check if FulfillmentLocation exists!
+	// if location exists {
+	//	return false;
+	//}
+	//else {
+		$this->api->createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
+						       $fufillerId, $locationType, $latitude, $longitutde, $status,
+						       $safetyStockLimitDefault, NULL, NULL);
+	//}
+	return true; // Successfully created new FulfillmentLocation
   }
 
   // **********************************************************************
@@ -87,8 +99,10 @@ class TeamRossSOAP {
   // **********************************************************************
   // MATT S
   // **********************************************************************
-  function createBin() {
-
+  function createBin($CreateBinRequest) {
+    return $this->api->createBin($CreateBinRequest['FulfillerLocationID'],
+ 		$CreateBinRequest['Name'], $CreateBinRequest['BinType'], 
+		$CreateBinRequest['BinStatus']) ? 0 : -1;
   }
 
   // **********************************************************************
