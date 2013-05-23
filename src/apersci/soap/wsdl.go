@@ -79,3 +79,37 @@ type CreateFulfillmentLocationResponse struct {
 	XMLName                         xml.Name `xml:"createFulfillmentLocationResponse"`
 	CreateFulfillmentLocationReturn string   `xml:"createFulfillmentLocationReturn"`
 }
+
+type AllocateInventory struct {
+	XMLName xml.Name      `xml:"allocateInventory"`
+	Request UpdateRequest `xml:"request"`
+}
+
+type UpdateRequest struct {
+	FulfillerID              uint
+	FulfillerLocationCatalog FulfillmentLocationCatalog
+	Items                    []UpdateItem `xml:">items"`
+}
+
+type FulfillmentLocationCatalog struct {
+	ManufacturerID      uint `xml:"ManufacturerCatalog>ManufacturerID"`
+	CatalogID           uint `xml:"ManufacturerCatalog>CatalogID"`
+	FulfillerLocationID uint
+}
+
+type UpdateItem struct {
+	PartNumber          string
+	UPC                 string
+	Quantity            int
+	FulfillerLocationID uint
+}
+
+type DeallocateInventory struct {
+	XMLName xml.Name      `xml:"deallocateInventory"`
+	Request UpdateRequest `xml:"request"`
+}
+
+type FulfillInventory struct {
+	XMLName xml.Name      `xml:"fulfillInventory"`
+	Request UpdateRequest `xml:"request"`
+}
