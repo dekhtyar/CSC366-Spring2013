@@ -1,0 +1,3 @@
+getBins - returns (array of Bins?) that pertain to BinRequest
+getBinTypes - returns BinType
+getBinStatuses - returns BinStatus
