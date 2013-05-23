@@ -90,6 +90,25 @@ class TeamRossAPI {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
+  private function getBins($binName, $fulfillerId, $internalLocationId) {
+    $stmt = $this->db->prepare("
+      SELECT * FROM Bins
+      WHERE binName LIKE :binName
+      AND fulfillerId = :fulfillerId
+      AND internalLocationId = :internalLocationId
+    ");
+
+    $stmt->bindValue(':binName', $binName);
+    $stmt->bindValue(':fulfillerId', $fulfillerId);
+    $stmt->bindValue(':internalLocationId', $internalLocationId);
+
+    $stmt->execute();
+
+    $arr = array();
+    while($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+    return $arr;
+  }
+
   private function getFulfillerIdFromLocationId($internalLocationId) {
     $stmt = $this->db->prepare("SELECT fulfillerId FROM Locations WHERE internalLocationId = :internalLocationId");
     $stmt->bindParam(':internalLocationId', $internalLocationId);

@@ -101,15 +101,17 @@ class TeamRossSOAP {
   // **********************************************************************
   function createBin($CreateBinRequest) {
     return $this->api->createBin($CreateBinRequest['FulfillerLocationID'],
- 		$CreateBinRequest['Name'], $CreateBinRequest['BinType'], 
+ 		$CreateBinRequest['Name'], $CreateBinRequest['BinType'],
 		$CreateBinRequest['BinStatus']) ? 0 : -1;
   }
 
   // **********************************************************************
   // IAN
   // **********************************************************************
-  function getBins() {
+  function getBins($GetBinsRequest) {
+    $bins = $this->api->getBins($GetBinRequest['SearchTerm'], $GetBinRequest['FulfillerID'], $GetBinRequest['FulfillerLocationID']);
 
+    return array_slice($bins, $GetBinRequest['ResultsStart'], $GetBinRequest['NumResults']);
   }
 
   // **********************************************************************
