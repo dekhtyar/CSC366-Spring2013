@@ -23,6 +23,6 @@ $client = new SoapClient(
     )
   );
 
-echo $client->__soapCall('createFulfiller', array( "FulfillerId" => 200, "Name" =>"Test");
+$client->__soapCall('createFulfiller', array("FulfillerId" => 200, "Name" =>"Test"));
 echo "Hello";
 ?>
