@@ -41,17 +41,17 @@ class TeamRossSOAP {
   function createFulfillmentLocation($fulfillerId, $retailerLocationId, $externalLocationId, $locationName,
 				     $locationType, $latitude, $longitude, $status, $countryCode) {
 
-	$safetyStockLimitDefault = 10; // FIXME
-	// check if FulfillmentLocation exists!
-	// if location exists {
-	//	return false;
-	//}
-	//else {
-		$this->api->createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
-						       $fufillerId, $locationType, $latitude, $longitutde, $status,
-						       $safetyStockLimitDefault, NULL, NULL);
-	//}
-	return true; // Successfully created new FulfillmentLocation
+  	$safetyStockLimitDefault = 10; // FIXME
+  	// check if FulfillmentLocation exists!
+  	// if location exists {
+  	//	return false;
+  	//}
+  	//else {
+  		$this->api->createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
+  						       $fufillerId, $locationType, $latitude, $longitutde, $status,
+  						       $safetyStockLimitDefault, NULL, NULL);
+  	//}
+  	return true; // Successfully created new FulfillmentLocation
   }
 
   // **********************************************************************
