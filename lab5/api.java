@@ -232,17 +232,17 @@ public class api {
          System.out.println("Error occured while creating a new Catalog tuple: " + e);
       }
    }
-	
+
    public void createFullfillmentLocation ()
    {
       System.out.println("in create Fulfillment Location");
    }
-	
+
    public void createManufacturerCatalog ()
    {
       System.out.println("in createManufacturer Catalog");
    }
-	
+
    public int createBin (int fulfillerId, int binId, int fulfillerLocationId,
                         String binType, String binStatus, String binName)
    {
@@ -369,47 +369,75 @@ public class api {
 
       return getBinAttributes(query, fulfillerId);
    }
-	
+
    public int refreshInventory(int internalFulfillerLocationId, String LocationName, String SKU, String UPC,
       int binId, int onhand, double ltd, int safetyStock)
     {
         int i = 0;
         int InternalFulfillerId = -1;
         int FulfillerId = -1;
+		int manuId = -1;
+		int catId = -1;
         String InternalFulfillerInt;
         String FulfillerInt;
+		String manufacturer;
+		String catalog;
+		PreparedStatement s0;
         PreparedStatement s1;
         PreparedStatement s2;
+		PreparedStatement s3;
         ResultSet InternalFulfillerHolder;
         ResultSet FulfillerHolder;
+		ResultSet manuIdHolder;
+		ResultSet catHolder;
 
-	setUpConnection();        
-
+        setUpConnection();
         RefreshItem[] item = new RefreshItem[1];
-        item[0] = new RefreshItem(SKU, UPC, 0, onhand, ltd, safetyStock);
-        
-        if (FulfillerId < 0)
-            return -1;
-        
+        item[0] = new RefreshItem(SKU, UPC, binId, onhand, ltd, safetyStock);
+                
         try {
-            FulfillerInt = "SELECT R.FulfillerId" +
-            "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L"+
-            "where LP.RetailerProductId = RP.Id AND RP.FulfillerId = R.FulfillerId"+
+		    catalog = "SELECT C.CatalogId " +
+			"FROM CatalogServedByLocation C " +
+			"WHERE C.InternalFulfillerLocationId = ?";
+			
+		    manufacturer = "SELECT C.ManufacturerId " +
+			"FROM CatalogServedByLocation C " +
+			"WHERE C.InternalFulfillerLocationId = ?";
+			
+            FulfillerInt = "SELECT R.FulfillerId " +
+            "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L "+
+            "where LP.RetailerProductId = RP.Id AND RP.FulfillerId = R.FulfillerId "+
             "AND R.FulfillerId = L.FulfillerId";
            
-           InternalFulfillerInt = "SELECT L.InternalFulfillerLocationId" +
-            "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L"+
+            InternalFulfillerInt = "SELECT L.InternalFulfillerLocationId " +
+            "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L "+
             "where LP.InternalFulfillerLocationId = ?";
-        
+			
+		    s0 = conn.prepareStatement(catalog);
+			s0.setInt(1, internalFulfillerLocationId);
+			catHolder = s0.executeQuery();
+		
             s1 = conn.prepareStatement(FulfillerInt);
             FulfillerHolder = s1.executeQuery();
-           
+ 
             s2 = conn.prepareStatement(InternalFulfillerInt);
             s2.setInt(1, internalFulfillerLocationId);
             InternalFulfillerHolder = s2.executeQuery();
-        
-            InternalFulfillerId = InternalFulfillerHolder.getInt(0);
-            FulfillerId = FulfillerHolder.getInt(0);
+		
+			s3 = conn.prepareStatement(manufacturer);
+			s3.setInt(1, internalFulfillerLocationId);
+			manuIdHolder = s3.executeQuery();
+       
+			if (catHolder.first())
+			   catId = catHolder.getInt(1);
+			if (InternalFulfillerHolder.first())
+               InternalFulfillerId = InternalFulfillerHolder.getInt(1);
+			if (FulfillerHolder.first())
+               FulfillerId = FulfillerHolder.getInt(1);
+			if (manuIdHolder.first())
+			   manuId = manuIdHolder.getInt(1);
+			
+			//System.out.println("RefreshInventory: catId = " + catId + " manuId = " + manuId + " IFID = " + InternalFulfillerId + " FId = " + FulfillerId);
         }
         catch (Exception e) {
             System.out.println("Errors");
@@ -418,15 +446,21 @@ public class api {
         for (i = 0; i < item.length; i++) {
             if (InternalFulfillerId == -1) { // not there, so use INSERT
                 try {
+                    String Product = "INSERT INTO Product (UPC, ManufacturerId, CatalogId) VALUES(?, ?, ?)";
                     String RP = "INSERT INTO RetailerProduct (FulfillerId, UPC, SKU) VALUES(?, ?, ?)";
                     String LP = "INSERT INTO LocationProduct (InternalFulfillerLocationId, LTD, SafeStockLimit) VALUES(?, ?, ?)";
                     String CIB = "INSERT INTO ContainedInBin (BinId, OnHand, Allocated) VALUES(?, ?, ?)";
-                
+
+                    PreparedStatement ps0 = conn.prepareStatement(Product);
+                    ps0.setString(1, item[i].UPC);
+                    ps0.setInt(2, manuId);
+                    ps0.setInt(3, catId);
+				
                     PreparedStatement ps1 = conn.prepareStatement(RP);
                     ps1.setInt(1, FulfillerId);
                     ps1.setString(2, item[i].UPC);
                     ps1.setString(3, item[i].partNumber);
-                
+					
                     PreparedStatement ps2 = conn.prepareStatement(LP);
                     ps2.setInt(1, InternalFulfillerId);
                     ps2.setDouble(2, item[i].LTD);
@@ -437,18 +471,20 @@ public class api {
                     ps3.setInt(2, item[i].Quantity);
                     ps3.setInt(3, 0);
                 
+				    ps0.executeUpdate();
                     ps1.executeUpdate();
                     ps2.executeUpdate();
                     ps3.executeUpdate();
                 }
                 catch (Exception e) {
-                    System.out.println("Can't insert for refresh inventory");
+                    System.out.println("Can't insert for refresh inventory: " + e);
                 }
             }
             else { // use UPDATE statements
-                String sql = "UPDATE LocationProduct LP, RetailerProduct RP, ContainedInBin CB "+
-                "SET LP.LTD = ? AND LP.SafeStockLimit = ? AND CB.BinId = ? AND RP.UPC = ? AND CB.OnHand = ? " +
-                "WHERE LP.RetailerProductId = RP.Id AND CB.LocationProductId = LP.Id";
+                String sql = "UPDATE LocationProduct LP, RetailerProduct RP, ContainedInBin CB, Product P "+
+                "SET LP.LTD = ? AND LP.SafeStockLimit = ? AND CB.BinId = ? AND RP.UPC = ? AND CB.OnHand = ? AND P.UPC = ? " +
+                "AND P.CatalogId = ? AND P.ManufacturerId = ? " +
+                "WHERE LP.RetailerProductId = RP.Id AND CB.LocationProductId = LP.Id AND RP.UPC = P.UPC AND P.CatalogId = 0";
                 
                 try {
                     PreparedStatement ps = conn.prepareStatement(sql);
@@ -457,6 +493,9 @@ public class api {
                     ps.setInt(3, item[i].BinID);
                     ps.setString(4, item[i].UPC);
                     ps.setInt(5, item[i].Quantity);
+                    ps.setString(6, item[i].UPC);
+					ps.setInt(7, catId);
+					ps.setInt(8, manuId);
                 }
                 catch (Exception e) {
                     System.out.println("Can't update for refresh inventory");
@@ -465,12 +504,7 @@ public class api {
             }
         }
         
-        closeConnection(); 
+        closeConnection();
         return 1;
-    } 
+    }
 }
-
-
-
-
-
