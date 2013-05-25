@@ -7,8 +7,9 @@ public class Test {
 
    private static Connection conn;
    private static api apiCall= new api();
-   private static boolean debug = true;
+   private static boolean debug = false;
    private static boolean setup = true;
+   private static boolean cleanup = false;
    private static int binId = 0;
 
 public static void main(String[] args) {
@@ -17,23 +18,27 @@ public static void main(String[] args) {
       
       if(setup)
       {
-      createDatabase();
+         createDatabase();
       
-      parseFulfillerLocations("fulfiller locations.csv");
-      parseLocationBins("fulfiller location_bins.csv");
-      parseFulfillerInventory("fulfiller inventory available bins.csv");
-      parseFulfillerInventory("fulfiller inventory available.csv");
-      parseFulfillerInventory("fulfiller inventory not available.csv");
+         parseFulfillerLocations("fulfiller locations.csv");
+         parseLocationBins("fulfiller location_bins.csv");
+         parseFulfillerInventory("fulfiller inventory available bins.csv");
+         parseFulfillerInventory("fulfiller inventory available.csv");
+         parseFulfillerInventory("fulfiller inventory not available.csv");
       }
 
+
+      //Object[][] fulfillerLocationCatalog = {{}};
+      //Object[][] items = {{"SKU"}};
+      //testAllocateInventory(0, fulfillerLocationCatalog, items);
       //testGetBins(54802, "", 100000, 10);
       //testGetBinTypes(48590);
       //testGetBinStatuses(48590);
 
-      if(!setup)
+      if(cleanup)
       {
-      clearDatabase();
-      destroyDatabase();
+         clearDatabase();
+         destroyDatabase();
       }
       
       closeConnection();
@@ -365,6 +370,10 @@ System.out.println(binTypes.get(ndx)[0] + " " + description);
       System.out.println(binTypes.size() + " rows selected");
    }
  
+   public static void testAllocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+      apiCall.allocateInventory(fulfillerId, fulfillerLocationCatalog, items);
+   } 
+
    public static boolean setupConnection() {
       try
       {
