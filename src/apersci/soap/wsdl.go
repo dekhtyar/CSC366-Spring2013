@@ -219,6 +219,11 @@ type FulfillmentLocationsReturn struct {
 	FulfillerLocationID uint
 }
 
+type GetFulfillerLocationTypesResponse struct {
+	XMLName xml.Name `xml:"getFulfillmentLocationTypesResponse"`
+	Return  []string `xml:"getFulfillmentLocationTypesReturn>LocationType"`
+}
+
 type GetFulfillerStatus struct {
 	XMLName     xml.Name `xml:"getFulfillerStatus"`
 	fulfillerID uint
