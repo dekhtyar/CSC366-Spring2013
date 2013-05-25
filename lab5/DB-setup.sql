@@ -2,15 +2,15 @@
 
 CREATE TABLE Retailer (
     FulfillerId INT PRIMARY KEY, 
-    Name VARCHAR2(75) 
+    Name VARCHAR(75) 
     );
 
 CREATE TABLE Location (
     FulfillerId INT REFERENCES Retailer(FulfillerId),
     ExternalFulfillerLocationId VARCHAR2(25),
     InternalFulfillerLocationId INT PRIMARY KEY,
-    Type VARCHAR2(25), 
-    Description VARCHAR2(50),
+    Type VARCHAR(25), 
+    Description VARCHAR(50),
     Latitude INT,
     Longitude INT,
     Status VARCHAR(25),
@@ -38,16 +38,16 @@ CREATE TABLE CatalogServedByLocation (
 CREATE TABLE StoreBin (
     Id INT AUTO_INCREMENT,
     InternalFulfillerLocationId INT REFERENCES Location(InternalFulfillerLocationId),
-    Status VARCHAR2(25),
-    Type VARCHAR2(25),
-    Name VARCHAR2(25),
-    Description VARCHAR2(50),
+    Status VARCHAR(25),
+    Type VARCHAR(25),
+    Name VARCHAR(25),
+    Description VARCHAR(50),
     PRIMARY KEY (InternalFulfillerLocationId, Name)
     );
 
 CREATE TABLE Product (
-    Name VARCHAR2(25),
-    UPC VARCHAR2(25) PRIMARY KEY,
+    Name VARCHAR(25),
+    UPC VARCHAR(25) PRIMARY KEY,
     ManufacturerId INT REFERENCES Manufacturer(ManufacturerId),
     CatalogId INT REFERENCES Catalog(CatalogId)
     );
@@ -55,8 +55,8 @@ CREATE TABLE Product (
 CREATE TABLE RetailerProduct (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     FulfillerId INT REFERENCES Retailer(FulfillerId),
-    UPC VARCHAR2(25) REFERENCES Product(UPC),
-    SKU VARCHAR2(25),
+    UPC VARCHAR(25) REFERENCES Product(UPC),
+    SKU VARCHAR(25),
     UNIQUE(FulfillerId, UPC)
     );
 
