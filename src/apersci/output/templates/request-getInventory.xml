@@ -1,0 +1,37 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:getInventory>
+         <v4:request>
+             <v4:FulfillerID>{{.FulfillerID}}</v4:FulfillerID>
+            <v4:Catalog>
+                <v4:ManufacturerID>{{.ManufacturerID}}</v4:ManufacturerID>
+                <v4:CatalogID>{{.CatalogID}}</v4:CatalogID>
+            </v4:Catalog>
+            <v4:Quantities>{{range .Quantities}}
+                <v4:items>
+                    <v4:PartNumber>{{.PartNumber}}</v4:PartNumber>
+                    <v4:UPC>{{.UPC}}</v4:UPC>
+                    <v4:Quantity>{{.Quantity}}</v4:Quantity>
+                </v4:items>{{end}}
+            </v4:Quantities>
+            <v4:LocationNames>{{range .LocationNames}}
+               <v4:LocationNames>{{.LocationNames}}</v4:LocationNames>{{end}}
+            </v4:LocationNames>
+            <v4:Location>
+                <v4:Unit>{{.Unit}}</v4:Unit>
+                <v4:Radius>{{.Radius}}</v4:Radius>
+                <v4:PostalCode>{{.PostalCode}}</v4:PostalCode>
+                <v4:Latitude>{{.Latitude}}</v4:Latitude>
+                <v4:Longitude>{{.Longitude}}</v4:Longitude>
+                <v4:CountryCode>{{.CountryCode}}</v4:CountryCode>
+            </v4:Location>
+            <v4:Type>{{.Type}}</v4:Type>
+            <v4:Limit>{{.Limit}}</v4:Limit>
+            <v4:IgnoreSafetyStock>{{.IgnoreSafetyStock}}</v4:IgnoreSafetyStock>
+            <v4:IncludeNegativeInventory>{{.IncludeNegativeInventory}}</v4:IncludeNegativeInventory>
+            <v4:OrderByLTD>{{.OrderByLTD}}</v4:OrderByLTD>
+         </v4:request>
+      </v4:getInventory>
+   </soapenv:Body>
+</soapenv:Envelope>

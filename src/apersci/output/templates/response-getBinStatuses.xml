@@ -1,0 +1,10 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+       <v4:getBinStatusesResponse>{{range .getBinStatusesResponse}}
+         <v4:getBinStatusesReturn>
+             <v4:BinStatus>{{.BinStatus}}</v4:BinStatus>
+        </v4:getBinStatusesReturn>{{end}}
+      </v4:getBinStatusesResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
