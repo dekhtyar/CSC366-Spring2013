@@ -113,3 +113,180 @@ type FulfillInventory struct {
 	XMLName xml.Name      `xml:"fulfillInventory"`
 	Request UpdateRequest `xml:"request"`
 }
+
+type GetFulfillerStatus struct {
+	XMLName     xml.Name `xml:"getFulfillerStatus"`
+	FulfillerID uint
+}
+
+type GetFulfillerStatusResponse struct {
+	XMLName xml.Name `xml:"getFulfillerStatusResponse"`
+	Return  string   `xml:"getFulfillerStatusReturn"`
+}
+
+type AdjustRequest struct {
+	XMLName      xml.Name `xml:"AdjustRequest"`
+	FulfillerID  uint
+	LocationName string
+	Items        []AdjustItem `xml:">items"`
+}
+
+type AdjustItem struct {
+	PartNumber string
+	UPC        string
+	BinID      uint
+	Quantity   int
+}
+
+type AdjustResponse struct {
+	XMLName xml.Name `xml:"AdjustResponse"`
+	Return  string   `xml:",chardata"`
+}
+
+type GetInventory struct {
+	XMLName xml.Name         `xml:"getInventory"`
+	Request InventoryRequest `xml:"request"`
+}
+
+type InventoryRequest struct {
+	FulfillerID              uint
+	ManufacturerID           uint            `xml:"Catalog>ManufacturerID"`
+	CatalogID                uint            `xml:"Catalog>CatalogID"`
+	Quantities               []InventoryItem `xml:">items"`
+	LocationNames            []string        `xml:">LocationNames"`
+	Location                 Location
+	Type                     string
+	Limit                    int
+	IgnoreSafetyStock        bool
+	IncludeNegativeInventory bool
+	OrderByLTD               bool
+}
+
+type InventoryItem struct {
+	PartNumber string
+	UPC        string
+	Quantity   int
+}
+
+type Location struct {
+	Unit        string
+	Radius      float64
+	PostalCode  string
+	Latitude    float64
+	Longitude   float64
+	CountryCode string
+}
+
+type GetInventoryResponse struct {
+	XMLName xml.Name        `xml:"getInventoryResponse"`
+	Return  InventoryReturn `xml:"getInventoryReturn"`
+}
+
+type InventoryReturn struct {
+	LocationName   string
+	CatalogID      uint
+	ManufacturerID uint
+	OnHand         int
+	Available      int
+	PartNumber     string
+	UPC            string
+	LTD            float64
+	SafetyStock    int
+	CountryCode    string
+	Distance       float64
+}
+
+type GetFulfillerLocations struct {
+	XMLName xml.Name     `xml:"getFulfillmentLocations"`
+	Request OrderRequest `xml:"request"`
+}
+
+type OrderRequest struct {
+	FulfillerID    uint
+	ManufacturerID uint `xml:"Catalog>ManufacturerID"`
+	CatalogID      uint `xml:"Catalog>CatalogID"`
+	Location       Location
+	MaxLocations   uint
+}
+
+type GetFulfillerLocationsResponse struct {
+	XMLName xml.Name                   `xml:"getFulfillmentLocationsResponse"`
+	Return  FulfillmentLocationsReturn `xml:"getFulfillmentLocationsReturn"`
+}
+
+type FulfillmentLocationsReturn struct {
+	FulfillerID         uint
+	FulfillerLocationID uint
+}
+
+type GetFulfillerStatus struct {
+	XMLName     xml.Name `xml:"getFulfillerStatus"`
+	fulfillerID uint
+}
+
+type GetFulfillerStatusResponse struct {
+	XMLName xml.Name `xml:"getFulfillerStatusResponse"`
+	Return  string   `xml:"getFulfillerStatusReturn"`
+}
+
+type GetItemLocationsByFulfiller struct {
+	XMLName xml.Name               `xml:"getItemLocationsByFulfiller"`
+	Request InventorySearchRequest `xml:"request"`
+}
+
+type InventorySearchRequest struct {
+	FulfillerIDs []uint `xml:">items"`
+	LocationID   uint
+	PostalCode   string
+	PartNumber   string
+	UPC          string
+}
+
+type GetItemLocationsByFulfillerResponse struct {
+	XMLName xml.Name                  `xml:"getItemLocationsByFulfillerResponse"`
+	Return  []InventorySearchResponse `xml:"getItemLocationsByFulfillerReturn"`
+}
+
+type InventorySearchResponse struct {
+	FulfillerID         uint
+	FulfillerLocationID uint
+	LocationName        string
+	PartNumber          string
+	UPC                 string
+	Available           int
+	OnHand              int
+	Allocated           int
+	Distance            float64
+}
+
+type GetBins struct {
+	XMLName xml.Name   `xml:"getBins"`
+	Request BinRequest `xml:"request"`
+}
+
+type BinRequest struct {
+	FulfillerID         uint
+	FulfillerLocationID uint
+	SearchTerm          string
+	NumResults          uint
+	ResultsStart        uint
+}
+
+type GetBinsResponse struct {
+	XMLName xml.Name   `xml:"getBinsResponse"`
+	Return  BinsReturn `xml:"getBinsReturn"`
+}
+
+type BinsReturn struct {
+	Bins []Bin `xml:">items"`
+}
+
+type GetBinTypesResponse struct {
+	XMLName xml.Name `xml:"getBinTypesResponse"`
+	Return  []string `xml:"getBinTypesReturn>BinType"`
+}
+
+type GetBinStatusesResponse struct {
+	XMLName xml.Name `xml:"getBinStatusesResponse"`
+	Return  []string `xml:"getBinStatusesReturn>BinStatus"`
+}
