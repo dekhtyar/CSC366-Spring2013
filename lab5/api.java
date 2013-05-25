@@ -79,6 +79,57 @@ public class api {
       return true;
    }
 
+   public void updateInventory(String query, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+
+      if(setUpConnection() == false) {
+         System.out.println("Connection failed");
+         return;
+      }
+
+      try {
+         String sku = items[0][0].toString();
+         String check = "SELECT * " +
+                        "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
+                        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ?";
+
+         PreparedStatement ps = conn.prepareStatement(check);
+         ps.setString(1, sku);
+         ResultSet r = ps.executeQuery();
+         if(!r.next()) {
+            System.out.println("Product does not exist and cannot be allocated");
+         }
+
+         /*
+         PreparedStatement ps2 = conn.prepareStatement(query);
+         ps.setInt(1, fulfillerId);
+         ResultSet r2 = ps.executeQuery();
+         boolean hasNext = r.next();
+
+          while(hasNext) {
+            String type = r.getString(1);
+            String description = r.getString(2);
+            Object[] returnObj = {type, description};
+            bins.add(returnObj);
+            hasNext = r.next();
+         }*/
+      }
+      catch (Exception e) {
+         System.out.println("Query failed");
+         System.out.println(e.toString());
+         return;
+      }
+
+      closeConnection();
+   }
+
+   public void allocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+      updateInventory("", fulfillerId, fulfillerLocationCatalog, items);
+   }
+
+   public void deallocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+      updateInventory("", fulfillerId, fulfillerLocationCatalog, items);
+   }
+
    public void createFulfiller(int fulfillerId, String locationName) {
       createNewRetailer(fulfillerId, locationName);
    }
