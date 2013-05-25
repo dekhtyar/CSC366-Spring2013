@@ -36,13 +36,13 @@ CREATE TABLE CatalogServedByLocation (
     );
 
 CREATE TABLE StoreBin (
-    Id INT AUTO_INCREMENT,
+    Id INT PRIMARY KEY AUTO_INCREMENT,
     InternalFulfillerLocationId INT REFERENCES Location(InternalFulfillerLocationId),
     Status VARCHAR(25),
     Type VARCHAR(25),
     Name VARCHAR(25),
     Description VARCHAR(50),
-    PRIMARY KEY (InternalFulfillerLocationId, Name)
+    UNIQUE(InternalFulfillerLocationId, Name)
     );
 
 CREATE TABLE Product (
