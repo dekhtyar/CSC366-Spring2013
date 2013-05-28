@@ -163,20 +163,6 @@
           </sequence>
         </complexType>
       </element>
-      <element name="refreshInventory">
-        <complexType>
-          <sequence>
-            <element name="request" type="impl:RefreshRequest"/>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="refreshInventoryResponse">
-        <complexType>
-          <sequence>
-            <element name="refreshInventoryReturn" type="xsd:int"/>
-          </sequence>
-        </complexType>
-      </element>
       <element name="getInventory">
         <complexType>
           <sequence>
@@ -358,12 +344,6 @@
           <element name="FulfillerID" type="xsd:positiveInteger"/>
           <element name="FulfillerLocationCatalog" type="impl:FulfillmentLocationCatalog"/>
           <element name="Items" type="impl:ArrayOf_impl_UpdateItem"/>
-        </sequence>
-      </complexType>
-      <complexType name="RefreshRequest">
-        <sequence>
-          <element name="LocationName" type="xsd:string"/>
-          <element name="Items" type="impl:ArrayOf_impl_RefreshItem" nillable="true"/>
         </sequence>
       </complexType>
       <complexType name="RefreshItem">
