@@ -5,11 +5,11 @@ import (
 	"io"
 )
 
-func GetBinTypesRequest(r io.Reader) (string, error) {
+func GetBinTypesRequest(r io.Reader) error {
 	return nil
 }
 
-func GetBinTypesResponse(r io.Reader) (string, error) {
+func GetBinTypesResponse(r io.Reader) ([]string, error) {
 	var v soap.GetBinTypesResponse
 	err := soap.Unmarshal(r, &v)
 	return v.Return, err

@@ -11,6 +11,6 @@ func CreateDeallocateInventoryRequest(r io.Reader) (soap.UpdateRequest, error) {
 	return v.Request, err
 }
 
-func CreateDeallocateInventoryResponse(r io.Reader) (string, error) {
+func CreateDeallocateInventoryResponse(r io.Reader) error {
 	return nil
 }

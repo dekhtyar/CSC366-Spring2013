@@ -8,11 +8,11 @@ import (
 func GetFulfillerStatusRequest(r io.Reader) (uint, error) {
 	var v soap.GetFulfillerStatus
 	err := soap.Unmarshal(r, &v)
-	return v.fulfillerID
+	return v.FulfillerID, err
 }
 
 func GetFulfillerStatusResponse(r io.Reader) (string, error) {
 	var v soap.GetFulfillerStatusResponse
 	err := soap.Unmarshal(r, &v)
-	return v.Return
+	return v.Return, err
 }

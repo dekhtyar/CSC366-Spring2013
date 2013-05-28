@@ -47,6 +47,6 @@ func CreateAllocateInventoryRequest(r io.Reader) (soap.UpdateRequest, error) {
 	return v.Request, err
 }
 
-func CreateAllocateInventoryResponse(r io.Reader) (string, error) {
+func CreateAllocateInventoryResponse(r io.Reader) error {
 	return nil
 }

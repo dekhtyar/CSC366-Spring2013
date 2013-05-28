@@ -11,7 +11,7 @@ func GetInventoryRequest(r io.Reader) (soap.InventoryRequest, error) {
 	return v.Request, err
 }
 
-func GetInventoryResponse(r io.Reader) (string, error) {
+func GetInventoryResponse(r io.Reader) (soap.InventoryReturn, error) {
 	var v soap.GetInventoryResponse
 	err := soap.Unmarshal(r, &v)
 	return v.Return, err

@@ -11,7 +11,7 @@ func GetBinRequest(r io.Reader) (soap.BinRequest, error) {
 	return v.Request, err
 }
 
-func GetBinResponse(r io.Reader) (string, error) {
+func GetBinResponse(r io.Reader) (soap.BinsReturn, error) {
 	var v soap.GetBinsResponse
 	err := soap.Unmarshal(r, &v)
 	return v.Return, err

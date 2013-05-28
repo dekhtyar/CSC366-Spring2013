@@ -11,7 +11,7 @@ func GetFulfillmentLocationsRequest(r io.Reader) (soap.OrderRequest, error) {
 	return v.Request, err
 }
 
-func GetFulfillmentLocationsResponse(r io.Reader) (string, error) {
+func GetFulfillmentLocationsResponse(r io.Reader) (soap.FulfillmentLocationsReturn, error) {
 	var v soap.GetFulfillerLocationsResponse
 	err := soap.Unmarshal(r, &v)
 	return v.Return, err

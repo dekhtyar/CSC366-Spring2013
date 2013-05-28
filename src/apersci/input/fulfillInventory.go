@@ -11,6 +11,6 @@ func CreateFulfillInventoryRequest(r io.Reader) (soap.UpdateRequest, error) {
 	return v.Request, err
 }
 
-func CreateFulfillInventoryResponse(r io.Reader) (string, error) {
+func CreateFulfillInventoryResponse(r io.Reader) error {
 	return nil
 }

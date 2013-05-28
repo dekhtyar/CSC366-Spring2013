@@ -224,16 +224,6 @@ type GetFulfillerLocationTypesResponse struct {
 	Return  []string `xml:"getFulfillmentLocationTypesReturn>LocationType"`
 }
 
-type GetFulfillerStatus struct {
-	XMLName     xml.Name `xml:"getFulfillerStatus"`
-	fulfillerID uint
-}
-
-type GetFulfillerStatusResponse struct {
-	XMLName xml.Name `xml:"getFulfillerStatusResponse"`
-	Return  string   `xml:"getFulfillerStatusReturn"`
-}
-
 type GetItemLocationsByFulfiller struct {
 	XMLName xml.Name               `xml:"getItemLocationsByFulfiller"`
 	Request InventorySearchRequest `xml:"request"`

@@ -1,7 +1,6 @@
 package output
 
 import (
-	"apersci/soap"
 	"io"
 )
 
