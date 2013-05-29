@@ -8,7 +8,7 @@ public class Test {
    private static Connection conn;
    private static api apiCall= new api();
    private static boolean debug = false;
-   private static boolean setup = true;
+   private static boolean setup = false;
    private static boolean cleanup = false;
    private static int binId = 0;
 
@@ -28,9 +28,9 @@ public static void main(String[] args) {
       }
 
 
-      //Object[][] fulfillerLocationCatalog = {{}};
-      //Object[][] items = {{"SKU"}};
-      //testAllocateInventory(0, fulfillerLocationCatalog, items);
+      Object[][] fulfillerLocationCatalog = {{}};
+      Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
+      testAllocateInventory(0, fulfillerLocationCatalog, items);
       //testGetBins(54802, "", 100000, 10);
       //testGetBinTypes(48590);
       //testGetBinStatuses(48590);

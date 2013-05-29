@@ -79,55 +79,75 @@ public class api {
       return true;
    }
 
-   public void updateInventory(String query, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+   public void updateInventory(String check, String update, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
 
       if(setUpConnection() == false) {
          System.out.println("Connection failed");
          return;
       }
 
-      try {
-         String sku = items[0][0].toString();
-         String check = "SELECT * " +
-                        "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-                        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ?";
+      for(int ndx = 0; ndx < items.length; ndx++) {
+         try {
+            String sku = items[ndx][0].toString();
+            Integer quantity = (Integer)items[ndx][2];
 
-         PreparedStatement ps = conn.prepareStatement(check);
-         ps.setString(1, sku);
-         ResultSet r = ps.executeQuery();
-         if(!r.next()) {
-            System.out.println("Product does not exist and cannot be allocated");
+            PreparedStatement ps = conn.prepareStatement(check);
+            ps.setString(1, sku);
+            ps.setInt(2, quantity);
+
+            ResultSet r = ps.executeQuery();
+            int binId;
+
+            if(!r.next()) {
+               System.out.println("Product does not exist and cannot be allocated");
+               continue;
+            }
+
+            binId = r.getInt(1);;
+
+            PreparedStatement ps2 = conn.prepareStatement(update);
+            ps2.setInt(1, quantity);
+            ps2.setInt(2, quantity);
+            ps2.setInt(3, binId);
+
+            int rows = ps.executeUpdate();
+
+            System.out.println(rows + " updated");
          }
-
-         /*
-         PreparedStatement ps2 = conn.prepareStatement(query);
-         ps.setInt(1, fulfillerId);
-         ResultSet r2 = ps.executeQuery();
-         boolean hasNext = r.next();
-
-          while(hasNext) {
-            String type = r.getString(1);
-            String description = r.getString(2);
-            Object[] returnObj = {type, description};
-            bins.add(returnObj);
-            hasNext = r.next();
-         }*/
-      }
-      catch (Exception e) {
-         System.out.println("Query failed");
-         System.out.println(e.toString());
-         return;
+         catch (Exception e) {
+            System.out.println("Allocation/deallocation failed");
+            System.out.println(e.toString());
+            return;
+         }
       }
 
       closeConnection();
    }
 
    public void allocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
-      updateInventory("", fulfillerId, fulfillerLocationCatalog, items);
+      String check = "SELECT b.Id " +
+                     "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
+                     "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand >= ? " +
+                     "ORDER BY c.OnHand";
+
+      String allocate = "UPDATE ContainedInBin " +
+                        "SET OnHand = OnHand - ?, Allocated = Allocated + ? " +
+                        "WHERE BinId = ?";
+
+      updateInventory(check, allocate, fulfillerId, fulfillerLocationCatalog, items);
    }
 
    public void deallocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
-      updateInventory("", fulfillerId, fulfillerLocationCatalog, items);
+      String check = "SELECT b.Id " +
+                     "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
+                     "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.Allocated >= ? " +
+                     "ORDER BY c.Allocated";
+
+      String deallocate = "UPDATE ContainedInBin " +
+                          "SET OnHand = OnHand + ?, Allocated = Allocated - ? " +
+                          "WHERE BinId = ?";
+
+      updateInventory(check, deallocate, fulfillerId, fulfillerLocationCatalog, items);
    }
 
    public void createFulfiller(int fulfillerId, String locationName) {
