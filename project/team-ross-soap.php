@@ -43,21 +43,21 @@ class TeamRossSOAP {
 
 	$safetyStockLimitDefault = 10; // FIXME
 	// check if FulfillmentLocation exists!
-	// if location exists {
+	//if getFulfillmentLocations($fulfillerId, NULL, ...) {
 	//	return false;
 	//}
 	//else {
 		$this->api->createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
 						       $fufillerId, $locationType, $latitude, $longitutde, $status,
 						       $safetyStockLimitDefault, NULL, NULL);
-	//}
+	}
 	return true; // Successfully created new FulfillmentLocation
   }
 
   // **********************************************************************
   //
   // **********************************************************************
-  function getFulfillmentLocations() {
+  function getFulfillmentLocations($fulfillerId, $mfgId, $catalogId, $) {
 
   }
 

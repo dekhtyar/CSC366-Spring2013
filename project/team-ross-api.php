@@ -205,5 +205,22 @@ class TeamRossAPI {
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
+  
+  private function findLocations($lat, $lon, $distance, $maxlocations) {
+    $stmt = $this->dp->prepare("
+      SELECT externalLocationId, ( 3959 * acos( cos( radians(:latitude) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( latitude ) ) ) ) AS distance 
+      FROM Locations 
+      HAVING distance < :distance 
+      ORDER BY distance
+      LIMIT 0 , :maxlocations 
+    ");
+    $stmt->bindParam(':latitude', $lat);
+    $stmt->bindParam(':longitude', $lon);
+    $stmt->bindParam(':distance', $distance);
+    $stmt->bindParam(':maxlocations', $maxlocations);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+
 }
 ?>
