@@ -38,26 +38,32 @@ class TeamRossSOAP {
   // **********************************************************************
   // RILEY
   // **********************************************************************
-  function createFulfillmentLocation($fulfillerId, $retailerLocationId, $externalLocationId, $locationName,
-				     $locationType, $latitude, $longitude, $status, $countryCode) {
-
-	$safetyStockLimitDefault = 10; // FIXME
-	// check if FulfillmentLocation exists!
-	//if getFulfillmentLocations($fulfillerId, NULL, ...) {
-	//	return false;
-	//}
-	//else {
-		$this->api->createFulfillmentLocation($locationName, $externalLocationId, $retailerLocationId,
-						       $fufillerId, $locationType, $latitude, $longitutde, $status,
-						       $safetyStockLimitDefault, NULL, NULL);
-	}
-	return true; // Successfully created new FulfillmentLocation
+  function createFulfillmentLocation($CreateFulfillmentLocationRequest) {
+    $safetyStockLimitDefault = 0; // FIXME
+    $mfgIdDefault = 0;
+    $catalogIdDefaut = 0;
+    // no longer checks if FulfillmentLocation exists. Just updates!
+    $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest['LocationName'],
+					  $CreateFulfillmentLocationRequest['ExternalLocationID'],
+					  $CreateFulfillmentLocationRequest['RetailerLocationID'],
+					  $CreateFulfillmentLocationRequest['FulfillerID'],
+					  $CreateFulfillmentLocationRequest['LocationType'],
+					  $CreateFulfillmentLocationRequest['Latitude'],
+					  $CreateFulfillmentLocationRequest['Longitude'],
+					  $CreateFulfillmentLocationRequest['Status'],
+					  $safetyStockLimitDefault,
+					  $mfgIdDefault;
+					  $catalogIdDefault; 
   }
 
   // **********************************************************************
   // Riley
   // **********************************************************************
-  function getFulfillmentLocations($fulfillerId, $mfgId, $catalogId, $) {
+  function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
+    return $this->api->findLocations($GetFulfillmentLocationsRequest['FulfillerId'], 
+				    $GetFulfillmentLocationsRequest['Catalog'],
+				    $GetFulfillmentLocationsRequest['Location'],
+				    $GetFulfillmentLocationsRequest['MaxLocations']; 
 
   }
 

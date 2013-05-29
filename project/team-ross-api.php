@@ -19,12 +19,24 @@ class TeamRossAPI {
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock, $mfgId, $catalogId) {
       // Create Location
       $stmt = $this->db->prepare("
-        INSERT INTO Locations
-          (externalLocationId, internalLocationId, fulfillerId, locationType,
-          latitude, longitude, status, safetyStockLimitDefault)
-        VALUES
-          (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
-           :latitude, :longitude, :status, :safetyStockLimitDefault);
+	IF EXISTS (SELECT * FROM Locations WHERE internalLocationId = :internalLocationId)
+	  UPDATE Locations
+	  SET (externalLocationId = :externalLocationId,
+	       fulfillerId = :fulfillerId, 
+	       locationType = :locationType ,
+	       latitude = :latitude, 
+	       longitude = :longitude, 
+	       status = :status, 
+	       safetyStockLimitDefault = :safetyStockLimitDefault)
+	  WHERE internalLocationId = :internalLocationId
+
+	ELSE
+	  INSERT INTO Locations
+	   (externalLocationId, internalLocationId, fulfillerId, locationType,
+	    latitude, longitude, status, safetyStockLimitDefault)
+	  VALUES
+	    (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
+	    :latitude, :longitude, :status, :safetyStockLimitDefault);
       ");
 
       $stmt->bindValue(':externalLocationId', $extLID);
@@ -36,8 +48,7 @@ class TeamRossAPI {
       $stmt->bindValue(':status', $status);
       $stmt->bindValue(':safetyStockLimitDefault', $safetyStock);
 
-      $stmt->execute();
-
+      $stmt->execute(); 
       // Create catalog if missing
       if (!$this->getCatalog($catalogId))
         $this->createCatalog($catalogId, $mfgId);
@@ -224,22 +235,29 @@ class TeamRossAPI {
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
-  
-  private function findLocations($lat, $lon, $distance, $maxlocations) {
-    $stmt = $this->dp->prepare("
-      SELECT externalLocationId, ( 3959 * acos( cos( radians(:latitude) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( latitude ) ) ) ) AS distance 
-      FROM Locations 
+  public function findLocations($fulfillerId, $catalog, $location, $maxlocations) {
+  // developers.google.com/maps/articles/phpsqlsearch_v3  
+    $stmt = $this->db->prepare("
+      SELECT l.externalLocationId, ( 3959 * acos( cos( radians(:latitude) ) * cos( radians( l.latitude ) ) * cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( l.latitude ) ) ) ) AS distance 
+      FROM Locations l INNER JOIN LocationOffersCatalogs lc 
+      ON lc.internalLocationId = l.interalLocationId
+      WHERE lc.fulfillerId = :fulfillerId 
+	    AND lc.manufacturerId = :mfgId 
+	    AND lc.catalogId = :catalogId 
       HAVING distance < :distance 
       ORDER BY distance
       LIMIT 0 , :maxlocations 
     ");
-    $stmt->bindParam(':latitude', $lat);
-    $stmt->bindParam(':longitude', $lon);
-    $stmt->bindParam(':distance', $distance);
+    $stmt->bindParam(':fufillerId', $fulfillerId);
+    $stmt->bindParam(':mfgId', $catalog['mfg_id']);
+    $stmt->bindParam(':catalogId', $catalog['catalog_id']);
+    $stmt->bindParam(':latitude', $location['latitude']);
+    $stmt->bindParam(':longitude', $location['longitude']);
+    $stmt->bindParam(':distance', $location['radius']);
     $stmt->bindParam(':maxlocations', $maxlocations);
     $stmt->execute();
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
 
-}
 ?>
