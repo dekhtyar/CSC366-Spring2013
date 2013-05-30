@@ -11,8 +11,8 @@ CREATE TABLE Location (
     InternalFulfillerLocationId INT PRIMARY KEY,
     Type VARCHAR(25), 
     Description VARCHAR(50),
-    Latitude INT,
-    Longitude INT,
+    Latitude FLOAT,
+    Longitude FLOAT,
     Status VARCHAR(25),
     SafetyStockLimit INT
     );
