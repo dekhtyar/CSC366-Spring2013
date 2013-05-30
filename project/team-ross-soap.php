@@ -52,18 +52,20 @@ class TeamRossSOAP {
 					  $CreateFulfillmentLocationRequest['Longitude'],
 					  $CreateFulfillmentLocationRequest['Status'],
 					  $safetyStockLimitDefault,
-					  $mfgIdDefault;
-					  $catalogIdDefault; 
+					  $mfgIdDefault,
+					  $catalogIdDefault
+          );
   }
 
   // **********************************************************************
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-    return $this->api->findLocations($GetFulfillmentLocationsRequest['FulfillerId'], 
+    return $this->api->findLocations($GetFulfillmentLocationsRequest['FulfillerId'],
 				    $GetFulfillmentLocationsRequest['Catalog'],
 				    $GetFulfillmentLocationsRequest['Location'],
-				    $GetFulfillmentLocationsRequest['MaxLocations']; 
+				    $GetFulfillmentLocationsRequest['MaxLocations']
+          );
 
   }
 
