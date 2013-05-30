@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func getBinTypes(w http.ResponseWriter, r *http.Request) {
+func getBins(w http.ResponseWriter, r *http.Request) {
 	req, err := input.GetBinsRequest(r.Body)
 	if err != nil {
 		writeStatusInternalServerError(w, err)
@@ -21,27 +21,32 @@ func getBinTypes(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	rows, err := conn.Query(`	SELECT * FROM Bins b
-								WHERE b.LocationId = $1
-									AND b.Name LIKE '%$2%'
-								LIMIT $3 OFFSET $4`,
-								req.FulfillerLocationId, req.SearchTerm,
+	rows, err := conn.Query(`	SELECT l.FulfillerID, b.ID, l.ID,
+									b.Type, b.Status, b.Name	
+								FROM Bins b
+									JOIN Locations l ON (l.Id = b.LocationID)
+								WHERE l.FulfillerID = $2
+									AND l.ID = $2
+									AND b.Name LIKE '%$3%'
+								LIMIT $4 OFFSET $5`,
+								req.FulfillerID, req.FulfillerLocationID, req.SearchTerm,
 								req.NumResults, req.ResultsStart)
 	if err != nil {
 		writeStatusInternalServerError(w, err)
 		return
 	}
 
-	/* TODO
 	var response soap.GetBinsResponse
 	for rows.Next() {
-		var bin string
-		err = rows.Scan(&binType)
+		var bin soap.Bin
+		err = rows.Scan(&bin.FulfillerID, &bin.BinID, &bin.FulfillerLocationID,
+						&bin.BinType, &bin.BinStatus, &bin.Name)
 		if err != nil {
 			writeStatusInternalServerError(w, err)
 			return
 		}
-		response.Return = append(response.Return, binType)
+
+		response.Return.Bins = append(response.Return.Bins, bin)
 	}
 	err = rows.Err()
 	if err != nil {
@@ -49,9 +54,9 @@ func getBinTypes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = output.GetBinTypesResponse(w, *response)
+	err = output.GetBinResponse(w, response)
 	if err != nil {
 		writeStatusInternalServerError(w, err)
 		return
-	} */
+	}
 }
