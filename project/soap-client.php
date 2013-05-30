@@ -24,5 +24,3 @@ $client = new SoapClient(
   );
 
 $client->__soapCall('createFulfiller', array("FulfillerId" => 200, "Name" =>"Test"));
-echo "Hello";
-?>
