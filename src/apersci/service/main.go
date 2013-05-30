@@ -17,6 +17,10 @@ func getDBConnection() (*sql.DB, error) {
 	return sql.Open(dbConnType, dbConnInfo)
 }
 
+func writeStatusInternalServerError(w http.ResponseWriter, err error) {
+	http.Error(w, err.Error(), http.StatusInternalServerError)
+}
+
 func getFileContents(fileName string) (contents string, err error) {
 	var b bytes.Buffer
 	f, err := os.Open(fileName)
@@ -67,6 +71,7 @@ func main() {
 	http.HandleFunc("/createFulfiller/", onlyPostAndCORS(createFulfiller))
 	http.HandleFunc("/createFulfillmentLocation/", onlyPostAndCORS(createFulfillmentLocation))
 	http.HandleFunc("/refreshInventory/", onlyPostAndCORS(refreshInventory))
+	http.HandleFunc("/getBinTypes/", onlyPostAndCORS(getBinTypes))
 	http.HandleFunc("/createDatabase/", onlyPostAndCORS(execFile("sql/DB-setup.sql")))
 	http.HandleFunc("/clearDatabase/", onlyPostAndCORS(execFile("sql/DB-clear.sql")))
 	http.HandleFunc("/destroyDatabase/", onlyPostAndCORS(execFile("sql/DB-cleanup.sql")))
