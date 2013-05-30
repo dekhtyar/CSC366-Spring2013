@@ -274,6 +274,7 @@ type GetBinsResponse struct {
 
 type BinsReturn struct {
 	Bins []Bin `xml:">items"`
+	//ResultCount int `xml:"ResultCount"` TODO add?
 }
 
 type GetBinTypesResponse struct {
