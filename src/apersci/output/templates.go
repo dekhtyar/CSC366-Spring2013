@@ -9,10 +9,12 @@ var templateNames = [...]string{
 	"request-createFulfiller.xml",
 	"request-createFulfillmentLocation.xml",
 	"request-refreshInventory.xml",
+	"request-getBinTypes.xml",
 	"response-createBin.xml",
 	"response-createFulfiller.xml",
 	"response-createFulfillmentLocation.xml",
 	"response-refreshInventory.xml",
+	"response-getBinTypes.xml",
 }
 
 func init() {

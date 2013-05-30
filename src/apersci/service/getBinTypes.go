@@ -4,6 +4,7 @@ import (
 	"apersci/input"
 	"apersci/output"
 	"apersci/soap"
+	"fmt"
 	"net/http"
 )
 
@@ -27,7 +28,7 @@ func getBinTypes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := new (soap.GetBinTypesResponse)
+	var response soap.GetBinTypesResponse
 	for rows.Next() {
 		var binType string
 		err = rows.Scan(&binType)
@@ -43,7 +44,7 @@ func getBinTypes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = output.GetBinTypesResponse(w, *response)
+	err = output.GetBinTypesResponse(w, response)
 	if err != nil {
 		writeStatusInternalServerError(w, err)
 		return
