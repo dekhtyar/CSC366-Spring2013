@@ -69,14 +69,14 @@ func RefreshInventory(url string, v soap.RefreshRequest) (r string, err error) {
 }
 
 
-func GetBinTypes(url string) (r string, err error) {
+func GetBinTypes(url string) (r []string, err error) {
 	var b bytes.Buffer
 
 	resp, err := http.Post(url+"/getBinTypes/", "application/soap+xml", &b)
 	if err != nil {
 		return
 	}
-	r, err = input.RefreshInventoryResponse(resp.Body)
+	r, err = input.GetBinTypesResponse(resp.Body)
 	return
 }
 
