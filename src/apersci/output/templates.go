@@ -36,7 +36,7 @@ var templateNames = [...]string{
 	"response-getFulfillerStatus.xml",
 	"response-getInventory.xml",
 	"response-getItemLocationsByFulfiller.xml",
-	"response-refreshInventory.xml"
+	"response-refreshInventory.xml",
 }
 
 func init() {
