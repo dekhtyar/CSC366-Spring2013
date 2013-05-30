@@ -4,7 +4,6 @@ import (
 	"apersci/input"
 	"apersci/output"
 	"apersci/soap"
-	"fmt"
 	"net/http"
 )
 
