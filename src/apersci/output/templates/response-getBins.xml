@@ -2,7 +2,7 @@
    <soapenv:Header/>
    <soapenv:Body>
       <v4:getBinsResponse>
-         <v4:getBinsReturn>{{range .getBinsReturn}}
+         <v4:getBinsReturn>
              <v4:Bins>{{range .Bins}}
                <v4:items>
                    <v4:FulfillerID>{{.FulfillerID}}</v4:FulfillerID>
@@ -12,7 +12,7 @@
                    <v4:BinStatus>{{.BinStatus}}</v4:BinStatus>
                    <v4:Name>{{.Name}}</v4:Name>
               </v4:items>{{end}}
-           </v4:Bins>{{end}}
+           </v4:Bins>
            <v4:ResultCount>{{.ResultCount}}</v4:ResultCount>
          </v4:getBinsReturn>
       </v4:getBinsResponse>
