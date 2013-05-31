@@ -81,9 +81,17 @@ public class api {
 
    public void updateInventory(String check, String update, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
 
+      int charCount = 0;
+
       if(setUpConnection() == false) {
          System.out.println("Connection failed");
          return;
+      }
+
+      for(char c: update.toCharArray()) {
+         if(c == '?') {
+            charCount++;
+         }
       }
 
       for(int ndx = 0; ndx < items.length; ndx++) {
@@ -107,8 +115,12 @@ public class api {
 
             PreparedStatement ps2 = conn.prepareStatement(update);
             ps2.setInt(1, quantity);
-            ps2.setInt(2, quantity);
-            ps2.setInt(3, binId);
+
+            if(charCount > 2) {
+               ps2.setInt(2, quantity);
+            }
+
+            ps2.setInt(charCount, binId);
 
             int rows = ps.executeUpdate();
 
@@ -148,6 +160,19 @@ public class api {
                           "WHERE BinId = ?";
 
       updateInventory(check, deallocate, fulfillerId, fulfillerLocationCatalog, items);
+   }
+
+   public void fulfillInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+      String check = "SELECT b.Id " +
+                     "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
+                     "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.Allocated >= ? " +
+                     "ORDER BY c.Allocated";
+
+      String fulfill = "UPDATE ContainedInBin " +
+                       "SET Allocated = Allocated - ? " +
+                       "WHERE BinId = ?";
+
+      updateInventory(check, fulfill, fulfillerId, fulfillerLocationCatalog, items);
    }
 
    public void createFulfiller(int fulfillerId, String locationName) {
