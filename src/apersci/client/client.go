@@ -166,13 +166,8 @@ func GetFulfillmentLocationsTypes(url string, v soap.FulfillmentLocation) (r []s
 	return
 }
 
-func GetBinStatuses(url string, v string) (r []string, err error) {
+func GetBinStatuses(url string) (r []string, err error) {
 	var b bytes.Buffer
-
-	err = output.GetBinStatusesRequest(&b, v)
-	if err != nil {
-		return
-	}
 
 	resp, err := http.Post(url+"/getBinStatuses/", "application/soap+xml", &b)
 	if err != nil {

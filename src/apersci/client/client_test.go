@@ -12,7 +12,7 @@ import (
 //
 //***********************************//
 
-var url = "http://db2.thepicard.org:8125"
+var url = "http://db2.thepicard.org:8101"
 
 func TestGetBinTypes(t *testing.T) {
 	r, err := GetBinTypes(url)
@@ -66,6 +66,22 @@ func TestGetBins(t *testing.T) {
 			assertString(t, "Status mismatch", bin.BinStatus, "Pickable")
 		}
 	}
+}
+
+func TestGetBinStatuses(t *testing.T) {
+	r, err := GetBinStatuses(url)
+	if err != nil {
+		t.Fatal("Error occurred during GetBinStatuses: \n" + err.Error())
+	}
+
+	if len(r) != 1 {
+		t.Fatal("Expected only 1 output, found %d.\n", len(r))
+	}
+
+	if r[0] != "Pickable" {
+		t.Fatal("Expected 'Pickable' as the bin type, found '" + r[0] + "'.\n")
+	}
+
 }
 
 func assertInt(t *testing.T, msg string, actual int, expected int) {
