@@ -8,6 +8,7 @@ import(
 )
 
 func getBinStatuses(w http.ResponseWriter, r *http.Request) (err error) {
+	fmt.Printf("Getting bin statuses")
 	err = input.GetBinStatusesRequest(r.Body)
 	if err != nil {
 		return
