@@ -1,3 +1,8 @@
+1 June 2013
+-----------
+
+Removed getItemLocationsByFulfiller operation
+
 7 May 2013
 ----------
 

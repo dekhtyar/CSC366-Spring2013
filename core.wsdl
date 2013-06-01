@@ -33,20 +33,6 @@
 					</sequence>
 				</complexType>
 			</element>
-			<element name="getItemLocationsByFulfiller">
-				<complexType>
-					<sequence>
-						<element name="request" type="impl:InventorySearchRequest"/>
-					</sequence>
-				</complexType>
-			</element>
-			<element name="getItemLocationsByFulfillerResponse">
-				<complexType>
-					<sequence>
-						<element name="getItemLocationsByFulfillerReturn" type="impl:InventorySearchResponse" minOccurs="0" maxOccurs="unbounded"/>
-					</sequence>
-				</complexType>
-			</element>
 			<element name="createFulfillmentLocation">
 				<complexType>
 					<sequence>
@@ -524,12 +510,6 @@
 	<wsdl:message name="fulfillInventoryResponse">
 		<wsdl:part name="parameters" element="impl:fulfillInventoryResponse"/>
 	</wsdl:message>
-	<wsdl:message name="getItemLocationsByFulfillerRequest">
-		<wsdl:part name="parameters" element="impl:getItemLocationsByFulfiller"/>
-	</wsdl:message>
-	<wsdl:message name="getItemLocationsByFulfillerResponse">
-		<wsdl:part name="parameters" element="impl:getItemLocationsByFulfillerResponse"/>
-	</wsdl:message>
 	<wsdl:message name="createBinRequest">
 		<wsdl:part name="parameters" element="impl:createBin"/>
 	</wsdl:message>
@@ -606,10 +586,6 @@
 		<wsdl:operation name="fulfillInventory">
 			<wsdl:input name="fulfillInventoryRequest" message="impl:fulfillInventoryRequest"/>
 			<wsdl:output name="fulfillInventoryResponse" message="impl:fulfillInventoryResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="getItemLocationsByFulfiller">
-			<wsdl:input name="getItemLocationsByFulfillerRequest" message="impl:getItemLocationsByFulfillerRequest"/>
-			<wsdl:output name="getItemLocationsByFulfillerResponse" message="impl:getItemLocationsByFulfillerResponse"/>
 		</wsdl:operation>
 		<wsdl:operation name="createBin">
 			<wsdl:input name="createBinRequest" message="impl:createBinRequest"/>
@@ -719,16 +695,6 @@
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="fulfillInventoryResponse">
-				<wsdlsoap:body use="literal"/>
-			</wsdl:output>
-		</wsdl:operation>
-		<wsdl:operation name="getItemLocationsByFulfiller">
-			<wsdlsoap:operation soapAction=""/>
-			<wsdl:input name="getItemLocationsByFulfillerRequest">
-				<wsdlsoap:header message="impl:getItemLocationsByFulfillerRequest" use="literal"/>
-				<wsdlsoap:body parts="parameters" use="literal"/>
-			</wsdl:input>
-			<wsdl:output name="getItemLocationsByFulfillerResponse">
 				<wsdlsoap:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
