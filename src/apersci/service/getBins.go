@@ -21,16 +21,15 @@ func getBins(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
-	rows, err := conn.Query(`	SELECT l.FulfillerID, b.ID, l.ID,
-									b.Type, b.Status, b.Name	
-								FROM Bins b
-									JOIN Locations l ON (l.Id = b.LocationID)
-								WHERE l.FulfillerID = $2
-									AND l.ID = $2
-									AND b.Name LIKE '%$3%'
-								LIMIT $4 OFFSET $5`,
-								req.FulfillerID, req.FulfillerLocationID, req.SearchTerm,
-								req.NumResults, req.ResultsStart)
+	rows, err := conn.Query(`
+		SELECT l.FulfillerID, b.ID, l.ID, b.Type, b.Status, b.Name	
+		FROM Bins b
+			JOIN Locations l ON (l.Id = b.LocationID)
+		WHERE l.FulfillerID = $2
+			AND l.ID = $2
+			AND b.Name LIKE '%$3%'
+		LIMIT $4 OFFSET $5`,
+		req.FulfillerID, req.FulfillerLocationID, req.SearchTerm, req.NumResults, req.ResultsStart)
 	if err != nil {
 		writeStatusInternalServerError(w, err)
 		return
