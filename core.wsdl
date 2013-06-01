@@ -125,7 +125,7 @@
 			<element name="getBinsResponse">
 				<complexType>
 					<sequence>
-						<element name="getBinsReturn" type="impl:BinResponse" maxOccurs="unbounded"/>
+						<element name="getBinsReturn" type="impl:BinResponse"/>
 					</sequence>
 				</complexType>
 			</element>
@@ -159,7 +159,7 @@
 			<element name="getInventoryResponse">
 				<complexType>
 					<sequence>
-						<element name="getInventoryReturn" type="impl:InventoryResponse" maxOccurs="unbounded"/>
+						<element name="getInventoryReturn" type="impl:InventoryResponse" minOccurs="0" maxOccurs="unbounded"/>
 					</sequence>
 				</complexType>
 			</element>
