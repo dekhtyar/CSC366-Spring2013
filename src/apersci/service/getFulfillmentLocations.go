@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
-func getFulfillmentLocations(w http.ResponseWriter, r *http.Request) {
+func getFulfillmentLocations(w http.ResponseWriter, r *http.Request) (err error) {
 	fmt.Println("TODO")
+	return
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
-func adjustInventory(w http.ResponseWriter, r *http.Request) {
+func adjustInventory(w http.ResponseWriter, r *http.Request) (err error) {
 	fmt.Println("TODO")
+	return
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
-func getBinStatuses(w http.ResponseWriter, r *http.Request) {
+func getBinStatuses(w http.ResponseWriter, r *http.Request) (err error) {
 	fmt.Println("TODO")
+	return
 }

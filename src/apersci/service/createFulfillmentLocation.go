@@ -7,19 +7,14 @@ import (
 	"net/http"
 )
 
-// INSERT into Manufacturers values (manufacturerId);
-// INSERT into Catalogs values (catalogId, manufacturerId);
-
-func createFulfillmentLocation(w http.ResponseWriter, r *http.Request) {
+func createFulfillmentLocation(w http.ResponseWriter, r *http.Request) (err error) {
 	l, err := input.CreateFulfillmentLocationRequest(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	conn, err := getDBConnection()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer conn.Close()
@@ -28,20 +23,18 @@ func createFulfillmentLocation(w http.ResponseWriter, r *http.Request) {
 		l.LocationName, l.FulfillerID, l.ExternalLocationID, l.RetailerLocationID,
 		l.LocationType, l.LocationType, l.Longitude, l.Latitude, l.Status)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	_, err = conn.Exec("INSERT INTO Bins(locationid, name, type) VALUES($1, 'Default', 'General')", l.RetailerLocationID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//res, err := conn.Exec("INSERT INTO LocationsProducts VALUES($1, $2)", l.RetailerLocationID
 
 	rows, _ := res.RowsAffected()
 	err = output.CreateFulfillmentLocationResponse(w, fmt.Sprint(rows))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	return
 }

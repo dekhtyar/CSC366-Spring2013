@@ -7,16 +7,14 @@ import (
 	"net/http"
 )
 
-func createFulfiller(w http.ResponseWriter, r *http.Request) {
+func createFulfiller(w http.ResponseWriter, r *http.Request) (err error) {
 	f, err := input.CreateFulfillerRequest(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	conn, err := getDBConnection()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer conn.Close()
@@ -24,13 +22,14 @@ func createFulfiller(w http.ResponseWriter, r *http.Request) {
 	res, err := conn.Exec("INSERT INTO Fulfillers VALUES($1,$2)",
 		f.FulfillerID, f.Name)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	rows, _ := res.RowsAffected()
 	err = output.CreateFulfillerResponse(w, fmt.Sprint(rows))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	return
 }
