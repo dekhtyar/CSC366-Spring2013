@@ -80,4 +80,21 @@ func GetBinTypes(url string) (r []string, err error) {
 	return
 }
 
+func GetBins(url string, v soap.BinRequest) (r soap.BinsReturn, err error) {
+	var b bytes.Buffer
+
+	err = output.GetBinsRequest(&b, v)
+	if err != nil {
+		return
+	}
+
+	resp, err := http.Post(url+"/getBins/", "application/soap+xml", &b)
+	if err != nil {
+		return
+	}
+
+	r, err = input.GetBinsResponse(resp.Body)
+	return
+}
+
 
