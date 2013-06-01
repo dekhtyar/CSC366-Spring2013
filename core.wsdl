@@ -167,14 +167,14 @@
 			<complexType name="AssignmentResponse">
 				<sequence>
 					<element name="FulfillerID" type="xsd:positiveInteger"/>
-					<element name="FulfillerLocationID" type="xsd:positiveInteger"/>
+					<element name="ExternalLocationID" type="xsd:string" />
 				</sequence>
 			</complexType>
 			<complexType name="Bin">
 				<sequence>
 					<element name="FulfillerID" type="xsd:positiveInteger"/>
 					<element name="BinID" type="xsd:positiveInteger" nillable="true"/>
-					<element name="FulfillerLocationID" type="xsd:positiveInteger"/> <!-- internal location ID -->
+					<element name="ExternalLocationID" type="xsd:string" />
 					<element name="BinType" type="xsd:string"/>
 					<element name="BinStatus" type="xsd:string"/>
 					<element name="Name" type="xsd:string" nillable="true"/>
@@ -183,7 +183,7 @@
 			<complexType name="BinRequest">
 				<sequence>
 					<element name="FulfillerID" type="xsd:positiveInteger"/>
-					<element name="FulfillerLocationID" type="xsd:positiveInteger"/>
+					<element name="ExternalLocationID" type="xsd:string" />
 					<element name="SearchTerm" type="xsd:string" nillable="true"/>
 					<element name="NumResults" type="xsd:positiveInteger" nillable="true"/>
 					<element name="ResultsStart" type="xsd:positiveInteger" nillable="true"/> <!-- pagination -->
@@ -242,7 +242,7 @@
 			<complexType name="FulfillmentLocationCatalog">
 				<sequence>
 					<element name="ManufacturerCatalog" type="impl:ManufacturerCatalog" nillable="true"/>
-					<element name="FulfillerLocationID" type="xsd:positiveInteger"/>
+					<element name="ExternalLocationID" type="xsd:string" />
 				</sequence>
 			</complexType>
 			<simpleType name="FulfillmentLocationIdentifierType"> <!-- not used but documents FulfillmentLocation > Type -->
@@ -272,7 +272,7 @@
 			<complexType name="InventorySearchResponse">
 				<sequence>
 					<element name="FulfillerID" type="xsd:positiveInteger"/>
-					<element name="FulfillerLocationID" type="xsd:positiveInteger"/>
+					<element name="ExternalLocationID" type="xsd:string" />
 					<element name="LocationName" type="xsd:string"/>
 					<element name="PartNumber" type="xsd:string"/>
 					<element name="UPC" type="xsd:string"/>
@@ -322,7 +322,7 @@
 					<element name="OrderID" type="xsd:positiveInteger"/> <!-- for a single Order -->
 					<element name="OrderItemID" type="xsd:positiveInteger"/> <!-- for a single item in an Order, still globally unique -->
 					<element name="ShipmentID" type="xsd:positiveInteger"/> <!-- group of Order Items -->
-					<element name="FulfillerLocationID" type="xsd:positiveInteger" nillable="true"/>
+					<element name="ExternalLocationID" type="xsd:string" nillable="true"/>
 				</sequence>
 			</complexType>
 			<complexType name="UpdateRequest">
@@ -347,7 +347,7 @@
 					<element name="FulfillerID" type="xsd:positiveInteger"/>
 					<element name="Catalog" type="impl:ManufacturerCatalog" nillable="false"/>
 					<element name="Quantities" type="impl:ArrayOf_impl_ItemQuantity" nillable="false"/>
-					<element name="LocationNames" type="impl:ArrayOfLocationNames" nillable="true"/>
+					<element name="LocationIDs" type="impl:ArrayOfLocationIDs" nillable="true"/>
 					<element name="Location" type="impl:RequestLocation" nillable="true"/>
 					<element name="Type" type="impl:InventoryRequestType" nillable="false" minOccurs="1"/>
 					<element name="Limit" type="xsd:int" default="10000"/> <!-- limit refers to the maximum amount of responses to send -->
@@ -408,9 +408,9 @@
 					<element name="items" type="impl:RefreshItem" minOccurs="0" maxOccurs="unbounded"/>
 				</sequence>
 			</complexType>
-			<complexType name="ArrayOfLocationNames">
+			<complexType name="ArrayOfLocationIDs">
 				<sequence>
-					<element name="LocationNames" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+					<element name="ExternalLocationID" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
 				</sequence>
 			</complexType>
 			<!--Inventory intake-->
@@ -419,7 +419,7 @@
 				<complexType>
 					<sequence>
 						<element name="FulfillerID" type="xsd:positiveInteger"/>
-						<element name="LocationName" type="xsd:string"/>
+						<element name="ExternalLocationID" type="xsd:string" />
 						<element name="Items" type="impl:ArrayOf_impl_AdjustItem" nillable="true"/>
 					</sequence>
 				</complexType>
@@ -429,7 +429,7 @@
 				<complexType>
 					<sequence>
 						<element name="FulfillerID" type="xsd:positiveInteger"/>
-						<element name="LocationName" type="xsd:string"/>
+						<element name="ExternalLocationID" type="xsd:string" />
 						<element name="Items" type="impl:ArrayOf_impl_RefreshItem" nillable="true"/>
 					</sequence>
 				</complexType>

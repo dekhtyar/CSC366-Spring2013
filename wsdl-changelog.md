@@ -1,7 +1,11 @@
 1 June 2013
 -----------
 
-Removed getItemLocationsByFulfiller operation
+* Removed the getItemLocationsByFulfiller operation.
+
+* All operations now use the ExternalLocationID instead of the
+  FulfillerLocationID (internal) or LocationName. This way, locations are
+  consistently identified throughout the WSDL.
 
 7 May 2013
 ----------
