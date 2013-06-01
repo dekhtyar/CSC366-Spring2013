@@ -87,5 +87,5 @@ func main() {
 	http.HandleFunc("/createDatabase/", onlyPostAndCORS(execFile("sql/DB-setup.sql")))
 	http.HandleFunc("/clearDatabase/", onlyPostAndCORS(execFile("sql/DB-clear.sql")))
 	http.HandleFunc("/destroyDatabase/", onlyPostAndCORS(execFile("sql/DB-cleanup.sql")))
-	http.ListenAndServe(":8125", nil)
+	http.ListenAndServe(":8080", nil)
 }
