@@ -179,7 +179,7 @@ type Location struct {
 
 type GetInventoryResponse struct {
 	XMLName xml.Name        `xml:"getInventoryResponse"`
-	Return  InventoryReturn `xml:"getInventoryReturn"`
+	Return  []InventoryReturn `xml:"getInventoryReturn"`
 }
 
 type InventoryReturn struct {
