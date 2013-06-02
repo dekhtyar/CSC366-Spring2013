@@ -5,12 +5,12 @@ import (
 	"io"
 )
 
-func CreateFulfillInventoryRequest(r io.Reader) (soap.UpdateRequest, error) {
+func FulfillInventoryRequest(r io.Reader) (soap.UpdateRequest, error) {
 	var v soap.FulfillInventory
 	err := soap.Unmarshal(r, &v)
 	return v.Request, err
 }
 
-func CreateFulfillInventoryResponse(r io.Reader) error {
+func FulfillInventoryResponse(r io.Reader) error {
 	return nil
 }

@@ -5,12 +5,12 @@ import (
 	"io"
 )
 
-func CreateDeallocateInventoryRequest(r io.Reader) (soap.UpdateRequest, error) {
+func DeallocateInventoryRequest(r io.Reader) (soap.UpdateRequest, error) {
 	var v soap.DeallocateInventory
 	err := soap.Unmarshal(r, &v)
 	return v.Request, err
 }
 
-func CreateDeallocateInventoryResponse(r io.Reader) error {
+func DeallocateInventoryResponse(r io.Reader) error {
 	return nil
 }
