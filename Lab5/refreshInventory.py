@@ -43,16 +43,20 @@ with open(sys.argv[1], 'r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',', quotechar="'")
     csvreader.next()
     for row in csvreader:
-	fulfiller_id = getFulfillerId(cursor, row[INT_FUL_LOC_ID])
-        cursor.execute(insertManufacturer, (row[MANU_ID],))
-	cursor.execute(insertCatalog, (row[CAT_ID], row[MANU_ID]))
-	cursor.execute(insertProduct, (row[UPC], row[CAT_ID], row[MANU_ID],
-                       row[PRODUCT_NAME]));
-        cursor.execute(insertFulfillerSpecificProduct, (row[SKU], fulfiller_id[0],
-                       row[UPC]))
-        cursor.execute(insertHeldAt, (fulfiller_id[0], row[EXT_FUL_LOC_ID],
-                       row[SKU], row[LTD], row[SAFETY_STOCK]))
-	cursor.execute(insertStoredIn, (row[SKU], fulfiller_id[0], row[BIN_NAME],
-		       row[EXT_FUL_LOC_ID], row[ON_HAND]))
+        try:
+            fulfiller_id = getFulfillerId(cursor, row[INT_FUL_LOC_ID])
+            cursor.execute(insertManufacturer, (row[MANU_ID],))
+            cursor.execute(insertCatalog, (row[CAT_ID], row[MANU_ID]))
+            cursor.execute(insertProduct, (row[UPC], row[CAT_ID], row[MANU_ID],
+                               row[PRODUCT_NAME]));
+            cursor.execute(insertFulfillerSpecificProduct, (row[SKU], fulfiller_id[0],
+                               row[UPC]))
+            cursor.execute(insertHeldAt, (fulfiller_id[0], row[EXT_FUL_LOC_ID],
+                               row[SKU], row[LTD], row[SAFETY_STOCK]))
+            cursor.execute(insertStoredIn, (row[SKU], fulfiller_id[0], row[BIN_NAME],
+                               row[EXT_FUL_LOC_ID], row[ON_HAND]))
+        except Exception as e:
+            print(e)
+            print(row)
 conn.commit()
 conn.close()
