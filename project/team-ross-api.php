@@ -15,6 +15,20 @@ class TeamRossAPI {
     return $stmt->execute();
   }
 
+  public function getFullfilerStatus($fulfiller_id) {
+    $stmt = $this->db->prepare("
+      SELECT count(*) total
+      FROM Locations
+      WHERE fulfillerId = :id
+      AND status = 'active'
+    ");
+    $stmt->bindvalue(':id', $fulfiller_id);
+    $stmt->execute();
+
+    $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $fetch['total'];
+  }
+
   public function createFulfillmentLocation($locationName, $extLID, $intLID,
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock, $mfgId, $catalogId) {
       // Create Location

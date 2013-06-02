@@ -31,8 +31,8 @@ class TeamRossSOAP {
   // **********************************************************************
   // Ross
   // **********************************************************************
-  function getFulfillerStatus() {
-
+  function getFulfillerStatus($getFulfillerStatusRequest) {
+    return $this->api->getFulfillerStatus($getFulfillerStatusRequest['fulfillerId']);
   }
 
   // **********************************************************************
