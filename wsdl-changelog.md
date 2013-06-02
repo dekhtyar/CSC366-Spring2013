@@ -1,3 +1,19 @@
+1 June 2013
+-----------
+
+* Removed the getItemLocationsByFulfiller operation.
+
+* All operations now use the ExternalLocationID instead of the
+  FulfillerLocationID (internal) or LocationName. This way, locations are
+  consistently identified throughout the WSDL.
+
+* getInventory may now return zero results. Previously, it had to return at
+  least one.
+
+* getBinsReturn no longer has a 1 to many cardinality. A getBins operation
+  should only return on getBinsReturn element which itself will contain many
+  bins. 
+
 7 May 2013
 ----------
 
