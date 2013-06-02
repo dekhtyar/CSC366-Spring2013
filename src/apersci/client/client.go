@@ -97,7 +97,7 @@ func GetBins(url string, v soap.BinRequest) (r soap.BinsReturn, err error) {
 	return
 }
 
-func GetInventory(url string, v soap.InventoryRequest) (r soap.InventoryReturn, err error) {
+func GetInventory(url string, v soap.InventoryRequest) (r []soap.InventoryReturn, err error) {
 	var b bytes.Buffer
 
 	err = output.GetInventoryRequest(&b, v)
