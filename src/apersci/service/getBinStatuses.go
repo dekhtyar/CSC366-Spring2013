@@ -1,6 +1,6 @@
 package main
 
-import(
+import (
 	"apersci/input"
 	"apersci/output"
 	"apersci/soap"
@@ -8,7 +8,6 @@ import(
 )
 
 func getBinStatuses(w http.ResponseWriter, r *http.Request) (err error) {
-	fmt.Printf("Getting bin statuses")
 	err = input.GetBinStatusesRequest(r.Body)
 	if err != nil {
 		return
@@ -25,7 +24,7 @@ func getBinStatuses(w http.ResponseWriter, r *http.Request) (err error) {
 		return
 	}
 
-    var response soap.GetBinStatusesResponse
+	var response soap.GetBinStatusesResponse
 	for rows.Next() {
 		var binStatus string
 		err = rows.Scan(&binStatus)
@@ -44,6 +43,5 @@ func getBinStatuses(w http.ResponseWriter, r *http.Request) (err error) {
 		return
 	}
 
-    return
+	return
 }
-
