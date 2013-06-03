@@ -97,5 +97,8 @@ func main() {
 	http.HandleFunc("/createDatabase/", onlyPostAndCORS(execFile("sql/DB-setup.sql")))
 	http.HandleFunc("/clearDatabase/", onlyPostAndCORS(execFile("sql/DB-clear.sql")))
 	http.HandleFunc("/destroyDatabase/", onlyPostAndCORS(execFile("sql/DB-cleanup.sql")))
-	http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		fmt.Println("Unable to start service: " + err.Error())
+	}
 }
