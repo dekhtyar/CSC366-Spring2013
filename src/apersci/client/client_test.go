@@ -84,6 +84,86 @@ func TestGetBinStatuses(t *testing.T) {
 
 }
 
+func TestAllocateInventory(t *testing.T) {
+	var req soap.UpdateRequest
+
+	req.FulfillerID = 69170
+
+	// TODO write a test to use these
+	req.FulfillerLocationCatalog.ManufacturerID = 0
+	req.FulfillerLocationCatalog.CatalogID = 0
+	req.FulfillerLocationCatalog.FulfillerLocationID = 0
+
+	var item soap.UpdateItem
+
+	item.PartNumber = "8888063910"
+	item.UPC = "8888063910"
+	item.Quantity = 1
+	item.FulfillerLocationID = 50565
+	req.Items = append(req.Items, item)
+
+	/* TODO uncomment 
+	err := AllocateInventory(url, req)
+	if err != nil {
+		t.Fatal("Error occurred during AllocateInventory: \n" + err.Error())
+	}*/
+
+	// TODO assert the result programatically using GetInventory()
+}
+
+func TestDeallocateInventory(t *testing.T) {
+	var req soap.UpdateRequest
+
+	req.FulfillerID = 69170
+
+	// TODO write a test to use these
+	req.FulfillerLocationCatalog.ManufacturerID = 0
+	req.FulfillerLocationCatalog.CatalogID = 0
+	req.FulfillerLocationCatalog.FulfillerLocationID = 0
+
+	var item soap.UpdateItem
+
+	item.PartNumber = "8888063910"
+	item.UPC = "8888063910"
+	item.Quantity = 1
+	item.FulfillerLocationID = 50565
+	req.Items = append(req.Items, item)
+
+	/* TODO uncomment
+	err := DeallocateInventory(url, req)
+	if err != nil {
+		t.Fatal("Error occurred during DeallocateInventory: \n" + err.Error())
+	}*/
+
+	// TODO assert the result programatically using GetInventory()
+}
+
+func TestFulfillInventory(t *testing.T) {
+	var req soap.UpdateRequest
+
+	req.FulfillerID = 69170
+
+	// TODO write a test to use these
+	req.FulfillerLocationCatalog.ManufacturerID = 0
+	req.FulfillerLocationCatalog.CatalogID = 0
+	req.FulfillerLocationCatalog.FulfillerLocationID = 0
+
+	var item soap.UpdateItem
+
+	item.PartNumber = "8888063910"
+	item.UPC = "8888063910"
+	item.Quantity = 1
+	item.FulfillerLocationID = 50565
+	req.Items = append(req.Items, item)
+
+	err := FulfillInventory(url, req)
+	if err != nil {
+		t.Fatal("Error occurred during FulfillInventory: \n" + err.Error())
+	}
+
+	// TODO assert the result programatically using GetInventory()
+}
+
 func assertInt(t *testing.T, msg string, actual int, expected int) {
 	if actual != expected {
 		t.Fatalf("%s: found %d, expected %d.\n", msg, actual, expected)
