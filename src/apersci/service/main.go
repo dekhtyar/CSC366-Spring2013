@@ -19,6 +19,16 @@ func getDBConnection() (*sql.DB, error) {
 	return sql.Open(dbConnType, dbConnInfo)
 }
 
+func getDBTransaction() (tx *sql.Tx, err error) {
+	conn, err := getDBConnection()
+	if err != nil {
+		return
+	}
+
+	tx, err = conn.Begin()
+	return
+}
+
 func getFileContents(fileName string) (contents string, err error) {
 	var b bytes.Buffer
 	f, err := os.Open(fileName)
