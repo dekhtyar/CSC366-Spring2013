@@ -621,7 +621,6 @@
 		<wsdl:operation name="createFulfiller">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="createFulfillerRequest">
-				<wsdlsoap:header message="impl:createFulfillerRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="createFulfillerResponse">
@@ -631,7 +630,6 @@
 		<wsdl:operation name="getFulfillerStatus">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="getFulfillerStatusRequest">
-				<wsdlsoap:header message="impl:getFulfillerStatusRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="getFulfillerStatusResponse">
@@ -641,7 +639,6 @@
 		<wsdl:operation name="createFulfillmentLocation">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="createFulfillmentLocationRequest">
-				<wsdlsoap:header message="impl:createFulfillmentLocationRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="createFulfillmentLocationResponse">
@@ -651,7 +648,6 @@
 		<wsdl:operation name="getFulfillmentLocations">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="getFulfillmentLocationsRequest">
-				<wsdlsoap:header message="impl:getFulfillmentLocationsRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="getFulfillmentLocationsResponse">
@@ -661,7 +657,6 @@
 		<wsdl:operation name="getFulfillmentLocationTypes">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="getFulfillmentLocationTypesRequest">
-				<wsdlsoap:header message="impl:getFulfillmentLocationTypesRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="getFulfillmentLocationTypesResponse">
@@ -671,7 +666,6 @@
 		<wsdl:operation name="allocateInventory">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="allocateInventoryRequest">
-				<wsdlsoap:header message="impl:allocateInventoryRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="allocateInventoryResponse">
@@ -681,7 +675,6 @@
 		<wsdl:operation name="deallocateInventory">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="deallocateInventoryRequest">
-				<wsdlsoap:header message="impl:deallocateInventoryRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="deallocateInventoryResponse">
@@ -691,7 +684,6 @@
 		<wsdl:operation name="fulfillInventory">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="fulfillInventoryRequest">
-				<wsdlsoap:header message="impl:fulfillInventoryRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="fulfillInventoryResponse">
@@ -701,7 +693,6 @@
 		<wsdl:operation name="createBin">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="createBinRequest">
-				<wsdlsoap:header message="impl:createBinRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="createBinResponse">
@@ -711,7 +702,6 @@
 		<wsdl:operation name="getBins">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="getBinsRequest">
-				<wsdlsoap:header message="impl:getBinsRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="getBinsResponse">
@@ -721,7 +711,6 @@
 		<wsdl:operation name="getBinTypes">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="getBinTypesRequest">
-				<wsdlsoap:header message="impl:getBinTypesRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="getBinTypesResponse">
@@ -731,7 +720,6 @@
 		<wsdl:operation name="getBinStatuses">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="getBinStatusesRequest">
-				<wsdlsoap:header message="impl:getBinStatusesRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="getBinStatusesResponse">
@@ -741,7 +729,6 @@
 		<wsdl:operation name="getInventory">
 			<wsdlsoap:operation soapAction=""/>
 			<wsdl:input name="getInventoryRequest">
-				<wsdlsoap:header message="impl:getInventoryRequest" use="literal"/>
 				<wsdlsoap:body parts="parameters" use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="getInventoryResponse">
