@@ -159,17 +159,17 @@ class TeamRossAPI {
     // STATEMENTS
     $stmt1 = $this->db->prepare("
       INSERT INTO BinContainsProducts
-        (binName, fulfillerId, internalLocationId, productUpc, allocated, onHand)
+        (binName, fulfillerId, internalLocationId, productUpc)
       VALUES
-        (:binName, :fulfillerId, :internalLocationId, :productUpc, '0', :onHand)
+        (:binName, :fulfillerId, :internalLocationId, :productUpc)
     ");
 
     $stmt2 = $this->db->prepare("INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
         VALUES(:fulfillerId, :productUpc, :sku)");
 
     $stmt3 = $this->db->prepare("
-        INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd)
-        VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd)
+        INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand)
+        VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand)
       ");
 
     // UPDATE INVENTORY FOR EACH ITEM
