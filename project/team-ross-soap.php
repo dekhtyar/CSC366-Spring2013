@@ -81,7 +81,7 @@ class TeamRossSOAP {
   // **********************************************************************
   function allocateInventory($UpdateRequest) {
 		return $this->api->allocateInventory($UpdateItem['FulfillerId'], 
-			$UpdateItem['Items']) ? 1 : 0;
+			$UpdateItem['Items']) ? 0 : -1;
   }
 
   // **********************************************************************
