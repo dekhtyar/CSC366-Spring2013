@@ -60,9 +60,9 @@ func isFulfillmentPossible(tx *sql.Tx, req soap.UpdateRequest) (bool, error) {
 	req.FulfillerID
 	req.FulfillerLocationCatalog.ManufacturerID
 	req.FulfillerLocationCatalog.CatalogID
-	req.FulfillerLocationCatalog.FulfillerLocationID
+	req.FulfillerLocationCatalog.ExternalLocationID
 	req.Items[] ...
-		Item.PartNumber, UPC, Quantity, FulfillerLocationID
+		Item.PartNumber, UPC, Quantity, ExternalLocationID
 */
 func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 	whereClause_ManCat := ""
@@ -98,7 +98,7 @@ func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 					AND fp.SKU = BinProducts.SKU
 					AND l.ID = $2`+whereClause_UPCorSKU+whereClause_ManCat+`
 				)`, // JOIN Catalogs c ON (c.ID = p.CatalogID)
-			item.Quantity, item.FulfillerLocationID)
+			item.Quantity, item.ExternalLocationID)
 		if err != nil {
 			return
 		}

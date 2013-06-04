@@ -83,7 +83,7 @@ func isAllocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool, 
 				JOIN Products p ON (p.UPC = fp.UPC)
 			WHERE l.ID = $1`+whereClause_UPCorSKU+whereClause_ManCat,
 			//JOIN Catalogs c ON (c.ID = p.CatalogID)
-			item.FulfillerLocationID)
+			item.ExternalLocationID)
 		if err != nil {
 			return isPossible, err
 		}
@@ -100,7 +100,7 @@ func isAllocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool, 
 				JOIN FulfillerProducts fp ON (fp.FulfillerID = lp.FulfillerID AND fp.SKU = lp.SKU)
 				JOIN Locations l ON (l.ID = lp.LocationID)
 			WHERE l.ID = $1`+whereClause_UPCorSKU+whereClause_ManCat,
-			item.FulfillerLocationID)
+			item.ExternalLocationID)
 		if err != nil {
 			return isPossible, err
 		}
@@ -124,9 +124,9 @@ func isAllocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool, 
 	req.FulfillerID
 	req.FulfillerLocationCatalog.ManufacturerID
 	req.FulfillerLocationCatalog.CatalogID
-	req.FulfillerLocationCatalog.FulfillerLocationID
+	req.FulfillerLocationCatalog.ExternalLocationID
 	req.Items[] ...
-		Item.PartNumber, UPC, Quantity, FulfillerLocationID
+		Item.PartNumber, UPC, Quantity, ExternalLocationID
 */
 func allocateAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 	whereClause_ManCat := ""
@@ -161,7 +161,7 @@ func allocateAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 					AND fp.SKU = BinProducts.SKU
 					AND l.ID = $2`+whereClause_UPCorSKU+whereClause_ManCat+`
 				)`, // JOIN Catalogs c ON (c.ID = p.CatalogID)
-			item.Quantity, item.FulfillerLocationID)
+			item.Quantity, item.ExternalLocationID)
 		if err != nil {
 			return
 		}

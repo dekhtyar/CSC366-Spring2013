@@ -25,7 +25,7 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) (err error) {
 		}
 		defer tx.Rollback()
 
-		locationid := rr.LocationName
+		locationid := rr.ExternalLocationID
 
 		rows, err := tx.Query("SELECT id FROM Bins WHERE name = $1 AND locationId = $2", i.BinID, locationid)
 		if err != nil {

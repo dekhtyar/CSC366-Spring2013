@@ -27,7 +27,7 @@ func getBins(w http.ResponseWriter, r *http.Request) (err error) {
 			AND l.ID = $2
 			AND b.Name LIKE '%`+req.SearchTerm+`%'
 		LIMIT $3 OFFSET $4`,
-		req.FulfillerID, req.FulfillerLocationID, req.NumResults, req.ResultsStart)
+		req.FulfillerID, req.ExternalLocationID, req.NumResults, req.ResultsStart)
 	if err != nil {
 		return
 	}
@@ -35,7 +35,7 @@ func getBins(w http.ResponseWriter, r *http.Request) (err error) {
 	var resp soap.GetBinsResponse
 	for rows.Next() {
 		var bin soap.Bin
-		err = rows.Scan(&bin.FulfillerID, &bin.BinID, &bin.FulfillerLocationID,
+		err = rows.Scan(&bin.FulfillerID, &bin.BinID, &bin.ExternalLocationID,
 			&bin.BinType, &bin.BinStatus, &bin.Name)
 		if err != nil {
 			return

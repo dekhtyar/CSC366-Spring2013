@@ -20,7 +20,7 @@ func createBin(w http.ResponseWriter, r *http.Request) (err error) {
 	defer conn.Close()
 
 	res, err := conn.Exec("INSERT INTO Bins(locationId, name, type, status) VALUES($1,$2,$3,$4)",
-		b.FulfillerLocationID, b.Name, b.BinType, b.BinStatus)
+		b.ExternalLocationID, b.Name, b.BinType, b.BinStatus)
 	if err != nil {
 		return
 	}

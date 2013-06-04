@@ -32,10 +32,10 @@ type RefreshItem struct {
 }
 
 type RefreshRequest struct {
-	XMLName           xml.Name `xml:"RefreshRequest"`
-	FulfillerID       uint
-	ExternalLocaionID uint
-	Items             []RefreshItem `xml:">items"`
+	XMLName            xml.Name `xml:"RefreshRequest"`
+	FulfillerID        uint
+	ExternalLocationID uint
+	Items              []RefreshItem `xml:">items"`
 }
 
 type RefreshResponse struct {
