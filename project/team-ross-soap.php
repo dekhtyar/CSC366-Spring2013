@@ -93,8 +93,8 @@ class TeamRossSOAP {
   // **********************************************************************
   // Ross
   // **********************************************************************
-  function fulfillInventory() {
-
+  function fulfillInventory($fulfillInventoryRequest) {
+    return $this->api->fulfillInventory($fulfillInventoryRequest);
   }
 
   // **********************************************************************
