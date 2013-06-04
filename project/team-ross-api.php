@@ -33,24 +33,22 @@ class TeamRossAPI {
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock,$mfgId, $catalogId) {
       // Create Location
       $stmt = $this->db->prepare("
-      	IF EXISTS (SELECT * FROM Locations WHERE internalLocationId = :internalLocationId)
-      	  UPDATE Locations
-      	  SET (externalLocationId = :externalLocationId,
+     	  INSERT INTO Locations
+      	   (externalLocationId, internalLocationId, fulfillerId, locationType,
+      	    latitude, longitude, status, safetyStockLimitDefault)
+      	  VALUES
+      	    (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
+      	    :latitude, :longitude, :status, :safetyStockLimitDefault)
+	  
+	  ON DUPLICATE KEY UPDATE
+	      externalLocationId = :externalLocationId,
       	       fulfillerId = :fulfillerId,
       	       locationType = :locationType ,
       	       latitude = :latitude,
       	       longitude = :longitude,
       	       status = :status,
-      	       safetyStockLimitDefault = :safetyStockLimitDefault)
-      	  WHERE internalLocationId = :internalLocationId
-
-      	ELSE
-      	  INSERT INTO Locations
-      	   (externalLocationId, internalLocationId, fulfillerId, locationType,
-      	    latitude, longitude, status, safetyStockLimitDefault)
-      	  VALUES
-      	    (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
-      	    :latitude, :longitude, :status, :safetyStockLimitDefault);
+      	       safetyStockLimitDefault = :safetyStockLimitDefault ;
+  
       ");
 
     $stmt->bindValue(':externalLocationId', $extLID);
@@ -226,7 +224,7 @@ class TeamRossAPI {
 
 		foreach ($items as $item) {
 			$stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
-			$stmt->bindParam(":quantity", $item['Quantity'];
+			$stmt->bindParam(":quantity", $item['Quantity']);
 			
 			if (!$stmt->execute())
 				$success = False;
