@@ -99,6 +99,6 @@ func main() {
 	http.HandleFunc("/destroyDatabase/", onlyPostAndCORS(execFile("sql/DB-cleanup.sql")))
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		fmt.Println("Unable to start service: " + err.Error())
+		log.Fatal("Unable to start service: " + err.Error())
 	}
 }
