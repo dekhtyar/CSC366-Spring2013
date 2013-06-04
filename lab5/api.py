@@ -20,7 +20,7 @@ def createFulfiller(tuple, db):
 
 def createFulfillmentLocation(tuple, db):
    FulfillerId = 1
-   FulfillerLocationId = 3
+   FulfillerLocationId = 2
    Name = 0
    Type = 4
    Latitude = 5
