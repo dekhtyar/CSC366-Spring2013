@@ -208,11 +208,31 @@ class TeamRossAPI {
   }
 
 	private function allocateInventory($fulfillerId, $items) {
+		$success = True;
+		
     $stmt = $this->db->prepare("
-      UPDATE 
-			SET 
-      WHERE 
+      UPDATE LocationSellsProducts
+			SET allocated = allocated + :quantity
+      WHERE fulfillerId = :fulfillerId
+				AND internalLocationId = 
+					(SELECT FIRST(internalLocationId)
+					FROM Locations
+					WHERE fulfillerId = :fulfillerId2
+						AND	externalLocationId = :externalLocationId);
     ");
+		
+		$stmt->bindParam(":fulfillerId", $fulfillerId);
+		$stmt->bindParam(":fulfillerId2", $fulfillerId);
+
+		foreach ($items as $item) {
+			$stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
+			$stmt->bindParam(":quantity", $item['Quantity'];
+			
+			if (!$stmt->execute())
+				$success = False;
+		}
+		
+		return $success;
 	}
 
   public function createProduct($product) {
