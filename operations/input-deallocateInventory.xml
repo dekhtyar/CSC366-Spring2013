@@ -9,7 +9,7 @@
                   <v4:ManufacturerID>?</v4:ManufacturerID>
                   <v4:CatalogID>?</v4:CatalogID>
                </v4:ManufacturerCatalog>
-               <v4:FulfillerLocationID>?</v4:FulfillerLocationID>
+               <v4:ExternalLocationID>?</v4:ExternalLocationID>
             </v4:FulfillerLocationCatalog>
             <v4:Items>
                <!--Zero or more repetitions:-->
@@ -20,7 +20,7 @@
                   <v4:OrderID>?</v4:OrderID>
                   <v4:OrderItemID>?</v4:OrderItemID>
                   <v4:ShipmentID>?</v4:ShipmentID>
-                  <v4:FulfillerLocationID>?</v4:FulfillerLocationID>
+                  <v4:ExternalLocationID>?</v4:ExternalLocationID>
                </v4:items>
             </v4:Items>
          </v4:request>

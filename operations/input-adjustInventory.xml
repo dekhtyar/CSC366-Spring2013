@@ -3,7 +3,7 @@
    <soapenv:Body>
       <v4:AdjustRequest>
          <v4:FulfillerID>?</v4:FulfillerID>
-         <v4:LocationName>?</v4:LocationName>
+         <v4:ExternalLocationID>?</v4:ExternalLocationID>
          <v4:Items>
             <!--Zero or more repetitions:-->
             <v4:items>

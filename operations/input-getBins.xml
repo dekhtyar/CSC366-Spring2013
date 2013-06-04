@@ -4,7 +4,7 @@
       <v4:getBins>
          <v4:request>
             <v4:FulfillerID>?</v4:FulfillerID>
-            <v4:FulfillerLocationID>?</v4:FulfillerLocationID>
+            <v4:ExternalLocationID>?</v4:ExternalLocationID>
             <v4:SearchTerm>?</v4:SearchTerm>
             <v4:NumResults>?</v4:NumResults>
             <v4:ResultsStart>?</v4:ResultsStart>

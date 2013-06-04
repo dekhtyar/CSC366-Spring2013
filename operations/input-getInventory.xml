@@ -16,10 +16,10 @@
                   <v4:Quantity>?</v4:Quantity>
                </v4:items>
             </v4:Quantities>
-            <v4:LocationNames>
+            <v4:LocationIDs>
                <!--Zero or more repetitions:-->
-               <v4:LocationNames>?</v4:LocationNames>
-            </v4:LocationNames>
+               <v4:ExternalLocationID>?</v4:ExternalLocationID>
+            </v4:LocationIDs>
             <v4:Location>
                <v4:Unit>MILES</v4:Unit>
                <v4:Radius>?</v4:Radius>
