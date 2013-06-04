@@ -288,6 +288,6 @@ class TeamRossAPI {
   }
 
   public function fulfillInventory($fulfillInventoryRequest) {
-    $stmt
+    $stmt = null;
   }
 }
