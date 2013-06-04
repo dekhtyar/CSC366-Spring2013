@@ -134,6 +134,18 @@ class TeamRossAPI {
     return $arr;
   }
 
+	private function getBinTypes() {
+		 $stmt = $this->db->prepare("
+      SELECT binType FROM Bins
+    ");
+
+    $stmt->execute();
+
+    $arr = array();
+    while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+    return $arr;
+	}
+
   private function getFulfillerIdFromLocationId($internalLocationId) {
     $stmt = $this->db->prepare("SELECT fulfillerId FROM Locations WHERE internalLocationId = :internalLocationId");
     $stmt->bindParam(':internalLocationId', $internalLocationId);
