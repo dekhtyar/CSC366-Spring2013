@@ -8,12 +8,12 @@ type CreateBin struct {
 }
 
 type Bin struct {
-	FulfillerID         uint
-	BinID               uint
-	FulfillerLocationID uint
-	BinType             string
-	BinStatus           string
-	Name                string
+	FulfillerID        uint
+	BinID              uint
+	ExternalLocationID uint
+	BinType            string
+	BinStatus          string
+	Name               string
 }
 
 type CreateBinResponse struct {
@@ -32,10 +32,10 @@ type RefreshItem struct {
 }
 
 type RefreshRequest struct {
-	XMLName      xml.Name `xml:"RefreshRequest"`
-	FulfillerID  uint
-	LocationName uint          //LocationName is really location id
-	Items        []RefreshItem `xml:">items"`
+	XMLName           xml.Name `xml:"RefreshRequest"`
+	FulfillerID       uint
+	ExternalLocaionID uint
+	Items             []RefreshItem `xml:">items"`
 }
 
 type RefreshResponse struct {
@@ -66,7 +66,7 @@ type CreateFulfillmentLocation struct {
 type FulfillmentLocation struct {
 	FulfillerID        uint
 	RetailerLocationID uint
-	ExternalLocationID string
+	ExternalLocationID uint
 	LocationName       string
 	LocationType       string
 	Latitude           float64
@@ -86,22 +86,15 @@ type AllocateInventory struct {
 }
 
 type UpdateRequest struct {
-	FulfillerID              uint
-	FulfillerLocationCatalog FulfillmentLocationCatalog
-	Items                    []UpdateItem `xml:">items"`
-}
-
-type FulfillmentLocationCatalog struct {
-	ManufacturerID      uint `xml:"ManufacturerCatalog>ManufacturerID"`
-	CatalogID           uint `xml:"ManufacturerCatalog>CatalogID"`
-	FulfillerLocationID uint
+	FulfillerID uint
+	Items       []UpdateItem `xml:">items"`
 }
 
 type UpdateItem struct {
-	PartNumber          string
-	UPC                 string
-	Quantity            int
-	FulfillerLocationID uint
+	PartNumber         string
+	UPC                string
+	Quantity           int
+	ExternalLocationID uint
 }
 
 type DeallocateInventory struct {
@@ -125,10 +118,10 @@ type GetFulfillerStatusResponse struct {
 }
 
 type AdjustRequest struct {
-	XMLName      xml.Name `xml:"AdjustRequest"`
-	FulfillerID  uint
-	LocationName string
-	Items        []AdjustItem `xml:">items"`
+	XMLName            xml.Name `xml:"AdjustRequest"`
+	FulfillerID        uint
+	ExternalLocationID uint
+	Items              []AdjustItem `xml:">items"`
 }
 
 type AdjustItem struct {
@@ -150,10 +143,8 @@ type GetInventory struct {
 
 type InventoryRequest struct {
 	FulfillerID              uint
-	ManufacturerID           uint            `xml:"Catalog>ManufacturerID"`
-	CatalogID                uint            `xml:"Catalog>CatalogID"`
 	Quantities               []InventoryItem `xml:">items"`
-	LocationNames            []string        `xml:">LocationNames"`
+	LocationIDs              []uint          `xml:">LocationIDs"`
 	Location                 Location
 	Type                     string
 	Limit                    int
@@ -178,22 +169,20 @@ type Location struct {
 }
 
 type GetInventoryResponse struct {
-	XMLName xml.Name        `xml:"getInventoryResponse"`
+	XMLName xml.Name          `xml:"getInventoryResponse"`
 	Return  []InventoryReturn `xml:"getInventoryReturn"`
 }
 
 type InventoryReturn struct {
-	LocationName   string
-	CatalogID      uint
-	ManufacturerID uint
-	OnHand         int
-	Available      int
-	PartNumber     string
-	UPC            string
-	LTD            float64
-	SafetyStock    int
-	CountryCode    string
-	Distance       float64
+	LocationName string
+	OnHand       int
+	Available    int
+	PartNumber   string
+	UPC          string
+	LTD          float64
+	SafetyStock  int
+	CountryCode  string
+	Distance     float64
 }
 
 type GetFulfillerLocations struct {
@@ -202,11 +191,9 @@ type GetFulfillerLocations struct {
 }
 
 type OrderRequest struct {
-	FulfillerID    uint
-	ManufacturerID uint `xml:"Catalog>ManufacturerID"`
-	CatalogID      uint `xml:"Catalog>CatalogID"`
-	Location       Location
-	MaxLocations   uint
+	FulfillerID  uint
+	Location     Location
+	MaxLocations uint
 }
 
 type GetFulfillerLocationsResponse struct {
@@ -215,43 +202,13 @@ type GetFulfillerLocationsResponse struct {
 }
 
 type FulfillmentLocationsReturn struct {
-	FulfillerID         uint
-	FulfillerLocationID uint
+	FulfillerID        uint
+	ExternalLocationID uint
 }
 
 type GetFulfillerLocationTypesResponse struct {
 	XMLName xml.Name `xml:"getFulfillmentLocationTypesResponse"`
 	Return  []string `xml:"getFulfillmentLocationTypesReturn>LocationType"`
-}
-
-type GetItemLocationsByFulfiller struct {
-	XMLName xml.Name               `xml:"getItemLocationsByFulfiller"`
-	Request InventorySearchRequest `xml:"request"`
-}
-
-type InventorySearchRequest struct {
-	FulfillerIDs []uint `xml:">items"`
-	LocationID   uint
-	PostalCode   string
-	PartNumber   string
-	UPC          string
-}
-
-type GetItemLocationsByFulfillerResponse struct {
-	XMLName xml.Name                  `xml:"getItemLocationsByFulfillerResponse"`
-	Return  []InventorySearchResponse `xml:"getItemLocationsByFulfillerReturn"`
-}
-
-type InventorySearchResponse struct {
-	FulfillerID         uint
-	FulfillerLocationID uint
-	LocationName        string
-	PartNumber          string
-	UPC                 string
-	Available           int
-	OnHand              int
-	Allocated           int
-	Distance            float64
 }
 
 type GetBins struct {
@@ -260,11 +217,11 @@ type GetBins struct {
 }
 
 type BinRequest struct {
-	FulfillerID         uint
-	FulfillerLocationID uint
-	SearchTerm          string
-	NumResults          uint
-	ResultsStart        uint
+	FulfillerID        uint
+	ExternalLocationID uint
+	SearchTerm         string
+	NumResults         uint
+	ResultsStart       uint
 }
 
 type GetBinsResponse struct {
