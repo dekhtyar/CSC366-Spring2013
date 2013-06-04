@@ -115,7 +115,7 @@ class TeamRossAPI {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
-  private function getBins($binName, $fulfillerId, $internalLocationId) {
+  public function getBins($binName, $fulfillerId, $internalLocationId) {
     $stmt = $this->db->prepare("
       SELECT * FROM Bins
       WHERE binName LIKE :binName
@@ -134,7 +134,7 @@ class TeamRossAPI {
     return $arr;
   }
 
-	private function getBinTypes() {
+	public function getBinTypes() {
 		 $stmt = $this->db->prepare("
       SELECT binType FROM Bins
     ");
@@ -206,6 +206,14 @@ class TeamRossAPI {
       $stmt3->execute();
     }
   }
+
+	private function allocateInventory($fulfillerId, $items) {
+    $stmt = $this->db->prepare("
+      UPDATE 
+			SET 
+      WHERE 
+    ");
+	}
 
   public function createProduct($product) {
     if (!$this->getCatalog($product['catalog_id']))
