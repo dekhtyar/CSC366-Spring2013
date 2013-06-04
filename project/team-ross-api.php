@@ -294,4 +294,8 @@ class TeamRossAPI {
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
+
+  public function fulfillInventory($fulfillInventoryRequest) {
+    $stmt = null;
+  }
 }
