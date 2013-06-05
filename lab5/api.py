@@ -7,123 +7,148 @@
 
 import MySQLdb
 
-def createFulfiller(tuple, db):
-   FulfillerId = 1
-   cursor = db.cursor()
+def createFulfiller(row, db):
+   # name,fulfiller_id,external_fulfiller_location_id,internal_fulfiller_location_id,description,latitude,longitude,status,safety_stock,mfg_id,catalog_id
+   query = """\
+       INSERT INTO Fulfillers (FulfillerId) VALUES (%s)"""
+
+   parameters = (row['fulfiller_id'],)
 
    try:
-      cursor.execute("INSERT INTO Fulfillers (FulfillerId) VALUES (%s)", (tuple[FulfillerId],))
-      db.commit()
-   except Exception, e:
-      print e
-      db.rollback()
+       with db as cursor:
+           cursor.execute(query, parameters)
+           print 'createFulfiller: inserted', parameters 
+   except MySQLdb.IntegrityError, e:
+       pass
+       #print e
+       #print parameters
 
-def createFulfillmentLocation(tuple, db):
-   FulfillerId = 1
-   FulfillerLocationId = 2
-   Name = 0
-   Type = 4
-   Latitude = 5
-   Longitude = 6
-   Status = 7
-   DefaultSafetyStock = 8
-
-   cursor = db.cursor()
-
-   insertStatement = "INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name, Type, Latitude, Longitude, Status, DefaultSafetyStockLimit)  VALUES (%d, %d, %s, %s, %f, %f, %s, %d)" % (int(tuple[FulfillerId]), int(tuple[FulfillerLocationId]), tuple[Name], tuple[Type], float(tuple[Latitude]), float(tuple[Longitude]), tuple[Status], int(tuple[DefaultSafetyStock]))
+def createBin(row, db):
+   # external_fulfiller_location_id,internal_fulfiller_location_id,bin_name,bin_type,bin_status
+   query = """\
+       INSERT INTO Bins (FulfillerId, FulfillerLocationId,
+                         Name, BinType)
+       VALUES (%s, %s, %s, %s)"""
 
    try:
-      cursor.execute(insertStatement)
-      db.commit()
-   except Exception, e:
-      print e
-      db.rollback()
+       with db as cursor:
+           cursor.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s',
+                          (row['external_fulfiller_location_id'],))
+           location = cursor.fetchone()
+           fulfiller_id = 0 if location is None else location[0]
 
-   insertStatement = "INSERT INTO SubscribeTo (FulfillerId, FulfillerLocationId, ManufacturerId, CatalogueId)  VALUES (%d, %d, %d, %d)" % (int(tuple[FulfillerId]), int(tuple[FulfillerLocationId]), int(tuple[9]), int(tuple[10]))
+           parameters = (fulfiller_id, row['external_fulfiller_location_id'],
+                         row['bin_name'], row['bin_type'])
 
-   try:
-      cursor.execute(insertStatement)
-      db.commit()
-   except Exception, e:
-      print e
-      db.rollback()
+           cursor.execute(query, parameters)
+           print 'createBin: inserted', parameters 
+   except MySQLdb.IntegrityError, e:
+       pass
+       #print e
+       #print parameters
 
-def createManufacturerCatalog(manufacturer_id, catalogue_id, db):
-    cursor = db.cursor()
+def createFulfillmentLocation(row, db):
+   query = """\
+       INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name,
+                              Type, Latitude, Longitude, Status,
+                              DefaultSafetyStockLimit)
+       VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
 
-    try:
-       cursor.execute("INSERT INTO Manufacturers VALUES (%s)", (manufacturer_id,))
-       cursor.execute("INSERT INTO Catalogues VALUES (%s, %s)", (manufacturer_id, 
-                                                                 catalogue_id))
-       db.commit()
-    except Exception, e:
-       print e
-       db.rollback()
-
-def createBin(tuple, db):
-   FulfillerId = 0
-   FulfillerLocationId = 1
-   Name = 2
-   BinType = 3
-   
-   cursor = db.cursor()
+   parameters = (row['fulfiller_id'], row['external_fulfiller_location_id'],
+                 row['name'], row['description'], row['latitude'], row['longitude'],
+                 row['status'], row['safety_stock'])
 
    try:
-      cursor.execute("INSERT INTO Bins (FulfillerId, FulfillerLocationId, Name, BinType) VALUES (%s, %s, %s, %s)", 
-                     (tuple[FulfillerId], tuple[FulfillerLocationId], tuple[Name], tuple[BinType]))
-      db.commit()
-   except Exception, e:
-      print e
-      db.rollback()   
+       with db as cursor:
+           cursor.execute(query, parameters)
+           print 'createFulfillmentLocation: inserted', parameters 
+       createBin({'fulfiller_id': row['fulfiller_id'],
+                  'external_fulfiller_location_id': row['external_fulfiller_location_id'],
+                  'bin_name': 'Default', 'bin_type': 'General'}, db)
+   except MySQLdb.IntegrityError, e:
+       pass
+       #print e
+       #print parameters
 
-def refreshInventory(location_id, item, db):
+def createManufacturerCatalog(row, db):
+   query1 = "INSERT INTO Manufacturers VALUES (%s)"
+   query2 = "INSERT INTO Catalogues VALUES (%s, %s)"
+
+   parameters1 = (row['mfg_id'],)
+   parameters2 = (row['mfg_id'], row['catalog_id'])
+
+   try:
+       with db as cursor:
+           cursor.execute(query1, parameters1)
+           print 'createManufacturerCatalog: inserted', parameters1
+   except MySQLdb.IntegrityError, e:
+       pass
+       #print e
+       #print parameters1
+
+   try:
+       with db as cursor:
+           cursor.execute(query2, parameters2)
+           print 'createManufacturerCatalog: inserted', parameters2 
+   except MySQLdb.IntegrityError, e:
+       pass
+       #print e
+       #print parameters2
+
+def refreshInventory(row, db):
     cur = db.cursor()
 
     # Find the fulfiller_id
     cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s',
-                (location_id,))
+                (row['external_fulfiller_location_id'],))
     location = cur.fetchone()
     fulfiller_id = 0 if location is None else location[0]
 
     sql_stored_at_where = 'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s'
     sql_stored_in_where = sql_stored_at_where+' AND Name = %s' 
-    args_stored_at_where = (item['sku'], fulfiller_id, location_id)
-    args_stored_in_where = args_stored_at_where + (item['binname'],)
+    args_stored_at_where = (row['SKU'], fulfiller_id, row['external_fulfiller_location_id'])
+    args_stored_in_where = args_stored_at_where + (row['bin_name'],)
 
     try:
-        cur.execute('INSERT INTO FulfilledBy VALUES (%s, %s, %s)',
-                    (item['upc'], fulfiller_id, item['sku']))
-
         # Update 'Items' table
-        cur.execute('SELECT UPC FROM Items WHERE UPC = %s', (item['upc'],)) 
+        cur.execute('SELECT UPC FROM Items WHERE UPC = %s', (row['UPC'],)) 
         if not cur.fetchone():
             cur.execute('INSERT INTO Items VALUES (%s, %s, %s, %s)',
-                        (item['upc'], item['mfg_id'], item['catalog_id'], item['name']))
+                        (row['UPC'], row['mfg_id'], row['catalog_id'], row['product_name']))
         else:
             cur.execute('UPDATE Items SET Name = %s, ManufacturerId = %s, CatalogueId = %s WHERE UPC = %s',
-                        (item['name'], item['mfg_id'], item['catalog_id'], item['upc']))
+                        (row['bin_name'], row['mfg_id'], row['catalog_id'], row['UPC']))
+
+        # FulfilledBy
+        cur.execute('INSERT INTO FulfilledBy VALUES (%s, %s, %s)',
+                    (row['UPC'], fulfiller_id, row['SKU']))
 
         # Update 'StoredIn' table
         cur.execute('SELECT SKU FROM StoredIn '+sql_stored_in_where,
                     args_stored_in_where)
         if not cur.fetchone():
             cur.execute('INSERT INTO StoredIn VALUES (%s, %s, %s, %s, %s, %s)',
-                        args_stored_in_where+(item['onhand'], 0))
+                        args_stored_in_where+(row['onhand'], 0))
         else:
             cur.execute('UPDATE StoredIn SET OnHand = %s ' + sql_stored_in_where,
-                        (item['onhand'],)+args_stored_in_where)
+                        (row['onhand'],)+args_stored_in_where)
 
         # Update 'StoredAt' table
         cur.execute('SELECT SKU FROM StoredAt '+sql_stored_at_where,
                     args_stored_at_where)
         if not cur.fetchone():
             cur.execute('INSERT INTO StoredAt VALUES (%s, %s, %s, %s, %s)',
-                        args_stored_at_where+(item['ltd'], item['safety']))
+                        args_stored_at_where+(row['ltd'], row['safety_stock']))
         else:
             cur.execute('UPDATE StoredAt SET LTD = %s, SafetyStockLimit = %s '+
                         sql_stored_at_where,
-                        (item['ltd'], item['safety'])+args_stored_at_where)
+                        (row['ltd'], row['safety_stock'])+args_stored_at_where)
         db.commit()
+
+        print 'refreshInventory: Items: inserted', str((row['UPC'], row['mfg_id'], row['catalog_id'], row['bin_name']))
+        print 'refreshInventory: FulfilledBy: inserted', str((row['UPC'], fulfiller_id, row['SKU']))
+        print 'refreshInventory: StoredIn: inserted', str(args_stored_in_where+(row['onhand'], 0))
+        print 'refreshInventory: StoredAt: inserted', str(args_stored_at_where+(row['ltd'], row['safety_stock']))
     except Exception, e:
         print e
         db.rollback()

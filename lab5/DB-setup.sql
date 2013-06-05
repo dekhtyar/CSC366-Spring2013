@@ -27,8 +27,7 @@ CREATE TABLE Locations (
    Longitude                FLOAT,
    Status                   INTEGER,
    DefaultSafetyStockLimit  INTEGER,
-   PRIMARY KEY (FulfillerId, FulfillerLocationId),
-   UNIQUE (Latitude, Longitude)   
+   PRIMARY KEY (FulfillerId, FulfillerLocationId)
 );
 
 CREATE TABLE Items (
