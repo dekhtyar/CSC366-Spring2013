@@ -19,7 +19,6 @@ var templateNames = [...]string{
 	"request-getFulfillerLocationTypes.xml",
 	"request-getFulfillerStatus.xml",
 	"request-getInventory.xml",
-	"request-getItemLocationsByFulfiller.xml",
 	"request-refreshInventory.xml",
 	"response-adjustInventory.xml",
 	"response-allocateInventory.xml",
@@ -35,7 +34,6 @@ var templateNames = [...]string{
 	"response-getFulfillerLocationTypes.xml",
 	"response-getFulfillerStatus.xml",
 	"response-getInventory.xml",
-	"response-getItemLocationsByFulfiller.xml",
 	"response-refreshInventory.xml",
 }
 
