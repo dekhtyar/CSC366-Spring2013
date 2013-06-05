@@ -836,6 +836,21 @@ public class api {
 		return 1;
    }
 
+	public int adjustInventory (int internalFulfillerLocationId, int binId, int onhand, double ltd, int safetyStock, int adjust) {
+
+		if (onhand+adjust > safetyStock) {
+			System.out.println("Adjusting larger than safety stock");
+		}		
+		try {
+			updateContainedInBin(binId, onhand+adjust, internalFulfillerLocationId, ltd, safetyStock);
+			System.out.println("Adjusted " +bindId);
+		}
+		catch (Exception e) {
+			System.out.println("adjustInventory: " +e);
+		}
+		
+	}
+
   //  public void getInventory(int manuId, int catId, String partNum, String UPC, String locUPC, int quantity, String location, ) { // InventoryRequest: Catalog, Quantities, LocationNames, Location, Type, Limit...
         
  //   }
