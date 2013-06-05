@@ -14,8 +14,8 @@ $client = new SoapClient(
       'password' => 'password',
 
       // Proxy url.
-      'proxy_host' => 'localhost/team-ross/project/', // Do not add the schema here (http or https). It won't work.
-      'proxy_port' => 8080,
+      'proxy_host' => 'cslvm51.csc.calpoly.edu', // Do not add the schema here (http or https). It won't work.
+      'proxy_port' => 80,
 
       // Auth credentials for the proxy.
       'proxy_login' => NULL,
