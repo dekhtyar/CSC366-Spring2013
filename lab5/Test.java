@@ -8,9 +8,8 @@ public class Test {
    private static Connection conn;
    private static api apiCall= new api();
    private static boolean debug = false;
-   private static boolean setup = false;
+   private static boolean setup = true;
    private static boolean cleanup = false;
-   private static int binId = 0;
 
 public static void main(String[] args) {
       
@@ -28,9 +27,9 @@ public static void main(String[] args) {
       }
 
 
-      Object[][] fulfillerLocationCatalog = {{}};
-      Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
-      testAllocateInventory(0, fulfillerLocationCatalog, items);
+      //Object[][] fulfillerLocationCatalog = {{}};
+      //Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
+      //testAllocateInventory(0, fulfillerLocationCatalog, items);
       //testGetBins(54802, "", 100000, 10);
       //testGetBinTypes(48590);
       //testGetBinStatuses(48590);
@@ -264,7 +263,7 @@ try {
                ", " + binType + ", " + binStatus);
          }
      
-ret = apiCall.createBin(externalLocationId, 0, internalFulfillerLocationId,
+ret = apiCall.createBin(externalLocationId, null, internalFulfillerLocationId,
             binType, binStatus, binName);
 
             //System.out.println(i);
@@ -284,7 +283,7 @@ int safetyStock, manufacturerId, catalogId, onhand, internalFulfillerLocationId;
 double ltd;
 
               // apiCall.RefreshItem[] item;
-
+    int binId = 0;
 try {
          in = new Scanner(new File(filename));
       }
@@ -314,9 +313,30 @@ try {
      
                // item = new apiCall.RefreshItem[1];
                // item[0] = new apiCall.RefreshItem(SKU, UPC, null, onhand, ltd, safetyStock);
+      
+      try {
+         String sql = "SELECT Id FROM StoreBin " +
+                      "WHERE Name = ? AND InternalFulfillerLocationId = ?";
+         PreparedStatement ps = conn.prepareStatement(sql);
+
+         ps.setString(1, binName);
+         ps.setInt(2, internalFulfillerLocationId);
+
+         ResultSet r = ps.executeQuery();
+
+         if(r.next()) {
+            binId = r.getInt(1);
+         }
+         else {
+            binId = apiCall.createBin(0, binId, internalFulfillerLocationId, null, null, binName);
+         }
+      }
+      catch(Exception e) {
+         //System.out.println("binId does not exist in the DB");
+         System.out.println(e.toString());
+      }
 			   
-      apiCall.refreshInventory(internalFulfillerLocationId, externalLocationId, SKU, UPC, binId++, onhand, ltd,
-                  safetyStock);
+      apiCall.refreshInventory(internalFulfillerLocationId, externalLocationId, SKU, UPC, binId, onhand, ltd, safetyStock);
       }
 }
 

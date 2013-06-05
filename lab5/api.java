@@ -20,7 +20,7 @@ public class api {
    public class RefreshItem {
         String partNumber;
         String UPC;
-        int BinID;
+        Integer BinID;
         int Quantity;
         double LTD;
         int SafetyStock;
@@ -339,10 +339,10 @@ public class api {
       System.out.println("in createManufacturer Catalog");
    }
 
-   public int createBin (int fulfillerId, int binId, int fulfillerLocationId,
-                        String binType, String binStatus, String binName)
+   public int createBin (int fulfillerId, Integer binId, int fulfillerLocationId,String binType, String binStatus, String binName)
    {
-      if(fulfillerId < 0 || binId < 0 || fulfillerLocationId < 0) {
+      if(fulfillerId < 0 || fulfillerLocationId < 0
+       ||(binId != null && binId < 0)) {
          return -1;
       }
 
@@ -350,23 +350,49 @@ public class api {
          return -1;
 
       try {
-         String sql = "INSERT INTO StoreBin VALUES(NULL, ?, ?, ?, ?, ?)";
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ps.setInt(1, fulfillerLocationId);
-         ps.setString(2, binStatus);
-         ps.setString(3, binType);
-         ps.setString(4, binName);
-         ps.setString(5, "");
+         /*if(binId = null){
+            String getBinId = "SELECT MAX(BinId) FROM StoreBin";
+            Statement s = conn.createStatement();
+            
+            ResultSet r = s.executeQuery(getBinId);
+            Boolean hasNext = r.next();
+            binId = r.getInt(1) + 1;
+         }*/
+
+         String sql = "INSERT INTO StoreBin VALUES(?, ?, ?, ?, ?, ?)";
+         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+         if(binId == null) {
+            ps.setString(1, null);
+         }
+         else {
+            ps.setInt(1, binId);
+         }
+
+         ps.setInt(2, fulfillerLocationId);
+         ps.setString(3, binStatus);
+         ps.setString(4, binType);
+         ps.setString(5, binName);
+         ps.setString(6, "");
 
          ps.executeUpdate();
+
+         if(binId == null) {
+            ResultSet r = ps.getGeneratedKeys();
+            
+            if(r != null && r.next()) {
+               binId = r.getInt(1);
+            }
+         }
       }
       catch (Exception e) {
+         System.out.println(e.toString());
          return -1;
       }
       
       closeConnection();
-      		
-      return 1;
+
+      return binId;
    }
 
    public ArrayList<Object[]> getBins (int fulfillerLocationId, String searchTerm, int numResults, int resultsStart)
