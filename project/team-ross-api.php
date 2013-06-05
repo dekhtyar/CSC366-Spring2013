@@ -39,7 +39,7 @@ class TeamRossAPI {
       	  VALUES
       	    (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
       	    :latitude, :longitude, :status, :safetyStockLimitDefault)
-	  
+
 	  ON DUPLICATE KEY UPDATE
 	      externalLocationId = :externalLocationId,
       	       fulfillerId = :fulfillerId,
@@ -48,7 +48,7 @@ class TeamRossAPI {
       	       longitude = :longitude,
       	       status = :status,
       	       safetyStockLimitDefault = :safetyStockLimitDefault ;
-  
+
       ");
 
     $stmt->bindValue(':externalLocationId', $extLID);
@@ -207,31 +207,61 @@ class TeamRossAPI {
 
 	private function allocateInventory($fulfillerId, $items) {
 		$success = True;
-		
+
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
 			SET allocated = allocated + :quantity
       WHERE fulfillerId = :fulfillerId
-				AND internalLocationId = 
+				AND internalLocationId =
 					(SELECT FIRST(internalLocationId)
 					FROM Locations
 					WHERE fulfillerId = :fulfillerId2
 						AND	externalLocationId = :externalLocationId);
     ");
-		
+
 		$stmt->bindParam(":fulfillerId", $fulfillerId);
 		$stmt->bindParam(":fulfillerId2", $fulfillerId);
 
 		foreach ($items as $item) {
 			$stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
 			$stmt->bindParam(":quantity", $item['Quantity']);
-			
+
 			if (!$stmt->execute())
 				$success = False;
 		}
-		
+
 		return $success;
 	}
+
+  public function fulfillInventory($fulfillInventoryRequest) {
+    $success = true;
+    $fulfillerId = $fulfillInventoryRequest['FulfillerId'];
+    $items = $fulfillInventoryRequest['Items'];
+
+    $stmt = $this->db->prepare("
+      UPDATE LocationSellsProducts
+      SET quantity = :quantity
+      WHERE fulfillerId = :fulfillerId
+        AND internalLocationId =
+          (SELECT FIRST(internalLocationId)
+          FROM Locations
+          WHERE fulfillerId = :fulfillerId2
+            AND externalLocationId = :externalLocationId);
+    ");
+
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":fulfillerId2", $fulfillerId);
+
+    foreach ($items as $item) {
+      $stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
+      $stmt->bindParam(":quantity", $item['Quantity']);
+
+      if (!$stmt->execute())
+        $success = false;
+    }
+
+    return $success;
+  }
 
   public function createProduct($product) {
     if (!$this->getCatalog($product['catalog_id']))
@@ -289,7 +319,7 @@ class TeamRossAPI {
   }
 
   public function getFulfillerLocationType($externalLocationID) {
-    $stmt = $this->prepare("SELECT locationType 
+    $stmt = $this->prepare("SELECT locationType
       FROM Locations WHERE externalLocationId=':externalLocationId'");
     $stmt->bindParam(':externalLocationId', $externalLocationID);
     $stmt->execute();
@@ -320,9 +350,5 @@ class TeamRossAPI {
     $stmt->execute();
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
-  }
-
-  public function fulfillInventory($fulfillInventoryRequest) {
-    $stmt = null;
   }
 }
