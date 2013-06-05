@@ -6,13 +6,8 @@ import (
 	"apersci/soap"
 	"database/sql"
 	"errors"
-	//	"fmt"
 	"net/http"
 )
-
-// TODO catalog lookup is currently commented out
-// because when an item is created it does not have
-// an associated catalog...
 
 func fulfillInventory(w http.ResponseWriter, r *http.Request) (err error) {
 	req, err := input.FulfillInventoryRequest(r.Body)
@@ -65,16 +60,6 @@ func isFulfillmentPossible(tx *sql.Tx, req soap.UpdateRequest) (bool, error) {
 		Item.PartNumber, UPC, Quantity, ExternalLocationID
 */
 func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
-	whereClause_ManCat := ""
-	/*
-		if req.FulfillerLocationCatalog.ManufacturerID != 0 {
-			whereClause_ManCat += fmt.Sprintf(" AND c.ManufacturerID = %d", req.FulfillerLocationCatalog.ManufacturerID)
-		}
-		if req.FulfillerLocationCatalog.CatalogID != 0 {
-			whereClause_ManCat += fmt.Sprintf(" AND c.ID = %d", req.FulfillerLocationCatalog.CatalogID)
-		}
-	*/
-
 	for _, item := range req.Items {
 		whereClause_UPCorSKU := ""
 		if item.PartNumber != "" {
@@ -96,8 +81,8 @@ func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 					JOIN Products p ON (p.UPC = fp.UPC)
 				WHERE fp.FulfillerID = BinProducts.FulfillerID
 					AND fp.SKU = BinProducts.SKU
-					AND l.ID = $2`+whereClause_UPCorSKU+whereClause_ManCat+`
-				)`, // JOIN Catalogs c ON (c.ID = p.CatalogID)
+					AND l.ID = $2`+whereClause_UPCorSKU+`
+				)`,
 			item.Quantity, item.ExternalLocationID)
 		if err != nil {
 			return
