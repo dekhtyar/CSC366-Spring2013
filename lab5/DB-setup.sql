@@ -65,7 +65,8 @@ CREATE TABLE LocationProduct (
     InternalFulfillerLocationId INT REFERENCES Location(InternalFulfillerLocationId),
     RetailerProductId INT REFERENCES RetailerProduct(Id),
     LTD INT,
-    SafeStockLimit INT
+    SafeStockLimit INT,
+    UNIQUE(InternalFulfillerLocationId, RetailerProductId)
     );
 
 CREATE TABLE ContainedInBin (
