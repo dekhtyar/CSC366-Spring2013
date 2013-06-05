@@ -139,11 +139,11 @@ public class api {
    public void allocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
       String check = "SELECT b.Id " +
                      "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-                     "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand >= ? " +
+                     "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - c.SafeStockLimit >= ? " +
                      "ORDER BY c.OnHand";
 
       String allocate = "UPDATE ContainedInBin " +
-                        "SET OnHand = OnHand - ?, Allocated = Allocated + ? " +
+                        "SET Allocated = Allocated + ? " +
                         "WHERE BinId = ?";
 
       updateInventory(check, allocate, fulfillerId, fulfillerLocationCatalog, items);
@@ -156,7 +156,7 @@ public class api {
                      "ORDER BY c.Allocated";
 
       String deallocate = "UPDATE ContainedInBin " +
-                          "SET OnHand = OnHand + ?, Allocated = Allocated - ? " +
+                          "SET Allocated = Allocated - ? " +
                           "WHERE BinId = ?";
 
       updateInventory(check, deallocate, fulfillerId, fulfillerLocationCatalog, items);
@@ -165,11 +165,11 @@ public class api {
    public void fulfillInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
       String check = "SELECT b.Id " +
                      "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-                     "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.Allocated >= ? " +
-                     "ORDER BY c.Allocated";
+                     "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - c.SafeStockLimit >= ? " +
+                     "ORDER BY c.OnHand, c.Allocated";
 
       String fulfill = "UPDATE ContainedInBin " +
-                       "SET Allocated = Allocated - ? " +
+                       "SET OnHand = OnHand - ?, Allocated = Allocated - ? " +
                        "WHERE BinId = ?";
 
       updateInventory(check, fulfill, fulfillerId, fulfillerLocationCatalog, items);
@@ -843,12 +843,15 @@ public class api {
 		}		
 		try {
 			updateContainedInBin(binId, onhand+adjust, internalFulfillerLocationId, ltd, safetyStock);
-			System.out.println("Adjusted " +bindId);
+			System.out.println("Adjusted " +binId);
 		}
 		catch (Exception e) {
 			System.out.println("adjustInventory: " +e);
+			return -1;
 		}
 		
+		return 1;
+
 	}
 
   //  public void getInventory(int manuId, int catId, String partNum, String UPC, String locUPC, int quantity, String location, ) { // InventoryRequest: Catalog, Quantities, LocationNames, Location, Type, Limit...
