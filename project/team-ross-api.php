@@ -288,6 +288,15 @@ class TeamRossAPI {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
+  public function getFulfillerLocationType($externalLocationID) {
+    $stmt = $this->prepare("SELECT locationType 
+      FROM Locations WHERE externalLocationId=':externalLocationId'");
+    $stmt->bindParam(':externalLocationId', $externalLocationID);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
   public function findLocations($fulfillerId, $catalog, $location, $maxlocations) {
   // developers.google.com/maps/articles/phpsqlsearch_v3
     $stmt = $this->db->prepare("
