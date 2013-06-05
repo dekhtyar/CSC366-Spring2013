@@ -238,9 +238,11 @@ class TeamRossAPI {
     $fulfillerId = $fulfillInventoryRequest['FulfillerId'];
     $items = $fulfillInventoryRequest['Items'];
 
+    # TODO: Use getInventory to get the quantity before trying to subtract
+
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-      SET quantity = :quantity
+      SET quantity = (quantity - :quantity)
       WHERE fulfillerId = :fulfillerId
         AND internalLocationId =
           (SELECT FIRST(internalLocationId)
