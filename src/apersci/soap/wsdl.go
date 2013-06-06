@@ -10,7 +10,7 @@ type CreateBin struct {
 type Bin struct {
 	FulfillerID        uint
 	BinID              uint
-	ExternalLocationID uint
+	ExternalLocationID string
 	BinType            string
 	BinStatus          string
 	Name               string
@@ -34,7 +34,7 @@ type RefreshItem struct {
 type RefreshRequest struct {
 	XMLName            xml.Name `xml:"RefreshRequest"`
 	FulfillerID        uint
-	ExternalLocationID uint
+	ExternalLocationID string
 	Items              []RefreshItem `xml:">items"`
 }
 
@@ -66,7 +66,7 @@ type CreateFulfillmentLocation struct {
 type FulfillmentLocation struct {
 	FulfillerID        uint
 	RetailerLocationID uint
-	ExternalLocationID uint
+	ExternalLocationID string
 	LocationName       string
 	LocationType       string
 	Latitude           float64
@@ -94,7 +94,7 @@ type UpdateItem struct {
 	PartNumber         string
 	UPC                string
 	Quantity           int
-	ExternalLocationID uint
+	ExternalLocationID string
 }
 
 type DeallocateInventory struct {
@@ -120,7 +120,7 @@ type GetFulfillerStatusResponse struct {
 type AdjustRequest struct {
 	XMLName            xml.Name `xml:"AdjustRequest"`
 	FulfillerID        uint
-	ExternalLocationID uint
+	ExternalLocationID string
 	Items              []AdjustItem `xml:">items"`
 }
 
@@ -203,7 +203,7 @@ type GetFulfillerLocationsResponse struct {
 
 type FulfillmentLocationsReturn struct {
 	FulfillerID        uint
-	ExternalLocationID uint
+	ExternalLocationID string
 }
 
 type GetFulfillerLocationTypesResponse struct {
@@ -218,7 +218,7 @@ type GetBins struct {
 
 type BinRequest struct {
 	FulfillerID        uint
-	ExternalLocationID uint
+	ExternalLocationID string
 	SearchTerm         string
 	NumResults         uint
 	ResultsStart       uint
