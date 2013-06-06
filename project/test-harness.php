@@ -134,10 +134,12 @@ function db_create_tables($db) {
         productUpc VARCHAR(11) NOT NULL,
         binName VARCHAR(11) NOT NULL,
         internalLocationId VARCHAR(11) NOT NULL,
+        fulfillerId VARCHAR(11) NOT NULL,
         constraint bcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
         constraint bcp_binname_fk FOREIGN KEY (internalLocationId, binName) REFERENCES Bins (internalLocationId, binName),
         constraint bcp_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),
-        constraint bcp_pk PRIMARY KEY (productUpc, internalLocationId, binName)
+        constraint bcp_fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers (fulfillerId),
+        constraint bcp_pk PRIMARY KEY (productUpc, fulfillerId, internalLocationId, binName)
       );
     ");
 
@@ -150,9 +152,11 @@ function db_create_tables($db) {
         allocated VARCHAR(6) DEFAULT '0',
         onHand VARCHAR(6),
         safetyStock VARCHAR(10),
+        fulfillerId VARCHAR(11) NOT NULL,
         constraint lsp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
         constraint lsp_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),
-        constraint lsp_pk PRIMARY KEY (productUpc, internalLocationId)
+        constraint lsp_fulfiller_fk FOREIGN KEY (fulfillerId) REFERENCES Fulfillers (fulfillerId),
+        constraint lsp_pk PRIMARY KEY (productUpc, fulfillerId, internalLocationId)
       );
     ");
 
