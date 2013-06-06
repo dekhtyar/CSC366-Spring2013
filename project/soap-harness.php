@@ -23,7 +23,20 @@
   }
 
   function createFulfillmentLocation($client, $request) {
+    $data = get_csv_data('csv_data/fulfiller_locations.csv');
+    $request->request = new \stdClass;
 
+    foreach ($data as $location) {
+      $request->request->FulfillerID = $location['fulfiller_id'];
+      $request->request->LocationName = $location['name'];
+      $request->request->LocationType = null;
+      $request->request->Latitude = $location['latitude'];
+      $request->request->Longitude = $location['longitude'];
+      $request->request->Status = $location['status'];
+
+      $ret = $client->createFulfillmentLocation($request);
+      print_r($ret);
+    }
   }
 
   function getFulfillmentLocations($client, $request) {

@@ -39,22 +39,24 @@ class TeamRossSOAP {
   // RILEY
   // **********************************************************************
   function createFulfillmentLocation($CreateFulfillmentLocationRequest) {
-    $safetyStockLimitDefault = 0; // FIXME
+    $safetyStockLimitDefault = 0;
     $mfgIdDefault = 0;
     $catalogIdDefaut = 0;
     // no longer checks if FulfillmentLocation exists. Just updates!
-    $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest['LocationName'],
-					  $CreateFulfillmentLocationRequest['ExternalLocationID'],
-					  $CreateFulfillmentLocationRequest['RetailerLocationID'],
-					  $CreateFulfillmentLocationRequest['FulfillerID'],
-					  $CreateFulfillmentLocationRequest['LocationType'],
-					  $CreateFulfillmentLocationRequest['Latitude'],
-					  $CreateFulfillmentLocationRequest['Longitude'],
-					  $CreateFulfillmentLocationRequest['Status'],
+
+    return array('createFulfillmentLocationReturn' => $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest->LocationName,
+					  $CreateFulfillmentLocationRequest->ExternalLocationID,
+					  $CreateFulfillmentLocationRequest->RetailerLocationID,
+					  $CreateFulfillmentLocationRequest->FulfillerID,
+					  $CreateFulfillmentLocationRequest->LocationType,
+					  $CreateFulfillmentLocationRequest->Latitude,
+					  $CreateFulfillmentLocationRequest->Longitude,
+					  $CreateFulfillmentLocationRequest->Status,
 					  $safetyStockLimitDefault,
 					  $mfgIdDefault,
 					  $catalogIdDefault
-          );
+          )
+        );
   }
 
   // **********************************************************************
