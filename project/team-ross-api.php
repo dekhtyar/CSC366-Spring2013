@@ -33,21 +33,21 @@ class TeamRossAPI {
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock,$mfgId, $catalogId) {
       // Create Location
       $stmt = $this->db->prepare("
-     	  INSERT INTO Locations
-      	   (externalLocationId, internalLocationId, fulfillerId, locationType,
-      	    latitude, longitude, status, safetyStockLimitDefault)
-      	  VALUES
-      	    (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
-      	    :latitude, :longitude, :status, :safetyStockLimitDefault)
+         INSERT INTO Locations
+           (externalLocationId, internalLocationId, fulfillerId, locationType,
+            latitude, longitude, status, safetyStockLimitDefault)
+          VALUES
+            (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
+            :latitude, :longitude, :status, :safetyStockLimitDefault)
 
-	  ON DUPLICATE KEY UPDATE
-	      externalLocationId = :externalLocationId,
-      	       fulfillerId = :fulfillerId,
-      	       locationType = :locationType ,
-      	       latitude = :latitude,
-      	       longitude = :longitude,
-      	       status = :status,
-      	       safetyStockLimitDefault = :safetyStockLimitDefault ;
+    ON DUPLICATE KEY UPDATE
+        externalLocationId = :externalLocationId,
+               fulfillerId = :fulfillerId,
+               locationType = :locationType ,
+               latitude = :latitude,
+               longitude = :longitude,
+               status = :status,
+               safetyStockLimitDefault = :safetyStockLimitDefault ;
 
       ");
 
@@ -126,9 +126,9 @@ class TeamRossAPI {
     return $arr;
   }
 
-	public function getBinTypes() {
-		 $stmt = $this->db->prepare("
-      SELECT binType FROM Bins
+  public function getBinTypes() {
+     $stmt = $this->db->prepare("
+      SELECT DISTINCT(binType) FROM Bins
     ");
 
     $stmt->execute();
@@ -136,7 +136,7 @@ class TeamRossAPI {
     $arr = array();
     while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
     return $arr;
-	}
+  }
 
   private function getFulfillerIdFromLocationId($internalLocationId) {
     $stmt = $this->db->prepare("SELECT fulfillerId FROM Locations WHERE internalLocationId = :internalLocationId");
@@ -204,33 +204,33 @@ class TeamRossAPI {
     }
   }
 
-	private function allocateInventory($fulfillerId, $items) {
-		$success = True;
+  private function allocateInventory($fulfillerId, $items) {
+    $success = True;
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-			SET allocated = allocated + :quantity
+      SET allocated = allocated + :quantity
       WHERE fulfillerId = :fulfillerId
-				AND internalLocationId =
-					(SELECT FIRST(internalLocationId)
-					FROM Locations
-					WHERE fulfillerId = :fulfillerId2
-						AND	externalLocationId = :externalLocationId);
+        AND internalLocationId =
+          (SELECT FIRST(internalLocationId)
+          FROM Locations
+          WHERE fulfillerId = :fulfillerId2
+            AND  externalLocationId = :externalLocationId);
     ");
 
-		$stmt->bindParam(":fulfillerId", $fulfillerId);
-		$stmt->bindParam(":fulfillerId2", $fulfillerId);
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":fulfillerId2", $fulfillerId);
 
-		foreach ($items as $item) {
-			$stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
-			$stmt->bindParam(":quantity", $item['Quantity']);
+    foreach ($items as $item) {
+      $stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
+      $stmt->bindParam(":quantity", $item['Quantity']);
 
-			if (!$stmt->execute())
-				$success = False;
-		}
+      if (!$stmt->execute())
+        $success = False;
+    }
 
-		return $success;
-	}
+    return $success;
+  }
 
   public function fulfillInventory($fulfillInventoryRequest) {
     $success = true;
@@ -335,8 +335,8 @@ class TeamRossAPI {
       FROM Locations l INNER JOIN LocationOffersCatalogs lc
       ON lc.internalLocationId = l.interalLocationId
       WHERE lc.fulfillerId = :fulfillerId
-	    AND lc.manufacturerId = :mfgId
-	    AND lc.catalogId = :catalogId
+      AND lc.manufacturerId = :mfgId
+      AND lc.catalogId = :catalogId
       HAVING distance < :distance
       ORDER BY distance
       LIMIT 0 , :maxlocations
