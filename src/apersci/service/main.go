@@ -30,6 +30,22 @@ func getDBTransaction() (tx *sql.Tx, err error) {
 	return
 }
 
+func getInternalFromExternalLocationID(tx *sql.Tx, extLocationID uint) (locationID uint, err error) {
+	rows, err := tx.Query("SELECT id FROM Locations WHERE externalFulfillerID = $1", extLocationID)
+	if err != nil {
+		return
+	}
+
+	rows.Next()
+	err = rows.Scan(&locationID)
+	if err != nil {
+		return
+	}
+	rows.Close()
+
+	return
+}
+
 func getFileContents(fileName string) (contents string, err error) {
 	var b bytes.Buffer
 	f, err := os.Open(fileName)

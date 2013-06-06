@@ -66,7 +66,7 @@ func isDeallocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool
 				JOIN Bins b ON (b.ID = bp.BinID)
 				JOIN Locations l ON (l.ID = b.LocationID)
 				JOIN Products p ON (p.UPC = fp.UPC)
-			WHERE l.ID = $1`+whereClause_UPCorSKU,
+			WHERE l.ExternalFulfillerID = $1`+whereClause_UPCorSKU,
 			item.ExternalLocationID)
 		if err != nil {
 			return isPossible, err
@@ -116,7 +116,7 @@ func deallocateAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 					JOIN Products p ON (p.UPC = fp.UPC)
 				WHERE fp.FulfillerID = BinProducts.FulfillerID
 					AND fp.SKU = BinProducts.SKU
-					AND l.ID = $2`+whereClause_UPCorSKU+`
+					AND l.ExternalFulfillerID = $2`+whereClause_UPCorSKU+`
 				)`,
 			item.Quantity, item.ExternalLocationID)
 		if err != nil {

@@ -81,7 +81,7 @@ func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 					JOIN Products p ON (p.UPC = fp.UPC)
 				WHERE fp.FulfillerID = BinProducts.FulfillerID
 					AND fp.SKU = BinProducts.SKU
-					AND l.ID = $2`+whereClause_UPCorSKU+`
+					AND l.ExternalFulfillerID = $2`+whereClause_UPCorSKU+`
 				)`,
 			item.Quantity, item.ExternalLocationID)
 		if err != nil {

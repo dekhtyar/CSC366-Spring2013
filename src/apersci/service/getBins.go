@@ -24,7 +24,7 @@ func getBins(w http.ResponseWriter, r *http.Request) (err error) {
 		FROM Bins b
 			JOIN Locations l ON (l.Id = b.LocationID)
 		WHERE l.FulfillerID = $1
-			AND l.ID = $2
+			AND l.externalFulfillerID = $2
 			AND b.Name LIKE '%`+req.SearchTerm+`%'
 		LIMIT $3 OFFSET $4`,
 		req.FulfillerID, req.ExternalLocationID, req.NumResults, req.ResultsStart)

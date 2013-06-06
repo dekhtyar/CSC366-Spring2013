@@ -13,20 +13,30 @@ func createBin(w http.ResponseWriter, r *http.Request) (err error) {
 		return
 	}
 
-	conn, err := getDBConnection()
+	tx, err := getDBTransaction()
 	if err != nil {
 		return
 	}
-	defer conn.Close()
+	defer tx.Rollback()
 
-	res, err := conn.Exec("INSERT INTO Bins(locationId, name, type, status) VALUES($1,$2,$3,$4)",
-		b.ExternalLocationID, b.Name, b.BinType, b.BinStatus)
+	locationID, err := getInternalFromExternalLocationID(tx, b.ExternalLocationID)
+	if err != nil {
+		return
+	}
+
+	res, err := tx.Exec("INSERT INTO Bins(locationId, name, type, status) VALUES($1,$2,$3,$4)",
+		locationID, b.Name, b.BinType, b.BinStatus)
 	if err != nil {
 		return
 	}
 
 	rows, _ := res.RowsAffected()
 	err = output.CreateBinResponse(w, fmt.Sprint(rows))
+	if err != nil {
+		return
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		return
 	}
