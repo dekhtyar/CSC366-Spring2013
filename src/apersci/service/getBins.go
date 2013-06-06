@@ -19,8 +19,9 @@ func getBins(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 	defer conn.Close()
 
+	// FIXME remove potential SQL injection
 	rows, err := conn.Query(`
-		SELECT l.FulfillerID, b.ID, l.ID, b.Type, b.Status, b.Name
+		SELECT l.FulfillerID, b.ID, l.externalFulfillerID, b.Type, b.Status, b.Name
 		FROM Bins b
 			JOIN Locations l ON (l.Id = b.LocationID)
 		WHERE l.FulfillerID = $1

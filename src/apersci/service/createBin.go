@@ -3,7 +3,6 @@ package main
 import (
 	"apersci/input"
 	"apersci/output"
-	"fmt"
 	"net/http"
 )
 

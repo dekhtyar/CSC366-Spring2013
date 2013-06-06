@@ -43,17 +43,17 @@ func getInventory(w http.ResponseWriter, r *http.Request) (err error) {
 	defer conn.Close()
 
 	/*
-				FulfillerID              uint
-		153     ManufacturerID           uint            `xml:"Catalog>ManufacturerID"`
-		154     CatalogID                uint            `xml:"Catalog>CatalogID"`
-		155     Quantities               []InventoryItem `xml:">items"`
-		156     LocationNames            []string        `xml:">LocationNames"`
-		157     Location                 Location
-		158     Type                     string
-		159     Limit                    int
-		160     IgnoreSafetyStock        bool
-		161     IncludeNegativeInventory bool
-		162     OrderByLTD               bool
+		144 type InventoryRequest struct {
+		145     FulfillerID              uint
+		146     Quantities               []InventoryItem `xml:">items"`
+		147     LocationIDs              []uint          `xml:">LocationIDs"`
+		148     Location                 Location
+		149     Type                     string
+		150     Limit                    int
+		151     IgnoreSafetyStock        bool
+		152     IncludeNegativeInventory bool
+		153     OrderByLTD               bool
+		154 }
 	*/
 	req = req
 	var resp soap.GetInventoryResponse

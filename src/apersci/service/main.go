@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"database/sql"
+	"errors"
 	"fmt"
 	_ "github.com/bmizerany/pq"
 	"log"
@@ -36,12 +37,20 @@ func getInternalFromExternalLocationID(tx *sql.Tx, extLocationID string) (locati
 		return
 	}
 
-	rows.Next()
+	if !rows.Next() {
+		err = errors.New("Location with ID = '" + extLocationID + "' was not found.")
+		return
+	}
+
 	err = rows.Scan(&locationID)
 	if err != nil {
 		return
 	}
-	rows.Close()
+
+	err = rows.Close()
+	if err != nil {
+		return
+	}
 
 	return
 }
