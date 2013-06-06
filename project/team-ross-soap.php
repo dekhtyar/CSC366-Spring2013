@@ -32,7 +32,7 @@ class TeamRossSOAP {
   // Ross
   // **********************************************************************
   function getFulfillerStatus($getFulfillerStatusRequest) {
-    return $this->api->getFulfillerStatus($getFulfillerStatusRequest['fulfillerId']);
+    return array('getFulfillerStatusReturn' => $this->api->getFulfillerStatus($getFulfillerStatusRequest->fulfillerID) ? 1 : 0);
   }
 
   // **********************************************************************
@@ -76,14 +76,16 @@ class TeamRossSOAP {
   // Matt T
   // **********************************************************************
   function getFulfillmentLocationTypes() {
-
+    //Unclear how id is selected. Sounds like should be
+    //ExternalLocationID which is external fulf location id?
+    //return $this->api->getFulfillerLocationType($extId)
   }
 
   // **********************************************************************
   // Matt S
   // **********************************************************************
   function allocateInventory($UpdateRequest) {
-		return $this->api->allocateInventory($UpdateItem['FulfillerId'], 
+		return $this->api->allocateInventory($UpdateItem['FulfillerId'],
 			$UpdateItem['Items']) ? 0 : -1;
   }
 
@@ -91,7 +93,7 @@ class TeamRossSOAP {
   // Ian
   // **********************************************************************
   function deallocateInventory() {
-		
+
   }
 
   // **********************************************************************
@@ -105,25 +107,41 @@ class TeamRossSOAP {
   // MATT S
   // **********************************************************************
   function createBin($CreateBinRequest) {
-    return $this->api->createBin($CreateBinRequest['FulfillerLocationID'],
- 		$CreateBinRequest['Name'], $CreateBinRequest['BinType'],
-		$CreateBinRequest['BinStatus']) ? 0 : -1;
+    return array(
+      'createBinReturn' => $this->api->createBin($CreateBinRequest->FulfillerId,
+ 		$CreateBinRequest->Name, $CreateBinRequest->BinType,
+		$CreateBinRequest->BinStatus) ? 0 : -1
+    );
   }
 
   // **********************************************************************
   // IAN
   // **********************************************************************
   function getBins($GetBinsRequest) {
-    $bins = $this->api->getBins($GetBinRequest['SearchTerm'], $GetBinRequest['FulfillerID'], $GetBinRequest['FulfillerLocationID']);
+    $bins = $this->api->getBins($GetBinRequest['SearchTerm'], $GetBinRequest['FulfillerLocationID']);
 
-    return array_slice($bins, $GetBinRequest['ResultsStart'], $GetBinRequest['NumResults']);
+    return array(
+      'getBinsReturn' => array(
+        'Bins' => array_slice($bins, $GetBinRequest['ResultsStart'], $GetBinRequest['NumResults']),
+        'ResultCount' => count($bins)
+      ));
   }
 
   // **********************************************************************
   // Matt S
   // **********************************************************************
   function getBinTypes() {
-		return $this->api->getBinTypes();
+		$bins = $this->api->getBinTypes();
+    $returnArr = array();
+
+    print_r($bins);
+
+    foreach ($bins as $bin) {
+      if ($bin['binType'])
+        $returnArr[]['BinType'] = $bin['binType'];
+    }
+
+    return array('getBinTypesReturn' => $returnArr);
   }
 
   // **********************************************************************

@@ -15,7 +15,7 @@ class TeamRossAPI {
     return $stmt->execute();
   }
 
-  public function getFullfilerStatus($fulfiller_id) {
+  public function getFulfillerStatus($fulfiller_id) {
     $stmt = $this->db->prepare("
       SELECT count(*) total
       FROM Locations
@@ -33,22 +33,22 @@ class TeamRossAPI {
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock,$mfgId, $catalogId) {
       // Create Location, update if exists
       $stmt = $this->db->prepare("
-     	  INSERT INTO Locations
-      	   (externalLocationId, internalLocationId, fulfillerId, locationType,
-      	    latitude, longitude, status, safetyStockLimitDefault)
-      	  VALUES
-      	    (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
-      	    :latitude, :longitude, :status, :safetyStockLimitDefault)
-	  
-	  ON DUPLICATE KEY UPDATE
-	      externalLocationId = :externalLocationId,
-      	       fulfillerId = :fulfillerId,
-      	       locationType = :locationType ,
-      	       latitude = :latitude,
-      	       longitude = :longitude,
-      	       status = :status,
-      	       safetyStockLimitDefault = :safetyStockLimitDefault ;
-  
+         INSERT INTO Locations
+           (externalLocationId, internalLocationId, fulfillerId, locationType,
+            latitude, longitude, status, safetyStockLimitDefault)
+          VALUES
+            (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
+            :latitude, :longitude, :status, :safetyStockLimitDefault)
+
+    ON DUPLICATE KEY UPDATE
+        externalLocationId = :externalLocationId,
+               fulfillerId = :fulfillerId,
+               locationType = :locationType ,
+               latitude = :latitude,
+               longitude = :longitude,
+               status = :status,
+               safetyStockLimitDefault = :safetyStockLimitDefault ;
+
       ");
 
     $stmt->bindValue(':externalLocationId', $extLID);
@@ -67,14 +67,13 @@ class TeamRossAPI {
 
     // Create LocationOffersCatalog
     $relational = $this->db->prepare("
-      INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId, fulfillerId)
-      VALUES (:catalogId, :manufacturerId, :internalLocationId, :fulfillerId);
+      INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId)
+      VALUES (:catalogId, :manufacturerId, :internalLocationId);
     ");
 
     $relational->bindParam(':catalogId', $catalogId);
     $relational->bindParam(':manufacturerId', $mfgId);
     $relational->bindParam(':internalLocationId', $intLID);
-    $relational->bindParam(':fulfillerId', $fulfillerId);
 
     $relational->execute();
   }
@@ -82,30 +81,27 @@ class TeamRossAPI {
   public function createBin($intLID, $name, $binType, $status) {
     $stmt = $this->db->prepare("
       INSERT INTO Bins
-        (internalLocationId, binName, binType, status, fulfillerId)
+        (internalLocationId, binName, binType, status)
       VALUES
-        (:internalLocationId, :binName, :binType, :status, :fulfillerId);
+        (:internalLocationId, :binName, :binType, :status);
     ");
 
     $stmt->bindValue(':internalLocationId', $intLID);
     $stmt->bindValue(':binName', $name);
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
-    $stmt->bindValue(':fulfillerId', $this->getFulfillerIdFromLocationId($intLID));
 
     return $stmt->execute();
   }
 
-  private function getBin($binName, $fulfillerId, $internalLocationId) {
+  private function getBin($binName, $internalLocationId) {
     $stmt = $this->db->prepare("
       SELECT * FROM Bins
       WHERE binName = :binName
-      AND fulfillerId = :fulfillerId
       AND internalLocationId = :internalLocationId
     ");
 
     $stmt->bindValue(':binName', $binName);
-    $stmt->bindValue(':fulfillerId', $fulfillerId);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
     $stmt->execute();
@@ -113,16 +109,14 @@ class TeamRossAPI {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
-  public function getBins($binName, $fulfillerId, $internalLocationId) {
+  public function getBins($binName, $internalLocationId) {
     $stmt = $this->db->prepare("
       SELECT * FROM Bins
       WHERE binName LIKE :binName
-      AND fulfillerId = :fulfillerId
       AND internalLocationId = :internalLocationId
     ");
 
     $stmt->bindValue(':binName', $binName);
-    $stmt->bindValue(':fulfillerId', $fulfillerId);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
     $stmt->execute();
@@ -132,9 +126,9 @@ class TeamRossAPI {
     return $arr;
   }
 
-	public function getBinTypes() {
-		 $stmt = $this->db->prepare("
-      SELECT binType FROM Bins
+  public function getBinTypes() {
+     $stmt = $this->db->prepare("
+      SELECT DISTINCT(binType) FROM Bins
     ");
 
     $stmt->execute();
@@ -142,7 +136,7 @@ class TeamRossAPI {
     $arr = array();
     while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
     return $arr;
-	}
+  }
 
   public function getBinStatuses() {
     $stmt = $this->db->prepare("
@@ -169,28 +163,29 @@ class TeamRossAPI {
     // STATEMENTS
     $stmt1 = $this->db->prepare("
       INSERT INTO BinContainsProducts
-        (binName, fulfillerId, internalLocationId, productUpc)
+        (binName, internalLocationId, productUpc, fulfillerId)
       VALUES
-        (:binName, :fulfillerId, :internalLocationId, :productUpc)
+        (:binName, :internalLocationId, :productUpc, :fulfillerId)
     ");
 
-    $stmt2 = $this->db->prepare("INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
-        VALUES(:fulfillerId, :productUpc, :sku)");
+    $stmt2 = $this->db->prepare("
+      INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
+      VALUES(:fulfillerId, :productUpc, :sku)
+    ");
 
     $stmt3 = $this->db->prepare("
-        INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand)
-        VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand)
-      ");
+      INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
+      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand, :fulfillerId)
+    ");
 
     // UPDATE INVENTORY FOR EACH ITEM
     foreach ($items as $item) {
       $fulfillerId = $this->getFulfillerIdFromLocationId($item['internal_fulfiller_location_id']);
 
       $stmt1->bindParam(':binName', $item['bin_name']);
-      $stmt1->bindParam(':fulfillerId', $fulfillerId);
       $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
       $stmt1->bindParam(':productUpc', $item['UPC']);
-      $stmt1->bindParam(':onHand', $item['onhand']);
+      $stmt1->bindParam(':fulfillerId', $fulfillerId);
 
       $stmt2->bindParam(':fulfillerId', $fulfillerId);
       $stmt2->bindParam(':productUpc', $item['UPC']);
@@ -201,49 +196,85 @@ class TeamRossAPI {
       $stmt3->bindParam(':storeSku', $item['SKU']);
       $stmt3->bindParam(':safetyStock', $item['safety_stock']);
       $stmt3->bindParam(':ltd', $item['ltd']);
+      $stmt3->bindParam(':onHand', $item['onHand']);
+      $stmt3->bindParam(':fulfillerId', $fulfillerId);
 
       // create product if missing
       if (!$this->getProductFromUpc($item['UPC']))
         $this->createProduct($item);
 
       // create bin if missing
-      if (!$this->getBin($item['bin_name'], $fulfillerId, $item['internal_fulfiller_location_id']))
-        $this->createBin($item['internal_fulfiller_location_id'], $item['bin_name'], '', '');
+      if (!$this->getBin($item['bin_name'], $item['internal_fulfiller_location_id']))
+        print "Bin doesn't exist.\n";
 
       // execute queries
-      $stmt1->execute();
-      $stmt2->execute();
-      $stmt3->execute();
+      else {
+        $stmt1->execute();
+        $stmt2->execute();
+        $stmt3->execute();
+      }
     }
   }
 
-	private function allocateInventory($fulfillerId, $items) {
-		$success = True;
-		
+  private function allocateInventory($fulfillerId, $items) {
+    $success = True;
+
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-			SET allocated = allocated + :quantity
+      SET allocated = allocated + :quantity
       WHERE fulfillerId = :fulfillerId
-				AND internalLocationId = 
-					(SELECT FIRST(internalLocationId)
-					FROM Locations
-					WHERE fulfillerId = :fulfillerId2
-						AND	externalLocationId = :externalLocationId);
+        AND internalLocationId =
+          (SELECT FIRST(internalLocationId)
+          FROM Locations
+          WHERE fulfillerId = :fulfillerId2
+            AND  externalLocationId = :externalLocationId);
     ");
-		
-		$stmt->bindParam(":fulfillerId", $fulfillerId);
-		$stmt->bindParam(":fulfillerId2", $fulfillerId);
 
-		foreach ($items as $item) {
-			$stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
-			$stmt->bindParam(":quantity", $item['Quantity']);
-			
-			if (!$stmt->execute())
-				$success = False;
-		}
-		
-		return $success;
-	}
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":fulfillerId2", $fulfillerId);
+
+    foreach ($items as $item) {
+      $stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
+      $stmt->bindParam(":quantity", $item['Quantity']);
+
+      if (!$stmt->execute())
+        $success = False;
+    }
+
+    return $success;
+  }
+
+  public function fulfillInventory($fulfillInventoryRequest) {
+    $success = true;
+    $fulfillerId = $fulfillInventoryRequest['FulfillerId'];
+    $items = $fulfillInventoryRequest['Items'];
+
+    # TODO: Use getInventory to get the quantity before trying to subtract
+
+    $stmt = $this->db->prepare("
+      UPDATE LocationSellsProducts
+      SET quantity = (quantity - :quantity)
+      WHERE fulfillerId = :fulfillerId
+        AND internalLocationId =
+          (SELECT FIRST(internalLocationId)
+          FROM Locations
+          WHERE fulfillerId = :fulfillerId2
+            AND externalLocationId = :externalLocationId);
+    ");
+
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":fulfillerId2", $fulfillerId);
+
+    foreach ($items as $item) {
+      $stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
+      $stmt->bindParam(":quantity", $item['Quantity']);
+
+      if (!$stmt->execute())
+        $success = false;
+    }
+
+    return $success;
+  }
 
   public function createProduct($product) {
     if (!$this->getCatalog($product['catalog_id']))
@@ -300,6 +331,15 @@ class TeamRossAPI {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
+  public function getFulfillerLocationType($externalLocationID) {
+    $stmt = $this->prepare("SELECT locationType
+      FROM Locations WHERE externalLocationId=':externalLocationId'");
+    $stmt->bindParam(':externalLocationId', $externalLocationID);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+
   public function findLocations($fulfillerId, $catalog, $location, $maxlocations) {
   // developers.google.com/maps/articles/phpsqlsearch_v3
     $stmt = $this->db->prepare("
@@ -315,8 +355,8 @@ class TeamRossAPI {
       FROM Locations l INNER JOIN LocationOffersCatalogs lc
       ON lc.internalLocationId = l.interalLocationId
       WHERE lc.fulfillerId = :fulfillerId
-	    AND lc.manufacturerId = :mfgId
-	    AND lc.catalogId = :catalogId
+      AND lc.manufacturerId = :mfgId
+      AND lc.catalogId = :catalogId
       HAVING distance < :distance
       ORDER BY distance
       LIMIT 0 , :maxlocations
@@ -333,9 +373,5 @@ class TeamRossAPI {
     $stmt->execute();
 
     return $stmt->fetchALL(PDO::FETCH_ASSOC);
-  }
-
-  public function fulfillInventory($fulfillInventoryRequest) {
-    $stmt = null;
   }
 }
