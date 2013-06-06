@@ -58,19 +58,20 @@ def createFulfillmentLocation(row, db):
                  row['name'], row['description'], row['latitude'], row['longitude'],
                  row['status'], row['safety_stock'])
 
-   SubscribeTo_query = """\
-       INSERT INTO SubscribeTo (FulfillerId, FulfillerLocationId,
-                                ManufacturerId, CatalogueId) 
-       VALUES (%s, %s, %s, %s)"""
-   SubscribeTo_parameters = (row['fulfiller_id'], row['external_fulfiller_location_id'],
-                             row['mfg_id'], row['catalog_id'])
+   # This doesn't work because request doesn't contain the manufacturer or catalogue information
+   #SubscribeTo_query = """\
+   #    INSERT INTO SubscribeTo (FulfillerId, FulfillerLocationId,
+   #                             ManufacturerId, CatalogueId) 
+   #    VALUES (%s, %s, %s, %s)"""
+   #SubscribeTo_parameters = (row['fulfiller_id'], row['external_fulfiller_location_id'],
+   #                          row['mfg_id'], row['catalog_id'])
 
    try:
        with db as cursor:
            cursor.execute(query, parameters)
            print 'createFulfillmentLocation: Locations: inserted', parameters 
-           cursor.execute(SubscribeTo_query, SubscribeTo_parameters)
-           print 'createFulfillmentLocation: SubscribeTo: inserted', SubscribeTo_parameters 
+           #cursor.execute(SubscribeTo_query, SubscribeTo_parameters)
+           #print 'createFulfillmentLocation: SubscribeTo: inserted', SubscribeTo_parameters 
        createBin({'fulfiller_id': row['fulfiller_id'],
                   'external_fulfiller_location_id': row['external_fulfiller_location_id'],
                   'bin_name': 'Default', 'bin_type': 'General'}, db)

@@ -1,6 +1,8 @@
 #!/usr/local/bin/python2.7
 
 import sys
+import api
+import MySQLdb
 from ZSI.ServiceContainer import AsServer
 from CoreServiceService_services_server import *
 
@@ -17,9 +19,10 @@ class Service(CoreServiceService):
         print "soap_createFulfiller:", FulfillerID, Name
 
         # Call API function with arguments above
+        api.createFulfiller({'fulfiller_id': FulfillerID}, db)
 
         # Set these values with results from calliing API function
-        createFulfillerReturn = 0 
+        createFulfillerReturn = 1 
 
         res.set_element_createFulfillerReturn(createFulfillerReturn)
         
@@ -57,10 +60,15 @@ class Service(CoreServiceService):
         Status = r.get_element_Status()
         print "soap_createFulfillmentLocation:", CountryCode, ExternalLocationID, FulfillerID, Latitude, LocationName, LocationType, Longitude, RetailerLocationID, Status
 
-        # Call API function with arguments above
+        api.createFulfillmentLocation({'fulfiller_id': FulfillerID,
+                                       'external_fulfiller_location_id': ExternalLocationID,
+                                       'name': LocationName, 'description': LocationType,
+                                       'latitude': Latitude, 'longitude': Longitude,
+                                       'status': Status,
+                                       'safety_stock': 0}, db)
 
         # Set these values with results from calliing API function
-        createFulfillmentLocationReturn = 0
+        createFulfillmentLocationReturn = 1 
 
         res.set_element_createFulfillmentLocationReturn(createFulfillmentLocationReturn)
 
@@ -196,7 +204,7 @@ class Service(CoreServiceService):
         res = CoreServiceService.soap_createBin(self, ps)
         req = self.request
 
-        r = req.new_request()
+        r = req.get_element_request()
 
         BinID = r.get_element_BinID()
         BinStatus = r.get_element_BinStatus()
@@ -207,6 +215,11 @@ class Service(CoreServiceService):
         print "soap_createBin:", BinID, BinStatus, BinType, FulfillerID, FulfillerLocationID, Name
 
         # Call API function with arguments above
+
+        print FulfillerLocationID
+        api.createBin({'fulfiller_id': FulfillerID,
+                       'external_fulfiller_location_id': FulfillerLocationID,
+                       'bin_name': BinID, 'bin_type': BinType}, db)
 
         # Set these values with results from calliing API function
         createBinReturn = 1
@@ -292,6 +305,8 @@ class Service(CoreServiceService):
 
 
 if __name__ == "__main__" :
-    port = 80
+    db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory_test")
+    port = 443 
     AsServer(port, (Service(),))
+    db.close()
 

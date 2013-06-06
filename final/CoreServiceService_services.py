@@ -13,7 +13,7 @@ from ZSI.generate.pyclass import pyclass_type
 
 # Locator
 class CoreServiceServiceLocator:
-    CoreService_address = "http://localhost/inventoryService/"
+    CoreService_address = "http://cslvm52.csc.calpoly.edu/inventoryService/"
     def getCoreServiceAddress(self):
         return CoreServiceServiceLocator.CoreService_address
     def getCoreService(self, url=None, **kw):
