@@ -15,7 +15,7 @@ class TeamRossAPI {
     return $stmt->execute();
   }
 
-  public function getFullfilerStatus($fulfiller_id) {
+  public function getFulfillerStatus($fulfiller_id) {
     $stmt = $this->db->prepare("
       SELECT count(*) total
       FROM Locations

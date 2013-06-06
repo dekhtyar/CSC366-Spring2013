@@ -14,7 +14,7 @@ $client = new SoapClient(
       'password' => 'password',
 
       // Proxy url.
-      'proxy_host' => 'cslvm51.csc.calpoly.edu', // Do not add the schema here (http or https). It won't work.
+      'proxy_host' => 'localhost', // Do not add the schema here (http or https). It won't work.
       'proxy_port' => 80,
 
       // Auth credentials for the proxy.
@@ -22,5 +22,3 @@ $client = new SoapClient(
       'proxy_password' => NULL
     )
   );
-
-$client->__soapCall('createFulfiller', array("FulfillerId" => 200, "Name" =>"Test"));
