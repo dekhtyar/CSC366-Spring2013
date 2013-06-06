@@ -1,0 +1,116 @@
+@charset "UTF-8";
+/* line 3, main.scss */
+body {
+  font-family: Exo;
+  font-size: 10.5pt;
+}
+
+/* line 8, main.scss */
+.pure-button-go {
+  background: #4cc947;
+  border-radius: 4px;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* line 15, main.scss */
+#menu {
+  background: #181818;
+  border: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  width: 16em;
+}
+/* line 24, main.scss */
+#menu > h1 {
+  margin: 5px 15px;
+  color: #d3d3d3;
+}
+/* line 28, main.scss */
+#menu > a {
+  color: #bbb;
+  border-bottom-color: #333;
+}
+/* line 32, main.scss */
+#menu > ul {
+  list-style: none;
+}
+/* line 35, main.scss */
+#menu > ul > li > a {
+  color: #999;
+}
+/* line 37, main.scss */
+#menu > ul > li > a:hover {
+  background-color: #333;
+}
+
+/* line 45, main.scss */
+#content {
+  padding: 1.17em 2em 2em 18em;
+}
+
+/* line 49, main.scss */
+label > input[type=checkbox] {
+  vertical-align: middle;
+}
+
+/*
+#xml-shade {
+    background-color: rgba(17,17,17,0.6);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+*/
+/* line 64, main.scss */
+#xml-viewer {
+  background-color: #fff;
+  border-left: 2px solid #5fc6da;
+  overflow: auto;
+  position: fixed;
+  margin: 0;
+  padding: 1em;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 50em;
+}
+/* line 75, main.scss */
+#xml-viewer > code {
+  word-break: normal;
+}
+
+/* line 80, main.scss */
+#xml-button {
+  -webkit-border-radius: 0 0 0 4px;
+  -moz-border-radius: 0 0 0 4px;
+  -ms-border-radius: 0 0 0 4px;
+  -o-border-radius: 0 0 0 4px;
+  border-radius: 0 0 0 4px;
+  background: #5fc6da;
+  color: #fff;
+  font-size: 12pt;
+  position: fixed;
+  top: 0;
+}
+/* line 87, main.scss */
+#xml-button.extend {
+  right: 45.5em;
+}
+/* line 89, main.scss */
+#xml-button.extend:after {
+  content: " »";
+}
+/* line 93, main.scss */
+#xml-button.retract {
+  right: 0;
+}
+/* line 95, main.scss */
+#xml-button.retract:before {
+  content: "« ";
+}

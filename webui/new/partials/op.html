@@ -1,0 +1,20 @@
+<div class="pure-g-r">
+    <form class="pure-u pure-form pure-form-aligned" ng-submit="performRequest()">
+        <fieldset>
+            <legend>{{op}}</legend>
+            <div class="pure-control-group" ng-repeat="field in opFields">
+                <label for="op_field_{{$index}}">{{field.__label}}</label>
+                <input id="op_field_{{$index}}" type="text" placeholder="{{field.__placeholder}}" ng-model="field.__value">
+            </div>
+            <div class="pure-controls">
+                <button type="submit" class="pure-button pure-button-go">Send</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<pre><code ng-bind-html-unsafe="responseXML | escape | prettify"></code></pre>
+
+<!-- <div id="xml-shade" ng-show="showXML"></div> -->
+<button id="xml-button" class="pure-button" ng-class="showXML && 'extend' || 'retract'" ng-click="showXML = !showXML">XML</button>
+<pre id="xml-viewer" ng-show="showXML"><code ng-bind-html-unsafe="requestXML | escape | prettify"></code></pre>

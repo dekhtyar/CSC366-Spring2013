@@ -1,0 +1,99 @@
+@import "compass/css3/border-radius";
+
+body {
+    font-family: Exo;
+    font-size: 10.5pt;
+}
+
+.pure-button-go {
+    background: rgb(76, 201, 71);
+    border-radius: 4px;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+#menu {
+    background: #181818;
+    border: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    position: fixed;
+    top: 0;
+    width: 16em;
+    > h1 {
+        margin: 5px 15px;
+        color: #d3d3d3;
+    }
+    > a {
+        color: #bbb;
+        border-bottom-color: #333;
+    }
+    > ul {
+        list-style: none;
+        > li {
+            > a {
+                color: #999;
+                &:hover {
+                    background-color: #333;
+                }
+            }
+        }
+    }
+}
+
+#content {
+    padding: 1.17em 2em 2em 18em;
+}
+
+label > input[type=checkbox] {
+    vertical-align: middle;
+}
+
+/*
+#xml-shade {
+    background-color: rgba(17,17,17,0.6);
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+*/
+
+#xml-viewer {
+    background-color: #fff;
+    border-left: 2px solid #5fc6da;
+    overflow: auto;
+    position: fixed;
+    margin: 0;
+    padding: 1em;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50em;
+    > code {
+        word-break: normal;
+    }
+}
+
+#xml-button {
+    @include border-radius(0 0 0 4px);
+    background: #5fc6da;
+    color: #fff;
+    font-size: 12pt;
+    position: fixed;
+    top: 0;
+    &.extend {
+        right: 45.5em;
+        &:after {
+            content: " »"
+        }
+    }
+    &.retract {
+        right: 0;
+        &:before {
+            content: "« "
+        }
+    }
+}
