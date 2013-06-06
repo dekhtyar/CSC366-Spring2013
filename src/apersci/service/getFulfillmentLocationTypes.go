@@ -35,7 +35,7 @@ func getFulfillmentLocationTypes(w http.ResponseWriter, r *http.Request) (err er
 	}
 	err = rows.Err()
 	if err != nil {
-		Return
+		return
 	}
 
 	err = output.GetFulfillmentLocationTypesResponse(w, response)
