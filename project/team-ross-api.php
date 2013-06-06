@@ -162,8 +162,10 @@ class TeamRossAPI {
         (:binName, :fulfillerId, :internalLocationId, :productUpc)
     ");
 
-    $stmt2 = $this->db->prepare("INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
-        VALUES(:fulfillerId, :productUpc, :sku)");
+    $stmt2 = $this->db->prepare("
+      INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
+      VALUES(:fulfillerId, :productUpc, :sku)
+    ");
 
     $stmt3 = $this->db->prepare("
         INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand)
@@ -199,9 +201,15 @@ class TeamRossAPI {
         $this->createBin($item['internal_fulfiller_location_id'], $item['bin_name'], '', '');
 
       // execute queries
-      $stmt1->execute();
+      if (!$stmt1->execute()) {
+        print($stmt1->errorInfo());
+      }
+      
       $stmt2->execute();
-      $stmt3->execute();
+      
+      if (!$stmt3->execute()) {
+        print($stmt3->errorInfo());
+      }
     }
   }
 
