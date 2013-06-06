@@ -839,12 +839,12 @@ public class api {
 	}
 
    //Still working on it...
-   public ArrayList<ArrayList<Object[]>> getInventory(int fulfillerId,
+   public ArrayList<Object[]> getInventory(int fulfillerId,
     int[] manCatalog, Object[][] quantities, String[] locationIds,
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
 
-      ArrayList<ArrayList<Object[]>> inventory = new ArrayList<ArrayList<Object[]>>();
+      ArrayList<Object[]> inventory = new ArrayList<Object[]>();
       String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
                     "m.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
                     "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
@@ -864,7 +864,7 @@ public class api {
                    //Not including RequestLocation
 
       for(int ndx = 0; ndx < quantities.length; ndx++) {
-         ArrayList<Object[]> response = new ArrayList<Object[]>();
+         //ArrayList<Object[]> response = new ArrayList<Object[]>();
 
          try {
             
@@ -880,7 +880,7 @@ public class api {
                                      r.getString(7), r.getDouble(8),
                                      r.getInt(9), 0, 0};
 
-               response.add(returnObj);
+               inventory.add(returnObj);
 
                hasNext = r.next();
                count++;
@@ -890,7 +890,7 @@ public class api {
             continue;
          }
 
-         inventory.add(response);
+         //inventory.add(response);
       }
 
       return inventory;
