@@ -75,9 +75,7 @@ class TeamRossSOAP {
   // Matt T
   // **********************************************************************
   function getFulfillmentLocationTypes() {
-    //Unclear how id is selected. Sounds like should be
-    //ExternalLocationID which is external fulf location id?
-    //return $this->api->getFulfillerLocationType($extId)
+    return array("FULFILLER", "RETAILER","RETAILER" );
   }
 
   // **********************************************************************
