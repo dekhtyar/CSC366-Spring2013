@@ -31,7 +31,7 @@ class TeamRossAPI {
 
   public function createFulfillmentLocation($locationName, $extLID, $intLID,
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock,$mfgId, $catalogId) {
-      // Create Location
+      // Create Location, update if exists
       $stmt = $this->db->prepare("
      	  INSERT INTO Locations
       	   (externalLocationId, internalLocationId, fulfillerId, locationType,
@@ -143,6 +143,18 @@ class TeamRossAPI {
     while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
     return $arr;
 	}
+
+  public function getBinStatuses() {
+    $stmt = $this->db->prepare("
+      SELECT distinct status FROM Bins
+    ");
+
+    $stmt->execute();
+
+    $arr = array();
+    while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+      return $arr;
+  }
 
   private function getFulfillerIdFromLocationId($internalLocationId) {
     $stmt = $this->db->prepare("SELECT fulfillerId FROM Locations WHERE internalLocationId = :internalLocationId");
@@ -291,7 +303,15 @@ class TeamRossAPI {
   public function findLocations($fulfillerId, $catalog, $location, $maxlocations) {
   // developers.google.com/maps/articles/phpsqlsearch_v3
     $stmt = $this->db->prepare("
-      SELECT l.externalLocationId, ( 3959 * acos( cos( radians(:latitude) ) * cos( radians( l.latitude ) ) * cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( l.latitude ) ) ) ) AS distance
+      SELECT FulfillerId, ExternalLocationID
+      FROM (
+
+      SELECT 
+	lc.fulfillerId AS FulFillerId, 
+	l.externalLocationId AS ExternalLocationID,
+	( 3959 * acos( cos( radians(:latitude) ) * cos( radians( l.latitude ) ) * 
+	cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * 
+	sin( radians( l.latitude ) ) ) ) AS distance
       FROM Locations l INNER JOIN LocationOffersCatalogs lc
       ON lc.internalLocationId = l.interalLocationId
       WHERE lc.fulfillerId = :fulfillerId
@@ -300,6 +320,8 @@ class TeamRossAPI {
       HAVING distance < :distance
       ORDER BY distance
       LIMIT 0 , :maxlocations
+
+      ) myview
     ");
     $stmt->bindParam(':fufillerId', $fulfillerId);
     $stmt->bindParam(':mfgId', $catalog['mfg_id']);
@@ -310,7 +332,7 @@ class TeamRossAPI {
     $stmt->bindParam(':maxlocations', $maxlocations);
     $stmt->execute();
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $stmt->fetchALL(PDO::FETCH_ASSOC);
   }
 
   public function fulfillInventory($fulfillInventoryRequest) {

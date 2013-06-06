@@ -42,8 +42,11 @@ class TeamRossSOAP {
     $safetyStockLimitDefault = 0; // FIXME
     $mfgIdDefault = 0;
     $catalogIdDefaut = 0;
+
+    $countrycode = CreateFulfillmentLocationRequest['CountryCode']; // FIXME: Doesn't exist in DB!
+
     // no longer checks if FulfillmentLocation exists. Just updates!
-    $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest['LocationName'],
+    return $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest['LocationName'],
 					  $CreateFulfillmentLocationRequest['ExternalLocationID'],
 					  $CreateFulfillmentLocationRequest['RetailerLocationID'],
 					  $CreateFulfillmentLocationRequest['FulfillerID'],
@@ -54,7 +57,7 @@ class TeamRossSOAP {
 					  $safetyStockLimitDefault,
 					  $mfgIdDefault,
 					  $catalogIdDefault
-          );
+      );
   }
 
   // **********************************************************************
@@ -65,7 +68,7 @@ class TeamRossSOAP {
 				    $GetFulfillmentLocationsRequest['Catalog'],
 				    $GetFulfillmentLocationsRequest['Location'],
 				    $GetFulfillmentLocationsRequest['MaxLocations']
-          );
+    );
 
   }
 
@@ -127,6 +130,7 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getBinStatuses() {
+    return $this->api->getBinStatuses();
 
   }
 
