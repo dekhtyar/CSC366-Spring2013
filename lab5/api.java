@@ -342,14 +342,6 @@ public class api {
          return -1;
 
       try {
-         /*if(binId = null){
-            String getBinId = "SELECT MAX(BinId) FROM StoreBin";
-            Statement s = conn.createStatement();
-            
-            ResultSet r = s.executeQuery(getBinId);
-            Boolean hasNext = r.next();
-            binId = r.getInt(1) + 1;
-         }*/
 
          String sql = "INSERT INTO StoreBin VALUES(?, ?, ?, ?, ?, ?)";
          PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -846,11 +838,52 @@ public class api {
 
 	}
 
-   public ArrayList<Object[]> getInventory(int fulfillerId, int[] manCatalog,
-    Object[][] quantities, String[] locationIds, Object[] location, String type,
-    int limit, boolean ignoreSafetyStock, boolean includeNegativeInventory,
-    boolean orderByLtd) {
+   //Still working on it...
+   public ArrayList<ArrayList<Object[]>> getInventory(int fulfillerId,
+    int[] manCatalog, Object[][] quantities, String[] locationIds,
+    Object[] location, String type, int limit, boolean ignoreSafetyStock,
+    boolean includeNegativeInventory, boolean orderByLtd) {
 
-      return null;
+      ArrayList<ArrayList<Object[]>> inventory = new ArrayList<ArrayList<Object[]>>();
+      String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
+                    "m.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
+                    "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
+                   "FROM Location l, Catalog c, Manufacturer m, " +
+                    "ContainedInBin cb, LocationProduct lp, " +
+                    "RetailerProduct rp " +
+                   "WHERE ";
+
+
+      for(int ndx = 0; ndx < quantities.length; ndx++) {
+         ArrayList<Object[]> response = new ArrayList<Object[]>();
+
+         try {
+            
+            PreparedStatement ps = conn.prepareStatement(sql);
+            Statement s = conn.createStatement();
+            ResultSet r = s.executeQuery(sql);
+            boolean hasNext = r.next();
+            int count = 0;
+
+            while(hasNext && count <= limit) {
+               Object[] returnObj = {r.getString(1), r.getInt(2), r.getInt(3),
+                                     r.getInt(4), r.getInt(5), r.getString(6),
+                                     r.getString(7), r.getDouble(8),
+                                     r.getInt(9), 0, 0};
+
+               response.add(returnObj);
+
+               hasNext = r.next();
+               count++;
+            }
+         }
+         catch(Exception e) {
+            continue;
+         }
+
+         inventory.add(response);
+      }
+
+      return inventory;
    }
 }
