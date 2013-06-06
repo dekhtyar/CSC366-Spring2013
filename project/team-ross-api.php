@@ -352,4 +352,33 @@ class TeamRossAPI {
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
+
+  public function adjustInventory($fulfillerId, $externalLocationId, $items) {
+    $success = True;
+
+    $stmt = $this->db->prepare("
+      UPDATE LocationSellsProducts
+        onHand = :quantity
+      WHERE productUpc = :upc
+        AND internalLocatioId =
+          (SELECT FIRST(internalLocationId)
+          FROM Locations
+          WHERE fulfillerId = :fulfillerId
+            AND  externalLocationId = :externalLocationId);
+    ");
+
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":externalLocationId", $externalLocationId);
+
+    foreach ($items as $item) {
+      $stmt->bindParam(":upc", $item['UPC']);
+      $stmt->bindParam(":quantity", $item['Quantity']);
+
+      if (!$stmt->execute()) {
+        $success = False;
+      }
+    }
+
+    return $success;
+  }
 }

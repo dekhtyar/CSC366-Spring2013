@@ -158,7 +158,11 @@ class TeamRossSOAP {
   // Group
   // **********************************************************************
   function adjustInventory() {
-
+    if ($this->api->adjustInventory($AdjustRequest['FulfillerId'],
+      $AdjustRequest['ExternalLocationID'], $AdjustRequest['items'])) {
+      return "SUCCESS!";
+    }
+    return "FAILURE!";
   }
 
   // **********************************************************************
