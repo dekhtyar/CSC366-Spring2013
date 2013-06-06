@@ -99,7 +99,6 @@ function db_create_tables($db) {
     $db->exec("
       create table Bins (
         internalLocationId VARCHAR(11) NOT NULL,
-        fulfillerId VARCHAR(11),
         binName VARCHAR(50) NOT NULL,
         binType VARCHAR(50),
         status VARCHAR(10),
@@ -113,7 +112,6 @@ function db_create_tables($db) {
         catalogId VARCHAR(11) NOT NULL,
         manufacturerId VARCHAR(11) NOT NULL,
         internalLocationId VARCHAR(11) NOT NULL,
-        fulfillerId VARCHAR(11),
         constraint loc_catalog_fk FOREIGN KEY (catalogId, manufacturerId) REFERENCES Catalogs (catalogId, manufacturerId) ON UPDATE CASCADE,
         constraint loc_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId) ON UPDATE CASCADE,
         constraint loc_pk PRIMARY KEY (catalogId, manufacturerId, internalLocationId)
@@ -136,7 +134,6 @@ function db_create_tables($db) {
         productUpc VARCHAR(11) NOT NULL,
         binName VARCHAR(11) NOT NULL,
         internalLocationId VARCHAR(11) NOT NULL,
-        fulfillerId VARCHAR(11),
         constraint bcp_productUpc_fk FOREIGN KEY (productUpc) REFERENCES Products (upc),
         constraint bcp_binname_fk FOREIGN KEY (internalLocationId, binName) REFERENCES Bins (internalLocationId, binName),
         constraint bcp_location_fk FOREIGN KEY (internalLocationId) REFERENCES Locations (internalLocationId),

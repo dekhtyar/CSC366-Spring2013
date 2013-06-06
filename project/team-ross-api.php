@@ -157,9 +157,9 @@ class TeamRossAPI {
     // STATEMENTS
     $stmt1 = $this->db->prepare("
       INSERT INTO BinContainsProducts
-        (binName, fulfillerId, internalLocationId, productUpc)
+        (binName, internalLocationId, productUpc)
       VALUES
-        (:binName, :fulfillerId, :internalLocationId, :productUpc)
+        (:binName, :internalLocationId, :productUpc)
     ");
 
     $stmt2 = $this->db->prepare("
@@ -177,10 +177,8 @@ class TeamRossAPI {
       $fulfillerId = $this->getFulfillerIdFromLocationId($item['internal_fulfiller_location_id']);
 
       $stmt1->bindParam(':binName', $item['bin_name']);
-      $stmt1->bindParam(':fulfillerId', $fulfillerId);
       $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
       $stmt1->bindParam(':productUpc', $item['UPC']);
-      $stmt1->bindParam(':onHand', $item['onhand']);
 
       $stmt2->bindParam(':fulfillerId', $fulfillerId);
       $stmt2->bindParam(':productUpc', $item['UPC']);
@@ -191,6 +189,7 @@ class TeamRossAPI {
       $stmt3->bindParam(':storeSku', $item['SKU']);
       $stmt3->bindParam(':safetyStock', $item['safety_stock']);
       $stmt3->bindParam(':ltd', $item['ltd']);
+      $stmt3->bindParam(':onHand', $item['onHand']);
 
       // create product if missing
       if (!$this->getProductFromUpc($item['UPC']))
@@ -198,17 +197,14 @@ class TeamRossAPI {
 
       // create bin if missing
       if (!$this->getBin($item['bin_name'], $fulfillerId, $item['internal_fulfiller_location_id']))
-        $this->createBin($item['internal_fulfiller_location_id'], $item['bin_name'], '', '');
-
-      // execute queries
-      if (!$stmt1->execute()) {
-        print($stmt1->errorInfo());
-      }
-      
-      $stmt2->execute();
-      
-      if (!$stmt3->execute()) {
-        print($stmt3->errorInfo());
+        print "Bin doesn't exist.\n";
+      else {
+        // execute queries
+        $stmt1->execute();
+        $stmt2->execute();
+        if (!$stmt3->execute()) {
+          print_r($stmt3->errorInfo());
+        }
       }
     }
   }
