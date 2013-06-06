@@ -47,6 +47,17 @@ def createBin(row, db):
        #print e
        #print parameters
 
+#CREATE TABLE SubscribeTo (
+#   FulfillerId              VARCHAR(50),
+#   FulfillerLocationId      VARCHAR(50),
+#   ManufacturerId           VARCHAR(50),
+#   CatalogueId              VARCHAR(50),
+#   PRIMARY KEY (FulfillerId, FulfillerLocationId, ManufacturerId, CatalogueId),
+#   FOREIGN KEY (FulfillerId, FulfillerLocationId)
+#    REFERENCES Locations (FulfillerId, FulfillerLocationId),
+#   FOREIGN KEY (ManufacturerId, CatalogueId)
+#    REFERENCES Catalogues (ManufacturerId, CatalogueId)
+#);
 def createFulfillmentLocation(row, db):
    query = """\
        INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name,
@@ -58,10 +69,19 @@ def createFulfillmentLocation(row, db):
                  row['name'], row['description'], row['latitude'], row['longitude'],
                  row['status'], row['safety_stock'])
 
+   SubscribeTo_query = """\
+       INSERT INTO SubscribeTo (FulfillerId, FulfillerLocationId,
+                                ManufacturerId, CatalogueId) 
+       VALUES (%s, %s, %s, %s)"""
+   SubscribeTo_parameters = (row['fulfiller_id'], row['external_fulfiller_location_id'],
+                             row['mfg_id'], row['catalog_id'])
+
    try:
        with db as cursor:
            cursor.execute(query, parameters)
-           print 'createFulfillmentLocation: inserted', parameters 
+           print 'createFulfillmentLocation: Locations: inserted', parameters 
+           cursor.execute(SubscribeTo_query, SubscribeTo_parameters)
+           print 'createFulfillmentLocation: SubscribeTo: inserted', SubscribeTo_parameters 
        createBin({'fulfiller_id': row['fulfiller_id'],
                   'external_fulfiller_location_id': row['external_fulfiller_location_id'],
                   'bin_name': 'Default', 'bin_type': 'General'}, db)
@@ -150,7 +170,7 @@ def refreshInventory(row, db):
         print 'refreshInventory: StoredIn: inserted', str(args_stored_in_where+(row['onhand'], 0))
         print 'refreshInventory: StoredAt: inserted', str(args_stored_at_where+(row['ltd'], row['safety_stock']))
     except Exception, e:
-        print e
+        #print e
         db.rollback()
     finally:
         cur.close()
