@@ -104,9 +104,11 @@ class TeamRossSOAP {
   // MATT S
   // **********************************************************************
   function createBin($CreateBinRequest) {
-    return $this->api->createBin($CreateBinRequest['FulfillerLocationID'],
- 		$CreateBinRequest['Name'], $CreateBinRequest['BinType'],
-		$CreateBinRequest['BinStatus']) ? 0 : -1;
+    return array(
+      'createBinReturn' => $this->api->createBin($CreateBinRequest->FulfillerId,
+ 		$CreateBinRequest->Name, $CreateBinRequest->BinType,
+		$CreateBinRequest->BinStatus) ? 0 : -1
+    );
   }
 
   // **********************************************************************

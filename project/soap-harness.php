@@ -38,7 +38,20 @@
   }
 
   function createBin($client, $request) {
+    $data = get_csv_data('csv_data/fulfiller_location_bins.csv');
 
+    $request->request = new \stdClass;
+
+    foreach ($data as $bin) {
+      $request->request->FulfillerID = $bin['internal_fulfiller_location_id'];
+      $request->request->BinID = $bin['bin_name'];
+      $request->request->ExternalLocationID = null;
+      $request->request->BinType = $bin['bin_type'];
+      $request->request->BinStatus = $bin['bin_status'];
+      $request->request->Name = $bin['bin_name'];
+
+      print_r($client->createBin($request));
+    }
   }
 
   function getBins($client, $request) {
@@ -70,4 +83,26 @@
 
   function refreshInventory($client, $request) {
 
+  }
+
+  // **********************************************************************
+  // Read data from CSV file and return array
+  // **********************************************************************
+  function get_csv_data($csv_file) {
+    $delimiter = ',';
+    $data = array();
+    $handle = fopen($csv_file, "r");
+
+    if (!$handle) {
+      print "Failed to open CSV: " . $csv_file . "\n";
+      die();
+    }
+
+    $header = fgetcsv($handle);
+    while (($line_array = fgetcsv($handle, 4000, $delimiter)) !== false) {
+      $data[] = array_combine($header, $line_array);
+    }
+
+    fclose($handle);
+    return $data;
   }
