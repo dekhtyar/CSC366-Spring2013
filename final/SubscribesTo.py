@@ -9,7 +9,7 @@ def createSubscribesTo(db):
 def createSubscribesTo(row, db):
     query = """\
         INSERT INTO SubscribesTo (FulfillerId, FulfillerLocationId, CatalogueId)
-        VALUES (%s, %s, %s)
+        VALUES (%s, %s, %s)"""
         
      parameters = (row[fulfiller_id], row[external_fulfiller_location_id], row[catalog_id])
      
