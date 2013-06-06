@@ -53,7 +53,8 @@
   }
 
   function getFulfillmentLocationTypes($client, $request) {
-
+    $ret = $client->getFulfillmentLocationTypes($request);
+    print_r($ret);
   }
 
   function allocateInventory($client, $request) {
@@ -101,7 +102,8 @@
   }
 
   function getBinStatuses($client, $request) {
-
+    $ret = $client->getBinStatuses($request);
+    print_r($ret);
   }
 
   function getInventory($client, $request) {
