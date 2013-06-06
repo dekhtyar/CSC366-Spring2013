@@ -39,16 +39,6 @@ class TeamRossAPI {
           VALUES
             (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
             :latitude, :longitude, :status, :safetyStockLimitDefault)
-
-    ON DUPLICATE KEY UPDATE
-        externalLocationId = :externalLocationId,
-               fulfillerId = :fulfillerId,
-               locationType = :locationType ,
-               latitude = :latitude,
-               longitude = :longitude,
-               status = :status,
-               safetyStockLimitDefault = :safetyStockLimitDefault ;
-
       ");
 
     $stmt->bindValue(':externalLocationId', $extLID);
@@ -64,6 +54,9 @@ class TeamRossAPI {
     // Create catalog if missing
     if (!$this->getCatalog($catalogId))
       $this->createCatalog($catalogId, $mfgId);
+
+    // Create default Bin
+    $this->createBin($intLID, 'Default', 'Default', $status);
 
     // Create LocationOffersCatalog
     $relational = $this->db->prepare("
