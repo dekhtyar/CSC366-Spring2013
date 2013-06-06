@@ -4,19 +4,12 @@
       <v4:deallocateInventory>
          <v4:request>
              <v4:FulfillerID>{{.FulfillerID}}</v4:FulfillerID>
-            <v4:FulfillerLocationCatalog>
-               <v4:ManufacturerCatalog>
-                   <v4:ManufacturerID>{{.FulfillerLocationCatalog.ManufacturerID}}</v4:ManufacturerID>
-                  <v4:CatalogID>{{.FulfillerLocationCatalog.CatalogID}}</v4:CatalogID>
-               </v4:ManufacturerCatalog>
-               <v4:FulfillerLocationID>{{.FulfillerLocationCatalog.FulfillerLocationID}}</v4:FulfillerLocationID>
-            </v4:FulfillerLocationCatalog>
             <v4:Items>{{range .Items}}
                <v4:items>
                    <v4:PartNumber>{{.PartNumber}}</v4:PartNumber>
                   <v4:UPC>{{.UPC}}</v4:UPC>
                   <v4:Quantity>{{.Quantity}}</v4:Quantity>
-                  <v4:FulfillerLocationID>{{.FulfillerLocationID}}</v4:FulfillerLocationID>
+                  <v4:ExternalLocationID>{{.ExternalLocationID}}</v4:ExternalLocationID>
               </v4:items>{{end}}
             </v4:Items>
          </v4:request>
