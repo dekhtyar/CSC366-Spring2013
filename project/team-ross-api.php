@@ -51,11 +51,6 @@ class TeamRossAPI {
 
       ");
 
-    if (!$stmt) {
-      echo "\nPDO::errorInfo():\n";
-      print_r($dbh->errorInfo());
-    }
-
     $stmt->bindValue(':externalLocationId', $extLID);
     $stmt->bindValue(':internalLocationId', $intLID);
     $stmt->bindValue(':fulfillerId', $fulfillerId);
