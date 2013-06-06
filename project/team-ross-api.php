@@ -196,12 +196,13 @@ class TeamRossAPI {
 
       // create bin if missing
       if (!$this->getBin($item['bin_name'], $fulfillerId, $item['internal_fulfiller_location_id']))
-        $this->createBin($item['internal_fulfiller_location_id'], $item['bin_name'], '', '');
-
-      // execute queries
-      $stmt1->execute();
-      $stmt2->execute();
-      $stmt3->execute();
+        print "Bin doesn't exist.\n";
+      else {
+        // execute queries
+        $stmt1->execute();
+        $stmt2->execute();
+        $stmt3->execute();
+      }
     }
   }
 
