@@ -47,7 +47,7 @@
     $request->request->ExternalLocationID = null;
     $request->request->SearchTerm = null;
     $request->request->NumResults = 100;
-    $request->request->RestartsStart = 0;
+    $request->request->ResultsStart = 0;
 
     print_r($client->getBins($request));
   }
