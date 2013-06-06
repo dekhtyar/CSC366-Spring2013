@@ -115,7 +115,11 @@ class TeamRossSOAP {
   function getBins($GetBinsRequest) {
     $bins = $this->api->getBins($GetBinRequest['SearchTerm'], $GetBinRequest['FulfillerLocationID']);
 
-    return array_slice($bins, $GetBinRequest['ResultsStart'], $GetBinRequest['NumResults']);
+    return array(
+      'getBinsReturn' => array(
+        'Bins' => array_slice($bins, $GetBinRequest['ResultsStart'], $GetBinRequest['NumResults']),
+        'ResultCount' => count($bins)
+      ));
   }
 
   // **********************************************************************

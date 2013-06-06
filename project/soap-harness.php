@@ -42,11 +42,18 @@
   }
 
   function getBins($client, $request) {
-    $client->__soapCall('getBins', $request);
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 91710;
+    $request->request->ExternalLocationID = null;
+    $request->request->SearchTerm = null;
+    $request->request->NumResults = 100;
+    $request->request->RestartsStart = 0;
+
+    print_r($client->getBins($request));
   }
 
   function getBinTypes($client, $request) {
-     print_r($client->getBinTypes($request));
+    print_r($client->getBinTypes($request));
   }
 
   function getBinStatuses($client, $request) {
