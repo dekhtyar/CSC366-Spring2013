@@ -47,17 +47,6 @@ def createBin(row, db):
        #print e
        #print parameters
 
-#CREATE TABLE SubscribeTo (
-#   FulfillerId              VARCHAR(50),
-#   FulfillerLocationId      VARCHAR(50),
-#   ManufacturerId           VARCHAR(50),
-#   CatalogueId              VARCHAR(50),
-#   PRIMARY KEY (FulfillerId, FulfillerLocationId, ManufacturerId, CatalogueId),
-#   FOREIGN KEY (FulfillerId, FulfillerLocationId)
-#    REFERENCES Locations (FulfillerId, FulfillerLocationId),
-#   FOREIGN KEY (ManufacturerId, CatalogueId)
-#    REFERENCES Catalogues (ManufacturerId, CatalogueId)
-#);
 def createFulfillmentLocation(row, db):
    query = """\
        INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name,
