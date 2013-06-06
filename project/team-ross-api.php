@@ -189,6 +189,7 @@ class TeamRossAPI {
       $stmt3->bindParam(':storeSku', $item['SKU']);
       $stmt3->bindParam(':safetyStock', $item['safety_stock']);
       $stmt3->bindParam(':ltd', $item['ltd']);
+      $stmt3->bindParam(':onHand', $item['onHand']);
 
       // create product if missing
       if (!$this->getProductFromUpc($item['UPC']))
@@ -201,7 +202,9 @@ class TeamRossAPI {
         // execute queries
         $stmt1->execute();
         $stmt2->execute();
-        $stmt3->execute();
+        if (!$stmt3->execute()) {
+          print_r($stmt3->errorInfo());
+        }
       }
     }
   }
