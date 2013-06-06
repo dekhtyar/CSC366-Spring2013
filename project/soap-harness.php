@@ -102,7 +102,8 @@
   }
 
   function getBinStatuses($client, $request) {
-
+    $ret = $client->getBinStatuses($request);
+    print_r($ret);
   }
 
   function getInventory($client, $request) {
