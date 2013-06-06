@@ -113,7 +113,7 @@ class TeamRossSOAP {
   // IAN
   // **********************************************************************
   function getBins($GetBinsRequest) {
-    $bins = $this->api->getBins($GetBinRequest['SearchTerm'], $GetBinRequest['FulfillerID'], $GetBinRequest['FulfillerLocationID']);
+    $bins = $this->api->getBins($GetBinRequest['SearchTerm'], $GetBinRequest['FulfillerLocationID']);
 
     return array_slice($bins, $GetBinRequest['ResultsStart'], $GetBinRequest['NumResults']);
   }

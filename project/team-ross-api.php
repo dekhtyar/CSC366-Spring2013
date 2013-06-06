@@ -96,16 +96,14 @@ class TeamRossAPI {
     return $stmt->execute();
   }
 
-  private function getBin($binName, $fulfillerId, $internalLocationId) {
+  private function getBin($binName, $internalLocationId) {
     $stmt = $this->db->prepare("
       SELECT * FROM Bins
       WHERE binName = :binName
-      AND fulfillerId = :fulfillerId
       AND internalLocationId = :internalLocationId
     ");
 
     $stmt->bindValue(':binName', $binName);
-    $stmt->bindValue(':fulfillerId', $fulfillerId);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
     $stmt->execute();
@@ -113,16 +111,14 @@ class TeamRossAPI {
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
-  public function getBins($binName, $fulfillerId, $internalLocationId) {
+  public function getBins($binName, $internalLocationId) {
     $stmt = $this->db->prepare("
       SELECT * FROM Bins
       WHERE binName LIKE :binName
-      AND fulfillerId = :fulfillerId
       AND internalLocationId = :internalLocationId
     ");
 
     $stmt->bindValue(':binName', $binName);
-    $stmt->bindValue(':fulfillerId', $fulfillerId);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
     $stmt->execute();
@@ -196,7 +192,7 @@ class TeamRossAPI {
         $this->createProduct($item);
 
       // create bin if missing
-      if (!$this->getBin($item['bin_name'], $fulfillerId, $item['internal_fulfiller_location_id']))
+      if (!$this->getBin($item['bin_name'], $item['internal_fulfiller_location_id']))
         print "Bin doesn't exist.\n";
       else {
         // execute queries
