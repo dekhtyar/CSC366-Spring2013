@@ -163,3 +163,51 @@ def refreshInventory(row, db):
         db.rollback()
     finally:
         cur.close()
+
+
+
+    def getFulfillerStatus(fID, fLID, db) :
+      cursor = db.cursor()
+      
+      try: 
+         cursor.execute('SELECT Status FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
+      
+         status = cursor.fetchone()
+         if status == 'active' : 
+            return 1
+         else : 
+            return  2  
+         
+      except Exception, e:
+      print e
+      
+    
+    
+    
+    
+    def getFulfillmentLocations(fID, catalogID, ManID, location, maxLocation, db)
+   
+      cursor = db.cursor()
+      
+      try:
+         cursor.execute('SELECT FulfillerId, FulfillerLocationId FROM Location l join SubscribeTo s on l.FulfillerId = s.FulfillerId and l.FulfillerLocationId = s.FulfillerLocationId join Items i on i.ManufacturerId = s.ManufacturerId and i.CatalogueId = s.CatalogueId' , fid, ManID, caralogID)
+    
+    
+    listIDs = cursor.fetchall()
+    
+    return  listIDs[:maxLocation]
+    
+    
+    
+    
+    def getFulfillmentLocationTypes(fID, fLID, db):
+      cursor = db.cursor()
+      
+      try:
+   `    cursor.execute('SELECT Type FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
+   
+        locationType = cursor.fetchone()
+        
+        return locationType
+      except Exception, e:
+      print e
