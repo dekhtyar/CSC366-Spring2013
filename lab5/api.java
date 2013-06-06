@@ -838,36 +838,32 @@ public class api {
 
 	}
 
-   //Still working on it...
-   public ArrayList<Object[]> getInventory(int fulfillerId,
+   public ArrayList<Object[]> getAllInventory(int fulfillerId,
     int[] manCatalog, Object[][] quantities, String[] locationIds,
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
-
       ArrayList<Object[]> inventory = new ArrayList<Object[]>();
+      String checkAvailable = "AND cb.OnHand - cb.Allocated" +
+       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? ";
       String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
-                    "m.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
+                    "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
                     "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
                    "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
-                    "Manufacturer m, ContainedInBin cb, LocationProduct lp, " +
-                    "RetailerProduct rp " +
+                    "ContainedInBin cb, LocationProduct lp, RetailerProduct rp " +
                    "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
                     "AND cl.CatalogId = c.CatalogId " +
                     "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
                     "AND rp.Id = lp.RetailerId AND lp.Id = cb.LocationProductId " +
-                    "AND l.FulfillerId = ? " +
-   /*ItemQuantity*/ "AND rp.SKU = ? AND rp.UPC = ? " +
-                    "AND cb.OnHand - cb.Allocated" + ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? " +
-   /*LocationIds*/  "AND l.RetailerId = ? " +
+                    "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
+                    "AND rp.SKU = ? AND rp.UPC = ? " +
+                    (includeNegativeInventory? "" : checkAvailable) +
+                    "AND l.RetailerId = ? " +
                     (orderByLtd? "ORDER BY lp.Ltd" : "");
-                   //m.ManufacturerId = ? AND c.CatalogId = ?
-                   //Not including RequestLocation
 
       for(int ndx = 0; ndx < quantities.length; ndx++) {
-         //ArrayList<Object[]> response = new ArrayList<Object[]>();
 
          try {
-            
+
             PreparedStatement ps = conn.prepareStatement(sql);
             Statement s = conn.createStatement();
             ResultSet r = s.executeQuery(sql);
@@ -890,10 +886,102 @@ public class api {
             continue;
          }
 
-         //inventory.add(response);
+
       }
 
       return inventory;
+   }
+
+   public ArrayList<Object[]> getSomeInventory(int fulfillerId,
+    int[] manCatalog, Object[][] quantities, String[] locationIds,
+    Object[] location, String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
+      ArrayList<Object[]> inventory = new ArrayList<Object[]>();
+      String checkAvailable = "AND cb.OnHand - cb.Allocated" +
+       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? ";
+      String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
+                    "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
+                    "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
+                   "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
+                    "ContainedInBin cb, LocationProduct lp, RetailerProduct rp " +
+                   "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
+                    "AND cl.CatalogId = c.CatalogId " +
+                    "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
+                    "AND rp.Id = lp.RetailerId AND lp.Id = cb.LocationProductId " +
+                    "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
+                    "AND rp.SKU = ? AND rp.UPC = ? " +
+                    (includeNegativeInventory? "" : checkAvailable) +
+                    "AND l.RetailerId = ?" +
+                    (orderByLtd? " ORDER BY lp.Ltd" : "");
+
+      for(int ndx = 0; ndx < locationIds.length; ndx++) {
+         sql += " AND l.ExternalFulfillerLocationId = ?";
+      }
+
+      sql += (orderByLtd? " ORDER BY lp.Ltd" : "");
+
+      for(int ndx = 0; ndx < quantities.length; ndx++) {
+
+         try {
+            int num = 0;
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            //(type.equals("PARTIAL")? " > 0" : " >= ? ");
+
+            for(int i = 0; i < locationIds.length; i++) {
+               ps.setString(num + i, locationIds[i]);
+            }
+
+            Statement s = conn.createStatement();
+            ResultSet r = s.executeQuery(sql);
+            boolean hasNext = r.next();
+            int count = 0;
+
+            while(hasNext && count <= limit) {
+               Object[] returnObj = {r.getString(1), r.getInt(2), r.getInt(3),
+                                     r.getInt(4), r.getInt(5), r.getString(6),
+                                     r.getString(7), r.getDouble(8),
+                                     r.getInt(9), 0, 0};
+
+               inventory.add(returnObj);
+
+               hasNext = r.next();
+               count++;
+            }
+         }
+         catch(Exception e) {
+            continue;
+         }
+
+
+      }
+
+      return inventory;
+   }
+
+   public ArrayList<Object[]> getInventory(int fulfillerId,
+    int[] manCatalog, Object[][] quantities, String[] locationIds,
+    Object[] location, String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
+
+      ArrayList<Object[]> inventory;
+
+      if(type.equals("ALL") || type.equals("ALL_STORES")) {
+         inventory =  getAllInventory(fulfillerId, manCatalog, quantities,
+                       locationIds, location, type, limit, ignoreSafetyStock,
+                       includeNegativeInventory, orderByLtd);
+      }
+      else if(type.equals("PARTIAL") || type.equals("ANY")) {
+         inventory = getSomeInventory(fulfillerId, manCatalog, quantities,
+                      locationIds, location, type, limit, ignoreSafetyStock,
+                      includeNegativeInventory, orderByLtd);
+      }
+      else {
+         inventory = null;
+      }
+
+      return inventory;
+
    }
    
    public double getDistance(String unit, double lat1, double lon1, double lat2, double lon2) {
