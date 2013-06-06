@@ -67,13 +67,14 @@ class TeamRossAPI {
 
     // Create LocationOffersCatalog
     $relational = $this->db->prepare("
-      INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId)
-      VALUES (:catalogId, :manufacturerId, :internalLocationId);
+      INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId, fulfillerId)
+      VALUES (:catalogId, :manufacturerId, :internalLocationId, :fulfillerId);
     ");
 
     $relational->bindParam(':catalogId', $catalogId);
     $relational->bindParam(':manufacturerId', $mfgId);
     $relational->bindParam(':internalLocationId', $intLID);
+    $relational->bindParam(':fulfillerId', $fulfillerId);
 
     $relational->execute();
   }
@@ -81,41 +82,47 @@ class TeamRossAPI {
   public function createBin($intLID, $name, $binType, $status) {
     $stmt = $this->db->prepare("
       INSERT INTO Bins
-        (internalLocationId, binName, binType, status)
+        (internalLocationId, binName, binType, status, fulfillerId)
       VALUES
-        (:internalLocationId, :binName, :binType, :status);
+        (:internalLocationId, :binName, :binType, :status, :fulfillerId);
     ");
 
     $stmt->bindValue(':internalLocationId', $intLID);
     $stmt->bindValue(':binName', $name);
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
+    $stmt->bindValue(':fulfillerId', $this->getFulfillerIdFromLocationId($intLID));
 
     return $stmt->execute();
   }
 
-  private function getBin($binName, $internalLocationId) {
+  private function getBin($binName, $fulfillerId, $internalLocationId) {
     $stmt = $this->db->prepare("
       SELECT * FROM Bins
       WHERE binName = :binName
+      AND fulfillerId = :fulfillerId
       AND internalLocationId = :internalLocationId
     ");
 
     $stmt->bindValue(':binName', $binName);
+    $stmt->bindValue(':fulfillerId', $fulfillerId);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
     $stmt->execute();
+
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
-  public function getBins($binName, $internalLocationId) {
+  public function getBins($binName, $fulfillerId, $internalLocationId) {
     $stmt = $this->db->prepare("
       SELECT * FROM Bins
       WHERE binName LIKE :binName
+      AND fulfillerId = :fulfillerId
       AND internalLocationId = :internalLocationId
     ");
 
     $stmt->bindValue(':binName', $binName);
+    $stmt->bindValue(':fulfillerId', $fulfillerId);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
     $stmt->execute();
@@ -126,7 +133,7 @@ class TeamRossAPI {
   }
 
 	public function getBinTypes() {
-		$stmt = $this->db->prepare("
+		 $stmt = $this->db->prepare("
       SELECT binType FROM Bins
     ");
 
@@ -189,7 +196,7 @@ class TeamRossAPI {
         $this->createProduct($item);
 
       // create bin if missing
-      if (!$this->getBin($item['bin_name'], $item['internal_fulfiller_location_id']))
+      if (!$this->getBin($item['bin_name'], $fulfillerId, $item['internal_fulfiller_location_id']))
         print "Bin doesn't exist.\n";
       else {
         // execute queries
