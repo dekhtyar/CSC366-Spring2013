@@ -178,7 +178,6 @@ class TeamRossAPI {
       $stmt1->bindParam(':fulfillerId', $fulfillerId);
       $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
       $stmt1->bindParam(':productUpc', $item['UPC']);
-      $stmt1->bindParam(':onHand', $item['onhand']);
 
       $stmt2->bindParam(':fulfillerId', $fulfillerId);
       $stmt2->bindParam(':productUpc', $item['UPC']);
