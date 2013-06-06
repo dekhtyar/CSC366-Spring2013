@@ -320,8 +320,8 @@ public class api {
       {
          PreparedStatement ps = conn.prepareStatement(sql);
 
-         ps.setInt(1, catalogId);
-         ps.setInt(2, manufacturerId);
+         ps.setInt(1, manufacturerId);
+         ps.setInt(2, catalogId);
 
          ps.executeUpdate();
       }

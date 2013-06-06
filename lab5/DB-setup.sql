@@ -22,8 +22,8 @@ CREATE TABLE Manufacturer (
     );
 
 CREATE TABLE Catalog (
-    CatalogId INT,
     ManufacturerId INT REFERENCES Manufacturer(ManufacturerId),
+    CatalogId INT,
     PRIMARY KEY (CatalogId, ManufacturerId)
     );
 
