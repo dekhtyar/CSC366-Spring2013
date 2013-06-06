@@ -194,20 +194,12 @@ class TeamRossAPI {
       // create bin if missing
       if (!$this->getBin($item['bin_name'], $item['internal_fulfiller_location_id']))
         print "Bin doesn't exist.\n";
+
+      // execute queries
       else {
-        // execute queries
-        if (!$stmt1->execute()) {
-          $error = $stmt1->errorInfo();
-          print "BinContainsProducts error: " . $error[2] . "\n";
-        }
-        if (!$stmt2->execute()) {
-          $error = $stmt2->errorInfo();
-          print "FulfillerCarriesProducts error: " . $error[2] . "\n";
-        }
-        if (!$stmt3->execute()) {
-          $error = $stmt3->errorInfo();
-          print "LocationSellsProducts error: " . $error[2] . "\n";
-        }
+        $stmt1->execute();
+        $stmt2->execute();
+        $stmt3->execute();
       }
     }
   }
