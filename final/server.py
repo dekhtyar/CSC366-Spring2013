@@ -219,7 +219,7 @@ class Service(CoreServiceService):
         print FulfillerLocationID
         api.createBin({'fulfiller_id': FulfillerID,
                        'external_fulfiller_location_id': FulfillerLocationID,
-                       'bin_name': BinID, 'bin_type': BinType}, db)
+                       'bin_name': BinID, 'bin_type': BinType, 'bin_status': BinStatus}, db)
 
         # Set these values with results from calliing API function
         createBinReturn = 1

@@ -52,6 +52,7 @@ CREATE TABLE Bins (
    FulfillerLocationId      VARCHAR(50),
    Name                     VARCHAR(20),
    BinType                  VARCHAR(20),
+   BinStatus                VARCHAR(20),
    PRIMARY KEY (FulfillerId, FulfillerLocationId, Name),
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
     REFERENCES Locations (FulfillerId, FulfillerLocationId)

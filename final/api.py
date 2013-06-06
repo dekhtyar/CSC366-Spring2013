@@ -27,8 +27,8 @@ def createBin(row, db):
    # external_fulfiller_location_id,internal_fulfiller_location_id,bin_name,bin_type,bin_status
    query = """\
        INSERT INTO Bins (FulfillerId, FulfillerLocationId,
-                         Name, BinType)
-       VALUES (%s, %s, %s, %s)"""
+                         Name, BinType, BinStatus)
+       VALUES (%s, %s, %s, %s, %s)"""
 
    try:
        with db as cursor:
@@ -38,7 +38,7 @@ def createBin(row, db):
            fulfiller_id = 0 if location is None else location[0]
 
            parameters = (fulfiller_id, row['external_fulfiller_location_id'],
-                         row['bin_name'], row['bin_type'])
+                         row['bin_name'], row['bin_type'], row['bin_status'])
 
            cursor.execute(query, parameters)
            print 'createBin: inserted', parameters 
@@ -74,7 +74,7 @@ def createFulfillmentLocation(row, db):
            #print 'createFulfillmentLocation: SubscribeTo: inserted', SubscribeTo_parameters 
        createBin({'fulfiller_id': row['fulfiller_id'],
                   'external_fulfiller_location_id': row['external_fulfiller_location_id'],
-                  'bin_name': 'Default', 'bin_type': 'General'}, db)
+                  'bin_name': 'Default', 'bin_type': 'General', 'bin_status': 'Pickable'}, db)
    except MySQLdb.IntegrityError, e:
        pass
        #print e
@@ -165,50 +165,43 @@ def refreshInventory(row, db):
     finally:
         cur.close()
 
-
-
-    def getFulfillerStatus(fID, fLID, db) :
-      cursor = db.cursor()
-      
-      try: 
-         cursor.execute('SELECT Status FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
-      
-         status = cursor.fetchone()
-         if status == 'active' : 
-            return 1
-         else : 
-            return  2  
-         
-      except Exception, e:
-      print e
-      
-    
-    
-    
-    
-    def getFulfillmentLocations(fID, catalogID, ManID, location, maxLocation, db)
+def getFulfillerStatus(fID, fLID, db):
+   cursor = db.cursor()
    
-      cursor = db.cursor()
-      
-      try:
-         cursor.execute('SELECT FulfillerId, FulfillerLocationId FROM Location l join SubscribeTo s on l.FulfillerId = s.FulfillerId and l.FulfillerLocationId = s.FulfillerLocationId join Items i on i.ManufacturerId = s.ManufacturerId and i.CatalogueId = s.CatalogueId' , fid, ManID, caralogID)
-    
-    
-    listIDs = cursor.fetchall()
-    
-    return  listIDs[:maxLocation]
-    
-    
-    
-    
-    def getFulfillmentLocationTypes(fID, fLID, db):
-      cursor = db.cursor()
-      
-      try:
-   `    cursor.execute('SELECT Type FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
+   try: 
+      cursor.execute('SELECT Status FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
    
-        locationType = cursor.fetchone()
-        
-        return locationType
-      except Exception, e:
+      status = cursor.fetchone()
+      if status == 'active': 
+         return 1
+      else: 
+         return  2  
+      
+   except Exception, e:
       print e
+ 
+def getFulfillmentLocations(fID, catalogID, ManID, location, maxLocation, db):
+ 
+   cursor = db.cursor()
+   
+   try:
+      cursor.execute('SELECT FulfillerId, FulfillerLocationId FROM Location l join SubscribeTo s on l.FulfillerId = s.FulfillerId and l.FulfillerLocationId = s.FulfillerLocationId join Items i on i.ManufacturerId = s.ManufacturerId and i.CatalogueId = s.CatalogueId' , fid, ManID, caralogID)
+ 
+ 
+      listIDs = cursor.fetchall()
+   except:
+      pass
+ 
+   return  listIDs[:maxLocation]
+ 
+def getFulfillmentLocationTypes(fID, fLID, db):
+   cursor = db.cursor()
+   
+   try:
+     cursor.execute('SELECT Type FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
+ 
+     locationType = cursor.fetchone()
+     
+     return locationType
+   except Exception, e:
+     print e
