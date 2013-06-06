@@ -911,25 +911,46 @@ public class api {
                     "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
                     "AND rp.SKU = ? AND rp.UPC = ? " +
                     (includeNegativeInventory? "" : checkAvailable) +
-                    "AND l.RetailerId = ?" +
-                    (orderByLtd? " ORDER BY lp.Ltd" : "");
+                    "AND l.RetailerId = ?";
+      String loc = " AND (";
 
-      for(int ndx = 0; ndx < locationIds.length; ndx++) {
-         sql += " AND l.ExternalFulfillerLocationId = ?";
+
+      for(int ndx = 0; locationIds != null && ndx < locationIds.length; ndx++) {
+         loc += " l.ExternalFulfillerLocationId = ?";
+
+         if(ndx + 1 < locationIds.length) {
+            loc += " OR";
+         }
       }
 
-      sql += (orderByLtd? " ORDER BY lp.Ltd" : "");
+      if(locationIds != null && locationIds.length > 0) {
+         sql += loc + ")";
+      }
+
+      if(orderByLtd) {
+         sql += " ORDER BY lp.Ltd";
+      }
 
       for(int ndx = 0; ndx < quantities.length; ndx++) {
 
          try {
-            int num = 0;
             PreparedStatement ps = conn.prepareStatement(sql);
 
-            //(type.equals("PARTIAL")? " > 0" : " >= ? ");
+            ps.setInt(1, fulfillerId);
+            ps.setInt(2, manCatalog[0]);
+            ps.setInt(3, manCatalog[1]);
+            ps.setString(4, quantities[ndx][0].toString());
+            ps.setString(5, quantities[ndx][1].toString());
+
+            if(type.equals("ANY")) {
+               ps.setInt(6, 1);
+            }
+            else {
+               ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
+            }
 
             for(int i = 0; i < locationIds.length; i++) {
-               ps.setString(num + i, locationIds[i]);
+               ps.setString(7 + i, locationIds[i]);
             }
 
             Statement s = conn.createStatement();
