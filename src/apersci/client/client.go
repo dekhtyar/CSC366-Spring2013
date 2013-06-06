@@ -5,8 +5,8 @@ import (
 	"apersci/output"
 	"apersci/soap"
 	"bytes"
-	"net/http"
 	"errors"
+	"net/http"
 )
 
 const HTTP_OK_STATUS_CODE = 200
@@ -95,7 +95,6 @@ func RefreshInventory(url string, v soap.RefreshRequest) (r string, err error) {
 	return
 }
 
-
 func GetBinTypes(url string) (r []string, err error) {
 	var b bytes.Buffer
 
@@ -158,7 +157,6 @@ func GetFulfillerStatus(url string, v uint) (r string, err error) {
 	return
 }
 
-
 func GetFulfillmentLocations(url string, v soap.OrderRequest) (r soap.FulfillmentLocationsReturn, err error) {
 	var b bytes.Buffer
 
@@ -176,7 +174,7 @@ func GetFulfillmentLocations(url string, v soap.OrderRequest) (r soap.Fulfillmen
 	return
 }
 
-func GetFulfillmentLocationsTypes(url string, v soap.FulfillmentLocation) (r []string, err error) {
+func GetFulfillmentLocationsTypes(url string, v string) (r []string, err error) {
 	var b bytes.Buffer
 
 	err = output.GetFulfillmentLocationTypesRequest(&b, v)
@@ -272,4 +270,3 @@ func AdjustInventory(url string, v soap.AdjustRequest) (r string, err error) {
 	r, err = input.AdjustInventoryResponse(resp.Body)
 	return
 }
-
