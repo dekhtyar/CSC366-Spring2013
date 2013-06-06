@@ -106,8 +106,8 @@ class TeamRossSOAP {
   function createBin($CreateBinRequest) {
     return array(
       'createBinReturn' => $this->api->createBin($CreateBinRequest->FulfillerId,
- 		$CreateBinRequest->Name, $CreateBinRequest->BinType,
-		$CreateBinRequest->BinStatus) ? 0 : -1
+ 		                       $CreateBinRequest->Name, $CreateBinRequest->BinType,
+		                       $CreateBinRequest->BinStatus) ? 0 : -1
     );
   }
 
@@ -131,12 +131,9 @@ class TeamRossSOAP {
 		$bins = $this->api->getBinTypes();
     $returnArr = array();
 
-    print_r($bins);
-
-    foreach ($bins as $bin) {
+    foreach ($bins as $bin)
       if ($bin['binType'])
         $returnArr[]['BinType'] = $bin['binType'];
-    }
 
     return array('getBinTypesReturn' => $returnArr);
   }
