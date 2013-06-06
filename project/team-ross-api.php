@@ -151,9 +151,9 @@ class TeamRossAPI {
     // STATEMENTS
     $stmt1 = $this->db->prepare("
       INSERT INTO BinContainsProducts
-        (binName, internalLocationId, productUpc)
+        (binName, internalLocationId, productUpc, fulfillerId)
       VALUES
-        (:binName, :internalLocationId, :productUpc)
+        (:binName, :internalLocationId, :productUpc, :fulfillerId)
     ");
 
     $stmt2 = $this->db->prepare("
@@ -162,9 +162,9 @@ class TeamRossAPI {
     ");
 
     $stmt3 = $this->db->prepare("
-        INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand)
-        VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand)
-      ");
+      INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
+      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand, :fulfillerId)
+    ");
 
     // UPDATE INVENTORY FOR EACH ITEM
     foreach ($items as $item) {
@@ -173,6 +173,7 @@ class TeamRossAPI {
       $stmt1->bindParam(':binName', $item['bin_name']);
       $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
       $stmt1->bindParam(':productUpc', $item['UPC']);
+      $stmt1->bindParam(':fulfillerId', $fulfillerId);
 
       $stmt2->bindParam(':fulfillerId', $fulfillerId);
       $stmt2->bindParam(':productUpc', $item['UPC']);
@@ -184,6 +185,7 @@ class TeamRossAPI {
       $stmt3->bindParam(':safetyStock', $item['safety_stock']);
       $stmt3->bindParam(':ltd', $item['ltd']);
       $stmt3->bindParam(':onHand', $item['onHand']);
+      $stmt3->bindParam(':fulfillerId', $fulfillerId);
 
       // create product if missing
       if (!$this->getProductFromUpc($item['UPC']))
@@ -195,12 +197,15 @@ class TeamRossAPI {
       else {
         // execute queries
         if (!$stmt1->execute()) {
+          print "BinContainsProducts error:\n";
           print_r($stmt1->errorInfo());
         }
         if (!$stmt2->execute()) {
+          print "FulfillerCarriesProducts error:\n";
           print_r($stmt2->errorInfo());
         }
         if (!$stmt3->execute()) {
+          print "LocationSellsProducts error:\n";
           print_r($stmt3->errorInfo());
         }
       }
