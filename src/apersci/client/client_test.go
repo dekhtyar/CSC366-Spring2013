@@ -12,7 +12,7 @@ import (
 //
 //***********************************//
 
-var url = "http://db2.thepicard.org:8101"
+var url = "http://db2.thepicard.org:8125"
 
 func TestGetBinTypes(t *testing.T) {
 	r, err := GetBinTypes(url)
@@ -33,7 +33,8 @@ func TestGetBins(t *testing.T) {
 	var req soap.BinRequest
 
 	req.FulfillerID = 48590
-	req.FulfillerLocationID = 54802
+	req.ExternalLocationID = "600"
+	//req.LocationID = 54802
 	req.SearchTerm = "203"
 	req.NumResults = 3
 	req.ResultsStart = 2
@@ -61,7 +62,7 @@ func TestGetBins(t *testing.T) {
 			t.Errorf("Did not expect to find bin: Name=%s Id=%d\n", bin.Name, bin.BinID)
 		} else {
 			assertInt(t, "FulfillerID mismatch", int(bin.FulfillerID), int(req.FulfillerID))
-			assertInt(t, "FulfillerLocationID mismatch", int(bin.FulfillerLocationID), int(req.FulfillerLocationID))
+			assertString(t, "ExternalLocationID mismatch", bin.ExternalLocationID, req.ExternalLocationID)
 			assertString(t, "Type mismatch", bin.BinType, "General")
 			assertString(t, "Status mismatch", bin.BinStatus, "Pickable")
 		}
@@ -89,17 +90,13 @@ func TestAllocateInventory(t *testing.T) {
 
 	req.FulfillerID = 69170
 
-	// TODO write a test to use these
-	req.FulfillerLocationCatalog.ManufacturerID = 0
-	req.FulfillerLocationCatalog.CatalogID = 0
-	req.FulfillerLocationCatalog.FulfillerLocationID = 0
-
 	var item soap.UpdateItem
 
 	item.PartNumber = "8888063910"
 	item.UPC = "8888063910"
 	item.Quantity = 1
-	item.FulfillerLocationID = 50565
+	item.ExternalLocationID = "440006"
+	//item.LocationID = 50565
 	req.Items = append(req.Items, item)
 
 	/* TODO uncomment 
@@ -116,17 +113,13 @@ func TestDeallocateInventory(t *testing.T) {
 
 	req.FulfillerID = 69170
 
-	// TODO write a test to use these
-	req.FulfillerLocationCatalog.ManufacturerID = 0
-	req.FulfillerLocationCatalog.CatalogID = 0
-	req.FulfillerLocationCatalog.FulfillerLocationID = 0
-
 	var item soap.UpdateItem
 
 	item.PartNumber = "8888063910"
 	item.UPC = "8888063910"
 	item.Quantity = 1
-	item.FulfillerLocationID = 50565
+	item.ExternalLocationID = "440006"
+	//item.LocationID = 50565
 	req.Items = append(req.Items, item)
 
 	/* TODO uncomment
@@ -143,23 +136,20 @@ func TestFulfillInventory(t *testing.T) {
 
 	req.FulfillerID = 69170
 
-	// TODO write a test to use these
-	req.FulfillerLocationCatalog.ManufacturerID = 0
-	req.FulfillerLocationCatalog.CatalogID = 0
-	req.FulfillerLocationCatalog.FulfillerLocationID = 0
-
 	var item soap.UpdateItem
 
 	item.PartNumber = "8888063910"
 	item.UPC = "8888063910"
 	item.Quantity = 1
-	item.FulfillerLocationID = 50565
+	item.ExternalLocationID = "440006"
+	//item.LocationID = 50565
 	req.Items = append(req.Items, item)
 
+	/* TODO uncomment
 	err := FulfillInventory(url, req)
 	if err != nil {
 		t.Fatal("Error occurred during FulfillInventory: \n" + err.Error())
-	}
+	}*/
 
 	// TODO assert the result programatically using GetInventory()
 }
