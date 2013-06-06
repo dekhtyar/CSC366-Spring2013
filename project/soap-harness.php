@@ -4,7 +4,16 @@
   $argv[1]($client, new \stdClass);
 
   function createFulfiller($client, $request) {
+    $data = get_csv_data('csv_data/fulfiller_locations.csv');
+    $request->request = new \stdClass;
 
+    foreach ($data as $location) {
+      $request->request->FulfillerID = $location['fulfiller_id'];
+      $request->request->Name = $location['name'];
+
+      $ret = $client->createFulfiller($request);
+      print_r($ret);
+    }
   }
 
   function getFulfillerStatus($client, $request) {

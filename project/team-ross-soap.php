@@ -24,8 +24,8 @@ class TeamRossSOAP {
   // GROUP
   // **********************************************************************
   function createFulfiller($FulfillerRequest) {
-    return $this->api->createFulfiller($FulfillerRequest['FullfillerID'],
-      $Fulfillerrequest['Name']) ? 0 : -1;
+    return array('createFulfillerReturn' => $this->api->createFulfiller($FulfillerRequest->FullfillerID,
+      $FulfillerRequest->Name) ? 0 : -1);
   }
 
   // **********************************************************************
