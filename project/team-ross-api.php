@@ -197,16 +197,16 @@ class TeamRossAPI {
       else {
         // execute queries
         if (!$stmt1->execute()) {
-          print "BinContainsProducts error:\n";
-          print_r($stmt1->errorInfo());
+          $error = $stmt1->errorInfo();
+          print "BinContainsProducts error: " . $error[2] . "\n";
         }
         if (!$stmt2->execute()) {
-          print "FulfillerCarriesProducts error:\n";
-          print_r($stmt2->errorInfo());
+          $error = $stmt2->errorInfo();
+          print "FulfillerCarriesProducts error: " . $error[2] . "\n";
         }
         if (!$stmt3->execute()) {
-          print "LocationSellsProducts error:\n";
-          print_r($stmt3->errorInfo());
+          $error = $stmt3->errorInfo();
+          print "LocationSellsProducts error: " . $error[2] . "\n";
         }
       }
     }
