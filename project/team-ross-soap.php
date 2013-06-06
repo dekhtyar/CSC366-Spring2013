@@ -45,16 +45,16 @@ class TeamRossSOAP {
     // no longer checks if FulfillmentLocation exists. Just updates!
 
     return array('createFulfillmentLocationReturn' => $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest->LocationName,
-					  $CreateFulfillmentLocationRequest->ExternalLocationID,
-					  $CreateFulfillmentLocationRequest->RetailerLocationID,
-					  $CreateFulfillmentLocationRequest->FulfillerID,
-					  $CreateFulfillmentLocationRequest->LocationType,
-					  $CreateFulfillmentLocationRequest->Latitude,
-					  $CreateFulfillmentLocationRequest->Longitude,
-					  $CreateFulfillmentLocationRequest->Status,
-					  $safetyStockLimitDefault,
-					  $mfgIdDefault,
-					  $catalogIdDefault
+            $CreateFulfillmentLocationRequest->ExternalLocationID,
+            $CreateFulfillmentLocationRequest->RetailerLocationID,
+            $CreateFulfillmentLocationRequest->FulfillerID,
+            $CreateFulfillmentLocationRequest->LocationType,
+            $CreateFulfillmentLocationRequest->Latitude,
+            $CreateFulfillmentLocationRequest->Longitude,
+            $CreateFulfillmentLocationRequest->Status,
+            $safetyStockLimitDefault,
+            $mfgIdDefault,
+            $catalogIdDefault
           )
         );
   }
@@ -64,9 +64,9 @@ class TeamRossSOAP {
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
     return array('getFulfillmentLocationsReturn' => $this->api->findLocations($GetFulfillmentLocationsRequest->FulfillerID,
-        				    $GetFulfillmentLocationsRequest->Catalog,
-        				    $GetFulfillmentLocationsRequest->Location,
-        				    $GetFulfillmentLocationsRequest->MaxLocations
+                    $GetFulfillmentLocationsRequest->Catalog,
+                    $GetFulfillmentLocationsRequest->Location,
+                    $GetFulfillmentLocationsRequest->MaxLocations
                   )
                 );
   }
@@ -84,8 +84,8 @@ class TeamRossSOAP {
   // Matt S
   // **********************************************************************
   function allocateInventory($UpdateRequest) {
-		return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-			$UpdateItem['Items']) ? 0 : -1;
+    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
+      $UpdateItem['Items']) ? 0 : -1;
   }
 
   // **********************************************************************
@@ -108,8 +108,8 @@ class TeamRossSOAP {
   function createBin($CreateBinRequest) {
     return array(
       'createBinReturn' => $this->api->createBin($CreateBinRequest->FulfillerId,
- 		                       $CreateBinRequest->Name, $CreateBinRequest->BinType,
-		                       $CreateBinRequest->BinStatus) ? 0 : -1
+                           $CreateBinRequest->Name, $CreateBinRequest->BinType,
+                           $CreateBinRequest->BinStatus) ? 0 : -1
     );
   }
 
@@ -130,7 +130,7 @@ class TeamRossSOAP {
   // Matt S
   // **********************************************************************
   function getBinTypes() {
-		$bins = $this->api->getBinTypes();
+    $bins = $this->api->getBinTypes();
     $returnArr = array();
 
     foreach ($bins as $bin)
