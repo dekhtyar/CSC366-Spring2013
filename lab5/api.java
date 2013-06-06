@@ -841,18 +841,27 @@ public class api {
    //Still working on it...
    public ArrayList<ArrayList<Object[]>> getInventory(int fulfillerId,
     int[] manCatalog, Object[][] quantities, String[] locationIds,
-    Object[] location, String type, int limit, boolean ignoreSafetyStock,
-    boolean includeNegativeInventory, boolean orderByLtd) {
+    Object[] location, String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
 
       ArrayList<ArrayList<Object[]>> inventory = new ArrayList<ArrayList<Object[]>>();
       String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
                     "m.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
                     "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
-                   "FROM Location l, Catalog c, Manufacturer m, " +
-                    "ContainedInBin cb, LocationProduct lp, " +
+                   "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
+                    "Manufacturer m, ContainedInBin cb, LocationProduct lp, " +
                     "RetailerProduct rp " +
-                   "WHERE ";
-
+                   "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
+                    "AND cl.CatalogId = c.CatalogId " +
+                    "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
+                    "AND rp.Id = lp.RetailerId AND lp.Id = cb.LocationProductId " +
+                    "AND l.FulfillerId = ? " +
+   /*ItemQuantity*/ "AND rp.SKU = ? AND rp.UPC = ? " +
+                    "AND cb.OnHand - cb.Allocated" + ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? " +
+   /*LocationIds*/  "AND l.RetailerId = ? " +
+                    (orderByLtd? "ORDER BY lp.Ltd" : "");
+                   //m.ManufacturerId = ? AND c.CatalogId = ?
+                   //Not including RequestLocation
 
       for(int ndx = 0; ndx < quantities.length; ndx++) {
          ArrayList<Object[]> response = new ArrayList<Object[]>();
