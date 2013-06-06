@@ -40,7 +40,16 @@
   }
 
   function getFulfillmentLocations($client, $request) {
+    $data = get_csv_data('csv_data/fulfiller_locations.csv');
+    $request->request = new \stdClass;
 
+    foreach ($data as $location) {
+      $request->request->FulfillerID = $location['fulfiller_id'];
+      $request->request->Catalog = $location['catalog_id'];
+
+      $ret = $client->getFulfillmentLocations($request);
+      print_r($ret);
+    }
   }
 
   function getFulfillmentLocationTypes($client, $request) {

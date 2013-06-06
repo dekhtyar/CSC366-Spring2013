@@ -63,12 +63,12 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-    return $this->api->findLocations($GetFulfillmentLocationsRequest['FulfillerId'],
-				    $GetFulfillmentLocationsRequest['Catalog'],
-				    $GetFulfillmentLocationsRequest['Location'],
-				    $GetFulfillmentLocationsRequest['MaxLocations']
-          );
-
+    return array('getFulfillmentLocationsReturn' => $this->api->findLocations($GetFulfillmentLocationsRequest->FulfillerID,
+        				    $GetFulfillmentLocationsRequest->Catalog,
+        				    $GetFulfillmentLocationsRequest->Location,
+        				    $GetFulfillmentLocationsRequest->MaxLocations
+                  )
+                );
   }
 
   // **********************************************************************
