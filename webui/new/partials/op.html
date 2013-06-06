@@ -13,6 +13,7 @@
     </form>
 </div>
 
+<p>Response Status: <span ng-style="{color: responseStatus == 200 && 'green' || 'red'}" ng-bind="responseStatus"></span></p>
 <pre><code ng-bind-html-unsafe="responseXML | escape | prettify"></code></pre>
 
 <!-- <div id="xml-shade" ng-show="showXML"></div> -->

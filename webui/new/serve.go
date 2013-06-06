@@ -33,7 +33,7 @@ func main() {
 
 	http.Handle("/assets/", serveDirAs(".", "/assets"))
 	http.HandleFunc("/", serveIndex)
-	err := http.ListenAndServe(":9000", nil)
+	err := http.ListenAndServe(":80", nil)
 	if err != nil {
 		fmt.Println(err)
 	}

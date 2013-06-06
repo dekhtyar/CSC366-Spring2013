@@ -172,15 +172,14 @@
             }
 
             function doBins() {
-                var bins = _.map(data, function(row) { return row.slice(1); });
-                var binRequests = _.map(bins, function(row) {
+                var binRequests = _.map(data, function(row) {
                     return [row[1], WSDL.createBin({
                         FulfillerID: '0',
                         BinID: '0',
-                        FulfillerLocationID: row[0],
-                        BinType: row[2],
-                        BinStatus: row[3],
-                        Name: row[1]
+                        ExternalLocationID: row[0],
+                        BinType: row[3],
+                        BinStatus: row[4],
+                        Name: row[2]
                     })];
                 });
                 doRequests('/createBin/', binRequests);

@@ -59,15 +59,20 @@ angular.module('apersci.controllers', [])
 
     $scope.responseXML = '';
     $scope.performRequest = function() {
-        console.log($scope.requestXML);
-        $http.post($scope.remoteHost + '/' + $scope.op + '/', APERSCI.encodeSOAP($scope.opData)).
-            success(function(data, status) {
-                $scope.responseXML = data;
-                console.log(status);
-            }).
-            error(function(data, status) {
-                $scope.responseXML = data;
-                console.log(status);
-            });
+        if (!$scope.remoteHost || $scope.remoteHost.match(/https?:\/\//) === null) {
+            $scope.responseStatus = 'A full remote host must be set! (eg http://yoursite.com)';
+        } else {
+            $http.post($scope.remoteHost + '/' + $scope.op + '/', APERSCI.encodeSOAP($scope.opData)).
+                success(function(data, status) {
+                    $scope.responseXML = data;
+                    $scope.responseStatus = status;
+                    console.log(status);
+                }).
+                error(function(data, status) {
+                    $scope.responseXML = data;
+                    $scope.responseStatus = status;
+                    console.log(status);
+                });
+        }
     };
 }]);
