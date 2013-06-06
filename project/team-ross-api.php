@@ -67,14 +67,13 @@ class TeamRossAPI {
 
     // Create LocationOffersCatalog
     $relational = $this->db->prepare("
-      INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId, fulfillerId)
-      VALUES (:catalogId, :manufacturerId, :internalLocationId, :fulfillerId);
+      INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId)
+      VALUES (:catalogId, :manufacturerId, :internalLocationId);
     ");
 
     $relational->bindParam(':catalogId', $catalogId);
     $relational->bindParam(':manufacturerId', $mfgId);
     $relational->bindParam(':internalLocationId', $intLID);
-    $relational->bindParam(':fulfillerId', $fulfillerId);
 
     $relational->execute();
   }
@@ -82,16 +81,15 @@ class TeamRossAPI {
   public function createBin($intLID, $name, $binType, $status) {
     $stmt = $this->db->prepare("
       INSERT INTO Bins
-        (internalLocationId, binName, binType, status, fulfillerId)
+        (internalLocationId, binName, binType, status)
       VALUES
-        (:internalLocationId, :binName, :binType, :status, :fulfillerId);
+        (:internalLocationId, :binName, :binType, :status);
     ");
 
     $stmt->bindValue(':internalLocationId', $intLID);
     $stmt->bindValue(':binName', $name);
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
-    $stmt->bindValue(':fulfillerId', $this->getFulfillerIdFromLocationId($intLID));
 
     return $stmt->execute();
   }
@@ -196,8 +194,12 @@ class TeamRossAPI {
         print "Bin doesn't exist.\n";
       else {
         // execute queries
-        $stmt1->execute();
-        $stmt2->execute();
+        if (!$stmt1->execute()) {
+          print_r($stmt1->errorInfo());
+        }
+        if (!$stmt2->execute()) {
+          print_r($stmt2->errorInfo());
+        }
         if (!$stmt3->execute()) {
           print_r($stmt3->errorInfo());
         }
