@@ -219,6 +219,8 @@ public class api {
       
       createNewCatalogServedByLocation(internalFulfillerLocationId, manufacturerId,
          catalogId);
+      createBin (fulfillerId, 0, internalFulfillerLocationId, "General",
+           "Pickable", "Default");
       
       if(closeConnection() == false)
          return;
@@ -327,16 +329,6 @@ public class api {
       {
          System.out.println("Error occured while creating a new Catalog tuple: " + e);
       }
-   }
-
-   public void createFullfillmentLocation ()
-   {
-      System.out.println("in create Fulfillment Location");
-   }
-
-   public void createManufacturerCatalog ()
-   {
-      System.out.println("in createManufacturer Catalog");
    }
 
    public int createBin (int fulfillerId, Integer binId, int fulfillerLocationId,String binType, String binStatus, String binName)
