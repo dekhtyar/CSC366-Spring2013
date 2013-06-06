@@ -483,7 +483,7 @@ public class api {
 
       return getBinAttributes(query, fulfillerId);
    }
-   
+  
    public int getRPId(int FulfillerId, String UPC, String SKU)
    {
         PreparedStatement s0;
@@ -846,7 +846,11 @@ public class api {
 
 	}
 
-  //  public void getInventory(int manuId, int catId, String partNum, String UPC, String locUPC, int quantity, String location, ) { // InventoryRequest: Catalog, Quantities, LocationNames, Location, Type, Limit...
-        
- //   }
+   public ArrayList<Object[]> getInventory(int fulfillerId, int[] manCatalog,
+    Object[][] quantities, String[] locationIds, Object[] location, String type,
+    int limit, boolean ignoreSafetyStock, boolean includeNegativeInventory,
+    boolean orderByLtd) {
+
+      return null;
+   }
 }
