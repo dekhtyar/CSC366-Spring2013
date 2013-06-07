@@ -422,9 +422,9 @@ public class api {
         return bins;
     }
     
-    public ArrayList<Object[]> getBinAttributes(String query, int fulfillerId)
+    public ArrayList<String> getBinAttributes(String query, int fulfillerId)
     {
-        ArrayList<Object[]> binTypes = new ArrayList<Object[]>();
+        ArrayList<String> binTypes = new ArrayList<String>();
         
         if(setUpConnection() == false) {
             System.out.println("Connection failed");
@@ -438,10 +438,7 @@ public class api {
             boolean hasNext = r.next();
             
             while(hasNext) {
-                String type = r.getString(1);
-                String description = r.getString(2);
-                Object[] returnObj = {type, description};
-                binTypes.add(returnObj);
+                binTypes.add(r.getString(1));
                 hasNext = r.next();
             }
         }
@@ -455,9 +452,9 @@ public class api {
         return binTypes;
     }
     
-    public ArrayList<Object[]> getBinTypes(int fulfillerId)
+    public ArrayList<String> getBinTypes(int fulfillerId)
     {
-        String query = "SELECT b.Type, b.Description " +
+        String query = "SELECT b.Type " +
         "FROM StoreBin b, Location l " +
         "WHERE l.FulfillerId = ? AND " +
         "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
@@ -465,9 +462,9 @@ public class api {
         return getBinAttributes(query, fulfillerId);
     }
     
-    public ArrayList<Object[]> getBinStatuses(int fulfillerId)
+    public ArrayList<String> getBinStatuses(int fulfillerId)
     {
-        String query = "SELECT b.Status, b.Description " +
+        String query = "SELECT b.Status " +
         "FROM StoreBin b, Location l " +
         "WHERE l.FulfillerId = ? AND " +
         "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
