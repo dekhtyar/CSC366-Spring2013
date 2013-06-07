@@ -849,15 +849,16 @@ public class api {
       String checkAvailable = "AND cb.OnHand - cb.Allocated" +
        ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? ";
       String sql = "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
-                    "ContainedInBin cb, LocationProduct lp, RetailerProduct rp " +
+                    "ContainedInBin cb, LocationProduct lp, " +
+                    "RetailerProduct rp, Product p " +
                    "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
-                    "AND cl.CatalogId = c.CatalogId " +
+                    "AND cl.CatalogId = c.CatalogId AND p.UPC = rp.UPC " +
                     "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
                     "AND rp.Id = lp.RetailerId AND lp.Id = cb.LocationProductId " +
                     "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
-                    "AND rp.SKU = ? AND rp.UPC = ? " +
-                    (includeNegativeInventory? "" : checkAvailable) +
-                    "AND l.RetailerId = ?";
+                    "AND p.ManufacturerId = ? AND p.CatalogId = ? " +
+                    "AND rp.SKU = ? AND rp.UPC = ?" +
+                    ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
       String sql1;
       String sql2;
@@ -891,13 +892,15 @@ public class api {
             ps.setInt(1, fulfillerId);
             ps.setInt(2, manCatalog[0]);
             ps.setInt(3, manCatalog[1]);
-            ps.setString(4, quantities[ndx][0].toString());
-            ps.setString(5, quantities[ndx][1].toString());
+            ps.setInt(4, manCatalog[0]);
+            ps.setInt(5, manCatalog[1]);
+            ps.setString(6, quantities[ndx][0].toString());
+            ps.setString(7, quantities[ndx][1].toString());
 
-            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
+            ps.setInt(8, (new Integer(quantities[ndx][2].toString())).intValue());
 
             for(int i = 0; i < locationIds.length; i++) {
-               ps.setString(7 + i, locationIds[i]);
+               ps.setString(9 + i, locationIds[i]);
             }
 
             ResultSet r = ps.executeQuery();
@@ -939,7 +942,7 @@ public class api {
 
       sql2 = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
               "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
-              "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit ";
+              "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit ";
 
       if(locations.size() > 0) {
          sql2 += loc + ")";
@@ -957,13 +960,15 @@ public class api {
             ps.setInt(1, fulfillerId);
             ps.setInt(2, manCatalog[0]);
             ps.setInt(3, manCatalog[1]);
-            ps.setString(4, quantities[ndx][0].toString());
-            ps.setString(5, quantities[ndx][1].toString());
+            ps.setInt(4, manCatalog[0]);
+            ps.setInt(5, manCatalog[1]);
+            ps.setString(6, quantities[ndx][0].toString());
+            ps.setString(7, quantities[ndx][1].toString());
 
-            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
+            ps.setInt(8, (new Integer(quantities[ndx][2].toString())).intValue());
 
             for(int i = 0; i < locationIds.length; i++) {
-               ps.setString(7 + i, locationIds[i]);
+               ps.setString(9 + i, locationIds[i]);
             }
 
             ResultSet r = ps.executeQuery();
@@ -999,17 +1004,18 @@ public class api {
        ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? ";
       String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
                     "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
-                    "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
+                    "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
                    "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
-                    "ContainedInBin cb, LocationProduct lp, RetailerProduct rp " +
+                    "ContainedInBin cb, LocationProduct lp, " +
+                    "RetailerProduct rp, Product p " +
                    "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
-                    "AND cl.CatalogId = c.CatalogId " +
+                    "AND cl.CatalogId = c.CatalogId AND p.UPC = rp.UPC " +
                     "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
                     "AND rp.Id = lp.RetailerId AND lp.Id = cb.LocationProductId " +
                     "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
-                    "AND rp.SKU = ? AND rp.UPC = ? " +
-                    (includeNegativeInventory? "" : checkAvailable) +
-                    "AND l.RetailerId = ?";
+                    "AND p.ManufacturerId = ? AND p.CatalogId = ? " +
+                    "AND rp.SKU = ? AND rp.UPC = ?" +
+                    ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
 
 
@@ -1037,18 +1043,20 @@ public class api {
             ps.setInt(1, fulfillerId);
             ps.setInt(2, manCatalog[0]);
             ps.setInt(3, manCatalog[1]);
-            ps.setString(4, quantities[ndx][0].toString());
-            ps.setString(5, quantities[ndx][1].toString());
+            ps.setInt(4, manCatalog[0]);
+            ps.setInt(5, manCatalog[1]);
+            ps.setString(6, quantities[ndx][0].toString());
+            ps.setString(7, quantities[ndx][1].toString());
 
             if(type.equals("ANY")) {
-               ps.setInt(6, 1);
+               ps.setInt(8, 1);
             }
             else {
-               ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
+               ps.setInt(8, (new Integer(quantities[ndx][2].toString())).intValue());
             }
 
             for(int i = 0; i < locationIds.length; i++) {
-               ps.setString(7 + i, locationIds[i]);
+               ps.setString(9 + i, locationIds[i]);
             }
 
             ResultSet r = ps.executeQuery();
@@ -1068,7 +1076,7 @@ public class api {
             }
          }
          catch(Exception e) {
-            System.out.println(e.toString());;
+            e.printStackTrace();
          }
       }
 
