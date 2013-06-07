@@ -843,12 +843,12 @@ public class api {
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
       ArrayList<Object[]> inventory = new ArrayList<Object[]>();
+      ArrayList<String> locations = new ArrayList<String>();
+      ArrayList<String> locations2 = new ArrayList<String>();
+      ArrayList<String> locations3 = new ArrayList<String>();
       String checkAvailable = "AND cb.OnHand - cb.Allocated" +
        ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? ";
-      String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
-                    "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
-                    "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
-                   "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
+      String sql = "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
                     "ContainedInBin cb, LocationProduct lp, RetailerProduct rp " +
                    "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
                     "AND cl.CatalogId = c.CatalogId " +
@@ -857,19 +857,118 @@ public class api {
                     "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
                     "AND rp.SKU = ? AND rp.UPC = ? " +
                     (includeNegativeInventory? "" : checkAvailable) +
-                    "AND l.RetailerId = ? " +
-                    (orderByLtd? "ORDER BY lp.Ltd" : "");
+                    "AND l.RetailerId = ?";
+      String loc = " AND (";
+      String sql1;
+      String sql2;
+
+
+      for(int ndx = 0; locationIds != null && ndx < locationIds.length; ndx++) {
+         loc += " l.ExternalFulfillerLocationId = ?";
+
+         if(ndx + 1 < locationIds.length) {
+            loc += " OR";
+         }
+      }
+
+      if(locationIds != null && locationIds.length > 0) {
+         sql += loc + ")";
+      }
+
+      loc = sql + " AND (";
+      
+
+      if(orderByLtd) {
+         sql += " ORDER BY lp.Ltd";
+      }
+
+      sql1 = "SELECT l.ExternalFulfillerLocationId " + sql;
+
+      for(int ndx = 0; ndx < quantities.length; ndx++) {
+         try {
+            PreparedStatement ps = conn.prepareStatement(sql1);
+
+            ps.setInt(1, fulfillerId);
+            ps.setInt(2, manCatalog[0]);
+            ps.setInt(3, manCatalog[1]);
+            ps.setString(4, quantities[ndx][0].toString());
+            ps.setString(5, quantities[ndx][1].toString());
+
+            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
+
+            for(int i = 0; i < locationIds.length; i++) {
+               ps.setString(7 + i, locationIds[i]);
+            }
+
+            ResultSet r = ps.executeQuery();
+            boolean hasNext = r.next();
+
+            while(hasNext) {
+               String l = r.getString(1);
+               if(ndx == 0) {
+                  locations2.add(l);
+               }
+               else {
+                  locations3.add(l);
+               }
+               hasNext = r.next();
+            }
+
+            for(int i = 0; i < locations3.size(); i++) {
+               String l = locations3.get(i);
+               if(locations2.contains(l)) {
+                  locations.add(l);
+               }
+            }
+            
+            locations2 = locations;
+            locations3.clear();
+         }
+         catch(Exception e) {
+            System.out.println(e.toString());
+         }
+      }
+
+      for(int i = 0; i < locations.size(); i++) {
+         loc += " l.ExternalFulfillerLocationId = ?";
+
+         if(i + 1 < locations.size()) {
+            loc += " OR";
+         }
+      }
+
+      sql2 = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
+              "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
+              "lp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit ";
+
+      if(locations.size() > 0) {
+         sql2 += loc + ")";
+      }
+
+      if(orderByLtd) {
+         sql2 += " ORDER BY lp.Ltd";
+      }
 
       for(int ndx = 0; ndx < quantities.length; ndx++) {
 
          try {
+            PreparedStatement ps = conn.prepareStatement(sql2);
 
-            PreparedStatement ps = conn.prepareStatement(sql);
-            Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(sql);
+            ps.setInt(1, fulfillerId);
+            ps.setInt(2, manCatalog[0]);
+            ps.setInt(3, manCatalog[1]);
+            ps.setString(4, quantities[ndx][0].toString());
+            ps.setString(5, quantities[ndx][1].toString());
+
+            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
+
+            for(int i = 0; i < locationIds.length; i++) {
+               ps.setString(7 + i, locationIds[i]);
+            }
+
+            ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
             int count = 0;
-
             while(hasNext && count <= limit) {
                Object[] returnObj = {r.getString(1), r.getInt(2), r.getInt(3),
                                      r.getInt(4), r.getInt(5), r.getString(6),
@@ -883,9 +982,8 @@ public class api {
             }
          }
          catch(Exception e) {
-            continue;
+            System.out.println(e.toString());
          }
-
 
       }
 
@@ -953,8 +1051,7 @@ public class api {
                ps.setString(7 + i, locationIds[i]);
             }
 
-            Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(sql);
+            ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
             int count = 0;
 
@@ -971,10 +1068,8 @@ public class api {
             }
          }
          catch(Exception e) {
-            continue;
+            System.out.println(e.toString());;
          }
-
-
       }
 
       return inventory;
