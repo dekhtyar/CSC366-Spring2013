@@ -9,6 +9,7 @@ public class Test {
    private static api apiCall = new api();
    private static boolean debug = false;
    private static boolean setup = false;
+   private static boolean test = true;
    private static boolean cleanup = false;
 
 public static void main(String[] args) {
@@ -34,22 +35,34 @@ public static void main(String[] args) {
       //testGetBinTypes(48590);
       //testGetBinStatuses(48590);
 
-      int fulfillerId = 48590;
-      int[] manCatalog = {11416, 0};
-      Object[][] quantities = {{"201162421", "201162421", 5}};
-      String[] locationIds = {};
-      Object[] location = null;
-      String type = "ANY";
-      int limit = 1000;
-      Boolean ignoreSafetyStock = null;
-      Boolean includeNegativeInventory = null;
-      boolean orderByLtd = false;
+      if(test) {
+         /*int fulfillerId = 48590;
+         int[] manCatalog = {11416, 0};
+         Object[][] quantities = {{"201162421", "201162421", 1}};
+         String[] locationIds = {};
+         Object[] location = null;
+         String type = "ANY";
+         int limit = 1000;
+         Boolean ignoreSafetyStock = null;
+         Boolean includeNegativeInventory = null;
+         boolean orderByLtd = false;*/
+         int fulfillerId = 69170;
+         int[] manCatalog = {11416, 0};
+         Object[][] quantities = {{"8888076828", "8888076828", 1}};
+         String[] locationIds = {};
+         Object[] location = null;
+         String type = "ANY";
+         int limit = 1000;
+         Boolean ignoreSafetyStock = null;
+         Boolean includeNegativeInventory = null;
+         boolean orderByLtd = false;
       
-      System.out.println("Testing getInventory");
-      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
-       manCatalog, quantities, locationIds, location, type, limit,
-       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
-      System.out.println(inventory.size() + " results");
+         System.out.println("Testing getInventory");
+         ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+          manCatalog, quantities, locationIds, location, type, limit,
+          ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+         System.out.println(inventory.size() + " results");
+      }
 
       if(cleanup)
       {
