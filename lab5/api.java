@@ -556,7 +556,7 @@ public class api {
 		ResultSet manuIdHolder;
 		ResultSet upcHolder;
 		
-		System.out.println("updating Product");
+		//System.out.println("updating Product");
 		
 		String catalog = "SELECT C.CatalogId " +
         "FROM CatalogServedByLocation C " +
@@ -632,7 +632,7 @@ public class api {
 		ResultSet FulfillerHolder;
 		ResultSet upcHolder;
         
-	    System.out.println("updating Retailer Product");
+	    //System.out.println("updating Retailer Product");
 		String findUPC = "SELECT RP.UPC " +
         "FROM RetailerProduct RP " +
         "where RP.UPC = '" + UPC + "'";
@@ -698,7 +698,7 @@ public class api {
 		int id = -1;
 		ResultSet FulfillerHolder;
 		
-		System.out.println("updating LocationProduct");
+		//System.out.println("updating LocationProduct");
 		
 		String fulfiller = "SELECT R.FulfillerId " +
         "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L " +
@@ -767,7 +767,7 @@ public class api {
 		int id = -1;
 		ResultSet idHolder;
 		
-		System.out.println("updating ContainedInBin");
+		//System.out.println("updating ContainedInBin");
 		
 		lpId = getLPId(internalFulfillerLocationId, ltd, safetyStock, UPC, SKU);
 		
