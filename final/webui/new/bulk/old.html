@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Test</title>
+
+    <meta name="viewport" content="width=device-width">
+
+    <link href="https://google-code-prettify.googlecode.com/svn/loader/prettify.css" rel="stylesheet" type="text/css">
+    <!-- pretty but over the top
+    <link href="http://fonts.googleapis.com/css?family=Exo:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    -->
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="http://fonts.googleapis.com/css?family=Anonymous+Pro" rel="stylesheet" type="text/css">
+    <style>
+    body, div, ul, li { margin: 0; padding: 0; border: 0; }
+    body { padding: 10px; }
+    pre, code, tt { font-family: "Anonymous+Pro", monospace; }
+    #message { display: inline; }
+    .success { /*color: #468847;*/ color: green; }
+    .error { /*color: #b94a48;*/ color: red; }
+    #requestResults { list-style: none; padding: 10px; }
+    </style>
+</head>
+<body>
+    <input id="endpoint" type="text" placeholder="http://example.com"/>
+    <input id="file" type="file"/>
+    <select id="requestType">
+        <option>Create Fulfillers</option>
+        <option>Create Locations</option>
+        <option>Create Bins</option>
+        <option>Create Products</option>
+        <option>Create Database</option>
+        <option>Clear Database</option>
+        <option>Destroy Database</option>
+    </select>
+    <input id="go" type="button" value="Go!"/>
+    <input id="clear" type="button" value="Clear"/>
+    <div id="message"></div>
+
+    <ul id="requestResults"></ul>
+
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="wsdl.js"></script>
+    <script src="csv.js"></script>
+    <script>
+        (function() {
+            var requestHeaders = [
+                ["name", "fulfiller_id", "external_fulfiller_location_id", "internal_fulfiller_location_id", "description", "latitude", "longitude", "status", "safety_stock", "mfg_id", "catalog_id"],
+                ["name", "fulfiller_id", "external_fulfiller_location_id", "internal_fulfiller_location_id", "description", "latitude", "longitude", "status", "safety_stock", "mfg_id", "catalog_id"],
+                ["external_fulfiller_location_id", "internal_fulfiller_location_id", "bin_name", "bin_type", "bin_status"],
+                ["product_name", "SKU", "UPC", "safety_stock", "ltd", "mfg_id", "catalog_id", "onhand", "bin_name", "external_fulfiller_location_id", "internal_fulfiller_location_id"],
+                [],
+                [],
+                []
+            ];
+
+            var id = _.bind(document.getElementById, document);
+            var endpoint = id('endpoint');
+            var input = id('file');
+            var requestType = id('requestType');
+            var message = id('message');
+            var go = id('go');
+            var clear = id('clear');
+            var requestResults = id('requestResults');
+
+            var data;
+            var headers = [];
+            var headersOk = true;
+            var activeRequests = 1;
+            var finishedRequests, totalRequests;
+
+            function Success(msg) { message.textContent = msg || 'ok'; message.className = 'success'; }
+            function Error(msg) { message.textContent = msg || 'error'; message.className = 'error'; }
+            function Notify(msg) { message.textContent = msg; message.className = ''; }
+
+            function checkHeaders() {
+                headersOk = _.isEqual(headers, requestHeaders[requestType.selectedIndex]);
+                if (headersOk) {
+                    Success();
+                } else {
+                    Error('bad CSV headers for request type');
+                }
+            }
+
+            requestType.onchange = checkHeaders;
+
+            function fileRead(event) {
+                var fileContents = event.target.result;
+                data = CSV.parse(fileContents);
+                headers = data[0];
+                data = data.slice(1);
+                checkHeaders();
+            }
+
+            input.onchange = function(event) {
+                var file = input.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = fileRead;
+                    reader.onerror = function() { headersOk = false; Error('error reading file'); };
+                    reader.readAsText(file, "UTF-8");
+                }
+            }
+
+            function xhrHandler(xhr, li) {
+                return function() {
+                    if (xhr.readyState === 4) {
+                        finishedRequests++;
+                        activeRequests--;
+                        if (finishedRequests % 100 === 0 || finishedRequests === totalRequests) {
+                            Notify(finishedRequests + ' / ' + totalRequests);
+                        }
+                        if (xhr.status === 200) {
+                            li.className = 'success';
+                        } else {
+                            li.className = 'error';
+                            li.textContent += ' (' + xhr.responseText.trim() + ')';
+                        }
+                    }
+                }
+            }
+
+            function doRequests(location, requests) {
+                finishedRequests = 0;
+                totalRequests = requests.length;
+                location = endpoint.value + location;
+                _.each(requests, function(req, i) {
+                    _.delay(function() {
+                        var li = document.createElement('li');
+                        li.textContent = req[0];
+                        requestResults.appendChild(li);
+
+                        var xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = xhrHandler(xhr, li);
+                        xhr.open('POST', location);
+                        xhr.setRequestHeader('Content-Type', 'text/plain'); // a lie, but causes simple CORS
+                        xhr.send(req[1]);
+                    }, Math.pow(activeRequests, 1.2) * 5);
+                    activeRequests++;
+                });
+            }
+
+            function doFulfillers() {
+                var fulfillers = _.map(data, function(row) { return row.slice(0, 2); });
+                var uniqueFulfillers = _.uniq(fulfillers, function(row) { return row[1]; });
+                var fulfillerRequests = _.map(uniqueFulfillers, function(row) {
+                    return [row[0], WSDL.createFulfiller({FulfillerID: row[1], Name: row[0]})];
+                });
+                doRequests('/createFulfiller/', fulfillerRequests);
+            }
+
+            function doLocations() {
+                var locations = _.map(data, function(row) { return row.slice(1, 8); });
+                var uniqueLocations = _.uniq(locations, function(row) { return row[2]; });
+                var locationRequests = _.map(uniqueLocations, function(row) {
+                    return [row[2], WSDL.createFulfillmentLocation({
+                        FulfillerID: row[0],
+                        RetailerLocationID: row[2],
+                        ExternalLocationID: row[1],
+                        LocationName: '', // lol?
+                        LocationType: row[3],
+                        Latitude: row[4],
+                        Longitude: row[5],
+                        Status: row[6],
+                        CountryCode: '' // k
+                    })];
+                });
+                doRequests('/createFulfillmentLocation/', locationRequests);
+            }
+
+            function doBins() {
+                var binRequests = _.map(data, function(row) {
+                    return [row[1], WSDL.createBin({
+                        FulfillerID: '0',
+                        BinID: '0',
+                        ExternalLocationID: row[0],
+                        BinType: row[3],
+                        BinStatus: row[4],
+                        Name: row[2]
+                    })];
+                });
+                doRequests('/createBin/', binRequests);
+            }
+
+            function doProducts() {
+                var products = _.map(data, function(row) { return row.slice(1, 5).concat(row.slice(7)); }); // TODO slice out ext ful loc id
+                //SKU,UPC,safety_stock,ltd,onhand,bin_name,external_fulfiller_location_id,internal_fulfiller_location_id
+                var productRequests = _.map(products, function(row) {
+                    return [row[0], WSDL.refreshInventory({
+                        FulfillerID: 0,
+                        LocationName: row[7],
+                        Items: [{
+                            PartNumber: row[0],
+                            UPC: row[1],
+                            BinID: row[5],
+                            Quantity: row[4],
+                            LTD: row[3],
+                            SafetyStock: row[2]
+                        }]
+                    })];
+                });
+                doRequests('/refreshInventory/', productRequests);
+            }
+
+            function doCreate() {
+                doRequests('/createDatabase/', [['Create Database', '']]);
+            }
+
+            function doClear() {
+                doRequests('/clearDatabase/', [['Clear Database', '']]);
+            }
+
+            function doDestroy() {
+                doRequests('/destroyDatabase/', [['Destroy Database', '']]);
+            }
+
+            go.onclick = function() {
+                if (!endpoint.value) {
+                    Error('an endpoint must be set');
+                    return;
+                }
+                checkHeaders();
+                if (headersOk) {
+                    ([doFulfillers, doLocations, doBins, doProducts, doCreate, doClear, doDestroy][requestType.selectedIndex])();
+                }
+            };
+
+            clear.onclick = function() {
+                requestResults.innerHTML = '';
+                file.value = '';
+                headers = [];
+                data = null;
+                checkHeaders();
+            }
+        })();
+    </script>
+</body>
+</html>

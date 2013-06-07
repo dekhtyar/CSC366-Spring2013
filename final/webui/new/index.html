@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CSC366 WebUI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="http://fonts.googleapis.com/css?family=Exo:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Anonymous+Pro" rel="stylesheet" type="text/css">
+
+    <!--<link href="/assets/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">-->
+    <!--<link href="/assets/lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">-->
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.1.0/pure-min.css">
+    <link href="/assets/lib/google-code-prettify/prettify.css" rel="stylesheet" type="text/css">
+
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css">
+</head>
+<body ng-app="apersci">
+    <div id="menu" class="pure-menu pure-menu-open">
+        <h1><a href="/">WebUI</a></h1>
+        <a class="pure-menu-heading">Database Creation</a>
+        <ul>
+            <li><a href="/assets/bulk/old.html" target="_blank">Old CSV Loader</a></li>
+            <!--
+            <li><a href="/operation/createDatabase">createDatabase</a></li>
+            <li><a href="/operation/clearDatabase">clearDatabase</a></li>
+            <li><a href="/operation/destroyDatabase">destroyDatabase</a></li>
+            -->
+        </ul>
+        <a class="pure-menu-heading">SOAP Operations</a>
+        <ul>
+            <li><a href="/operation/adjustInventory">adjustInventory</a></li>
+            <li><a href="/operation/allocateInventory">allocateInventory</a></li>
+            <li><a href="/operation/createBin">createBin</a></li>
+            <li><a href="/operation/createFulfiller">createFulfiller</a></li>
+            <li><a href="/operation/createFulfillmentLocation">createFulfillmentLocation</a></li>
+            <li><a href="/operation/deallocateInventory">deallocateInventory</a></li>
+            <li><a href="/operation/fulfillInventory">fulfillInventory</a></li>
+            <li><a href="/operation/getBinStatuses">getBinStatuses</a></li>
+            <li><a href="/operation/getBinTypes">getBinTypes</a></li>
+            <li><a href="/operation/getBins">getBins</a></li>
+            <li><a href="/operation/getFulfillerStatus">getFulfillerStatus</a></li>
+            <li><a href="/operation/getFulfillmentLocationTypes">getFulfillmentLocationTypes</a></li>
+            <li><a href="/operation/getFulfillmentLocations">getFulfillmentLocations</a></li>
+            <li><a href="/operation/getInventory">getInventory</a></li>
+            <li><a href="/operation/refreshInventory">refreshInventory</a></li>
+        </ul>
+    </div>
+
+    <div id="content">
+        <form class="pure-form">
+            <fieldset>
+            <input type="text" ng-model="remoteHost" placeholder="http://example.com">
+            <!--
+            <label for="remember">
+                <input id="remember" type="checkbox" ng-model="rememberHost"> Remember
+            </label>
+            -->
+        </fieldset>
+        </form>
+
+        <div ng-view></div>
+
+        <!--
+        <ul id="request-log">
+            <li ng-repeat="request in requestLog" ng-class="request.success && 'requestSuccess' || 'requestFailure'">{{request.message}}</li>
+        </ul>
+        -->
+    </div>
+
+	<script src="/assets/lib/angular/angular-1.0.7.min.js"></script>
+    <!--<script src="/assets/lib/angular-ui/ui-bootstrap-tpls-0.3.0.min.js"></script>-->
+    <script src="/assets/lib/underscore/lodash.min.js"></script>
+	<script src="/assets/lib/google-code-prettify/prettify.js"></script>
+    <script src="/assets/js/apersci.js"></script>
+
+    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/services.js"></script>
+    <script src="/assets/js/controllers.js"></script>
+    <script src="/assets/js/filters.js"></script>
+    <script src="/assets/js/directives.js"></script>
+</body>
+</html>
