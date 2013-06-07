@@ -84,7 +84,6 @@ public class api {
       int charCount = 0;
 
       if(setUpConnection() == false) {
-         System.out.println("Connection failed");
          return;
       }
 
@@ -846,16 +845,16 @@ public class api {
       ArrayList<String> locations = new ArrayList<String>();
       ArrayList<String> locations2 = new ArrayList<String>();
       ArrayList<String> locations3 = new ArrayList<String>();
-      String checkAvailable = "AND cb.OnHand - cb.Allocated" +
-       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? ";
+      String checkAvailable = " AND cb.OnHand - cb.Allocated" +
+       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - lp.SafeStockLimit" : "") + " >= ? ";
       String sql = "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
                     "ContainedInBin cb, LocationProduct lp, " +
                     "RetailerProduct rp, Product p " +
                    "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
                     "AND cl.CatalogId = c.CatalogId AND p.UPC = rp.UPC " +
                     "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
-                    "AND rp.Id = lp.RetailerId AND lp.Id = cb.LocationProductId " +
-                    "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
+                    "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
+                    "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
                     "AND p.ManufacturerId = ? AND p.CatalogId = ? " +
                     "AND rp.SKU = ? AND rp.UPC = ?" +
                     ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
@@ -1000,8 +999,8 @@ public class api {
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
       ArrayList<Object[]> inventory = new ArrayList<Object[]>();
-      String checkAvailable = "AND cb.OnHand - cb.Allocated" +
-       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - cb.SafeStockLimit" : "") + " >= ? ";
+      String checkAvailable = " AND cb.OnHand - cb.Allocated" +
+       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - lp.SafeStockLimit" : "") + " >= ? ";
       String sql = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
                     "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
                     "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
@@ -1011,8 +1010,8 @@ public class api {
                    "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
                     "AND cl.CatalogId = c.CatalogId AND p.UPC = rp.UPC " +
                     "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
-                    "AND rp.Id = lp.RetailerId AND lp.Id = cb.LocationProductId " +
-                    "AND l.FulfillerId = ?, c.ManufacturerId = ? AND c.CatalogId = ? " +
+                    "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
+                    "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
                     "AND p.ManufacturerId = ? AND p.CatalogId = ? " +
                     "AND rp.SKU = ? AND rp.UPC = ?" +
                     ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
@@ -1059,6 +1058,7 @@ public class api {
                ps.setString(9 + i, locationIds[i]);
             }
 
+            System.out.println(ps.toString());
             ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
             int count = 0;
@@ -1090,6 +1090,10 @@ public class api {
 
       ArrayList<Object[]> inventory;
 
+      if(!setUpConnection()) {
+         return null;
+      }
+
       if(type.equals("ALL") || type.equals("ALL_STORES")) {
          inventory =  getAllInventory(fulfillerId, manCatalog, quantities,
                        locationIds, location, type, limit, ignoreSafetyStock,
@@ -1104,8 +1108,9 @@ public class api {
          inventory = null;
       }
 
-      return inventory;
+      closeConnection();
 
+      return inventory;
    }
    
    public double getDistance(String unit, double lat1, double lon1, double lat2, double lon2) {
