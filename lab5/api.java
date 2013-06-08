@@ -920,8 +920,8 @@ public class api {
              item[i].UPC, item[i].partNumber);
 //	      }
 
-      System.out.println("num: " + num);
-      num++;
+      //System.out.println("num: " + num);
+      //num++;
 
       closeConnection();
       return 1;
@@ -1199,10 +1199,10 @@ public class api {
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
         
-      ArrayList<Object[]> inventory;
+      ArrayList<Object[]> inventory = new ArrayList<Object[]>();
         
       if(!setUpConnection()) {
-         return null;
+         return inventory;
       }
         
       if(type.equals("ALL") || type.equals("ALL_STORES")) {
@@ -1214,9 +1214,6 @@ public class api {
          inventory = getSomeInventory(fulfillerId, manCatalog, quantities,
           locationIds, location, type, limit, ignoreSafetyStock,
           includeNegativeInventory, orderByLtd);
-      }
-      else {
-         inventory = null;
       }
         
       closeConnection();

@@ -379,7 +379,7 @@ try {
    }
 
    public static void testGetBinTypes(int fulfillerId) {
-      ArrayList<Object[]> binTypes = apiCall.getBinTypes(fulfillerId);
+      ArrayList<String> binTypes = apiCall.getBinTypes(fulfillerId);
 
       if(binTypes == null) {
          System.out.println("getBinTypes: Query failed");
@@ -400,7 +400,7 @@ System.out.println(binTypes.get(ndx)[0] + " " + description);
    }
 
    public static void testGetBinStatuses(int fulfillerId) {
-      ArrayList<Object[]> binTypes = apiCall.getBinStatuses(fulfillerId);
+      ArrayList<String> binTypes = apiCall.getBinStatuses(fulfillerId);
 
       if(binTypes == null) {
          System.out.println("getBinStatuses: Query failed");
