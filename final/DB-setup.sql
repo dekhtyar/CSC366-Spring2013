@@ -5,21 +5,22 @@
 -- Luke Larson  lplarson@calpoly.edu
 
 CREATE TABLE Manufacturers (
-   ManufacturerId           VARCHAR(50) PRIMARY KEY
+   ManufacturerId           INTEGER PRIMARY KEY
 );
 
 CREATE TABLE Catalogues (
-   ManufacturerId           VARCHAR(50) REFERENCES Manufacturers,
-   CatalogueId              VARCHAR(50),
+   ManufacturerId           INTEGER REFERENCES Manufacturers,
+   CatalogueId              INTEGER,
    PRIMARY KEY (ManufacturerId, CatalogueId)
 );
 
 CREATE TABLE Fulfillers (
-   FulfillerId              VARCHAR(50) PRIMARY KEY
+   FulfillerId              INTEGER PRIMARY KEY,
+   FulfillerName            VARCHAR(50)
 );
 
 CREATE TABLE Locations (
-   FulfillerId              VARCHAR(50) REFERENCES Fulfillers,
+   FulfillerId              INTEGER REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR(50),
    Name                     VARCHAR(20),
    Type                     VARCHAR(20),
@@ -32,8 +33,8 @@ CREATE TABLE Locations (
 
 CREATE TABLE Items (
    UPC                      CHAR(14) PRIMARY KEY, 
-   ManufacturerId           VARCHAR(50),
-   CatalogueId              VARCHAR(50),
+   ManufacturerId           INTEGER,
+   CatalogueId              INTEGER,
    Name                     VARCHAR(80),
    FOREIGN KEY (ManufacturerId, CatalogueId)
     REFERENCES Catalogues (ManufacturerId, CatalogueId)
@@ -41,14 +42,14 @@ CREATE TABLE Items (
 
 CREATE TABLE FulfilledBy (
    UPC                      CHAR(14) REFERENCES Items,
-   FulfillerId              VARCHAR(50) REFERENCES Fulfillers,
+   FulfillerId              INTEGER REFERENCES Fulfillers,
    SKU                      VARCHAR(50),
    PRIMARY KEY (UPC, FulfillerId),
    UNIQUE (SKU, FulfillerId)
 );
 
 CREATE TABLE Bins (
-   FulfillerId              VARCHAR(50),
+   FulfillerId              INTEGER,
    FulfillerLocationId      VARCHAR(50),
    Name                     VARCHAR(20),
    BinType                  VARCHAR(20),
@@ -60,7 +61,7 @@ CREATE TABLE Bins (
 
 CREATE TABLE StoredIn (
    SKU                      VARCHAR(50),
-   FulfillerId              VARCHAR(50),
+   FulfillerId              INTEGER,
    FulfillerLocationId      VARCHAR(50),
    Name                     VARCHAR(20),
    OnHand                   INTEGER,
@@ -74,7 +75,7 @@ CREATE TABLE StoredIn (
 
 CREATE TABLE StoredAt (
    SKU                      VARCHAR(50),
-   FulfillerId              VARCHAR(50),
+   FulfillerId              INTEGER,
    FulfillerLocationId      VARCHAR(50),
    LTD                      FLOAT,
    SafetyStockLimit         INTEGER,
@@ -86,10 +87,10 @@ CREATE TABLE StoredAt (
 ); 
 
 CREATE TABLE SubscribeTo (
-   FulfillerId              VARCHAR(50),
+   FulfillerId              INTEGER,
    FulfillerLocationId      VARCHAR(50),
-   ManufacturerId           VARCHAR(50),
-   CatalogueId              VARCHAR(50),
+   ManufacturerId           INTEGER,
+   CatalogueId              INTEGER,
    PRIMARY KEY (FulfillerId, FulfillerLocationId, ManufacturerId, CatalogueId),
    FOREIGN KEY (FulfillerId, FulfillerLocationId)
     REFERENCES Locations (FulfillerId, FulfillerLocationId),

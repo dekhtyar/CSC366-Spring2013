@@ -25,7 +25,7 @@
     </style>
 </head>
 <body>
-    <input id="endpoint" type="text" placeholder="http://example.com"/>
+    <input id="endpoint" type="text" value="http://cslvm52.csc.calpoly.edu" placeholder="http://example.com"/>
     <input id="file" type="file"/>
     <select id="requestType">
         <option>Create Fulfillers</option>
@@ -149,7 +149,7 @@
                 var fulfillerRequests = _.map(uniqueFulfillers, function(row) {
                     return [row[0], WSDL.createFulfiller({FulfillerID: row[1], Name: row[0]})];
                 });
-                doRequests('/createFulfiller/', fulfillerRequests);
+                doRequests('/inventoryService/', fulfillerRequests);
             }
 
             function doLocations() {
@@ -164,25 +164,25 @@
                         LocationType: row[3],
                         Latitude: row[4],
                         Longitude: row[5],
-                        Status: row[6],
+                        Status: row[6] == "active" ? 1 : 2,
                         CountryCode: '' // k
                     })];
                 });
-                doRequests('/createFulfillmentLocation/', locationRequests);
+                doRequests('/inventoryService/', locationRequests);
             }
 
             function doBins() {
                 var binRequests = _.map(data, function(row) {
-                    return [row[1], WSDL.createBin({
-                        FulfillerID: '0',
-                        BinID: '0',
-                        ExternalLocationID: row[0],
+                    return [row[0], WSDL.createBin({
+                        FulfillerID: 1,
+                        BinID: '1',
+                        FulfillerLocationID: row[0],
                         BinType: row[3],
                         BinStatus: row[4],
                         Name: row[2]
                     })];
                 });
-                doRequests('/createBin/', binRequests);
+                doRequests('/inventoryService/', binRequests);
             }
 
             function doProducts() {
@@ -190,19 +190,19 @@
                 //SKU,UPC,safety_stock,ltd,onhand,bin_name,external_fulfiller_location_id,internal_fulfiller_location_id
                 var productRequests = _.map(products, function(row) {
                     return [row[0], WSDL.refreshInventory({
-                        FulfillerID: 0,
+                        FulfillerID: 1,
                         LocationName: row[7],
                         Items: [{
                             PartNumber: row[0],
                             UPC: row[1],
-                            BinID: row[5],
+                            BinID: 0, // BinID is not bin name
                             Quantity: row[4],
                             LTD: row[3],
                             SafetyStock: row[2]
                         }]
                     })];
                 });
-                doRequests('/refreshInventory/', productRequests);
+                doRequests('/inventoryService/', productRequests);
             }
 
             function doCreate() {

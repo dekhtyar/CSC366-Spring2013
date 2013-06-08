@@ -19,10 +19,11 @@ class Service(CoreServiceService):
         print "soap_createFulfiller:", FulfillerID, Name
 
         # Call API function with arguments above
-        api.createFulfiller({'fulfiller_id': FulfillerID}, db)
+        response = api.createFulfiller({'fulfiller_id': FulfillerID,
+                                        'name': Name}, db)
 
         # Set these values with results from calliing API function
-        createFulfillerReturn = 1 
+        createFulfillerReturn = response
 
         res.set_element_createFulfillerReturn(createFulfillerReturn)
         
@@ -300,6 +301,21 @@ class Service(CoreServiceService):
     def soap_refreshInventory(self, ps):
         res = CoreServiceService.soap_refreshInventory(self, ps)
         req = self.request
+
+        Items = req.get_element_Items()
+        items = Items.get_element_items()
+        BinID = items[0].get_element_BinID()
+        LTD = items[0].get_element_LTD()
+        PartNumber = items[0].get_element_PartNumber()
+        Quantity = items[0].get_element_Quantity()
+        SafetyStock = items[0].get_element_SafetyStock()
+        UPC = items[0].get_element_UPC()
+        FulfillerID = req.get_element_FulfillerID()
+        LocationName = req.get_element_LocationName()
+
+        print "soap_refreshInventory:", items, BinID, LTD, PartNumber, Quantity, SafetyStock, UPC, FulfillerID, LocationName
+
+        api.refreshInventory(req, db)
         return res
 
 

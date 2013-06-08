@@ -62,7 +62,7 @@ angular.module('apersci.controllers', [])
         if (!$scope.remoteHost || $scope.remoteHost.match(/https?:\/\//) === null) {
             $scope.responseStatus = 'A full remote host must be set! (eg http://yoursite.com)';
         } else {
-            $http.post($scope.remoteHost + '/' + $scope.op + '/', APERSCI.encodeSOAP($scope.opData)).
+            $http.post($scope.remoteHost + '/inventoryService/', APERSCI.encodeSOAP($scope.opData)).
                 success(function(data, status) {
                     $scope.responseXML = data;
                     $scope.responseStatus = status;

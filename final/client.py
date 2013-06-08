@@ -4,13 +4,13 @@
 from CoreServiceService_services import *
 import re
 
-print dir()
+#print dir()
 
 loc = CoreServiceServiceLocator()
-print dir(loc)
+#print dir(loc)
 
 port = loc.getCoreService()
-print dir(port)
+#print dir(port)
 
 req = getFulfillerStatusRequest()
 req.set_element_fulfillerID(1)
@@ -115,10 +115,31 @@ request.set_element_FulfillerID(2)
 request.set_element_FulfillerLocationID(2)
 request.set_element_Name('Name')
 req.set_element_request(request)
-print dir(request)
-print dir(req)
 res = port.createBin(req)
 print 'createBin'
+
+req = RefreshInventorySoapIn()
+Items = req.new_Items()
+items1 = Items.new_items()
+items1.set_element_BinID(123)
+items1.set_element_LTD(1.0)
+items1.set_element_PartNumber('PartNumber2')
+items1.set_element_Quantity(12)
+items1.set_element_SafetyStock(10)
+items1.set_element_UPC('UPC12')
+items2 = Items.new_items()
+items2.set_element_BinID(123)
+items2.set_element_LTD(1.0)
+items2.set_element_PartNumber('PartNumber12')
+items2.set_element_Quantity(12)
+items2.set_element_SafetyStock(10)
+items2.set_element_UPC('UPC2')
+Items.set_element_items([items1, items2])
+req.set_element_Items(Items)
+req.set_element_FulfillerID(123)
+req.set_element_LocationName('LocationName')
+res = port.refreshInventory(req)
+print 'refreshInventory', res # res is a string
 
 #req = getFulfillmentLocationTypesRequest()
 #res = port.getFulfillmentLocationTypes(req)
@@ -148,22 +169,6 @@ print 'createBin'
 #req.set_element_request(request)
 #res = port.allocate(req)
 #print 'allocateInventory'
-
-#req = RefreshInventorySoapIn()
-#Items = req.new_Items()
-#items = Items.new_items()
-#items.set_element_BinID()
-#items.set_element_LTD()
-#items.set_element_PartNumber()
-#items.set_element_Quantity()
-#items.set_element_SafetyStock()
-#items.set_element_UPC()
-#Items.set_element_items(items)
-#req.set_element_Items(Items)
-#req.set_element_FulfillerID()
-#req.set_element_LocationName()
-#res = port.Refresh(req)
-#print 'RefreshInventorySoap'
 
 #req = AdjustInventorySoapIn()
 #Items = req.new_Items()

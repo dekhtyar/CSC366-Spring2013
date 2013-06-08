@@ -10,17 +10,18 @@ import MySQLdb
 def createFulfiller(row, db):
    # name,fulfiller_id,external_fulfiller_location_id,internal_fulfiller_location_id,description,latitude,longitude,status,safety_stock,mfg_id,catalog_id
    query = """\
-       INSERT INTO Fulfillers (FulfillerId) VALUES (%s)"""
+       INSERT INTO Fulfillers (FulfillerId, FulfillerName) VALUES (%s, %s)"""
 
-   parameters = (row['fulfiller_id'],)
+   parameters = (row['fulfiller_id'], row['name'])
 
    try:
        with db as cursor:
            cursor.execute(query, parameters)
            print 'createFulfiller: inserted', parameters 
+       return 1
    except MySQLdb.IntegrityError, e:
-       pass
-       #print e
+       print e
+       return 0
        #print parameters
 
 def createBin(row, db):
@@ -44,7 +45,7 @@ def createBin(row, db):
            print 'createBin: inserted', parameters 
    except MySQLdb.IntegrityError, e:
        pass
-       #print e
+       print e
        #print parameters
 
 def createFulfillmentLocation(row, db):
@@ -77,7 +78,7 @@ def createFulfillmentLocation(row, db):
                   'bin_name': 'Default', 'bin_type': 'General', 'bin_status': 'Pickable'}, db)
    except MySQLdb.IntegrityError, e:
        pass
-       #print e
+       print e
        #print parameters
 
 def createManufacturerCatalog(row, db):
@@ -93,7 +94,7 @@ def createManufacturerCatalog(row, db):
            print 'createManufacturerCatalog: inserted', parameters1
    except MySQLdb.IntegrityError, e:
        pass
-       #print e
+       print e
        #print parameters1
 
    try:
@@ -102,17 +103,18 @@ def createManufacturerCatalog(row, db):
            print 'createManufacturerCatalog: inserted', parameters2 
    except MySQLdb.IntegrityError, e:
        pass
-       #print e
+       print e
        #print parameters2
 
-def refreshInventory(row, db):
+def refreshInventoryElem(row, db):
     cur = db.cursor()
 
     # Find the fulfiller_id
-    cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s',
-                (row['external_fulfiller_location_id'],))
-    location = cur.fetchone()
-    fulfiller_id = 0 if location is None else location[0]
+    #cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s',
+    #            (row['external_fulfiller_location_id'],))
+    
+    #location = cur.fetchone()
+    fulfiller_id = 0 if row['fulfiller_id'] is None else row['fulfiller_id']
 
     sql_stored_at_where = 'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s'
     sql_stored_in_where = sql_stored_at_where+' AND Name = %s' 
@@ -160,10 +162,35 @@ def refreshInventory(row, db):
         print 'refreshInventory: StoredIn: inserted', str(args_stored_in_where+(row['onhand'], 0))
         print 'refreshInventory: StoredAt: inserted', str(args_stored_at_where+(row['ltd'], row['safety_stock']))
     except Exception, e:
-        #print e
+        print e
         db.rollback()
     finally:
         cur.close()
+
+def refreshInventory(request, db):
+    Items = request.get_element_Items()
+    items = Items.get_element_items()
+    FulfillerID = request.get_element_FulfillerID()
+    LocationName = request.get_element_LocationName()
+
+    for item in items:
+        BinID = item.get_element_BinID() # bin_name?
+        LTD = item.get_element_LTD()
+        PartNumber = item.get_element_PartNumber() # SKU
+        Quantity = item.get_element_Quantity()
+        SafetyStock = item.get_element_SafetyStock()
+        UPC = item.get_element_UPC()
+        refreshInventoryElem({'fulfiller_id': FulfillerID,
+                              'external_fulfiller_location_id': '600', # Where do we get this?
+                              'SKU': PartNumber,
+                              'UPC': UPC,
+                              'bin_name': '', # Where do we get this?
+                              'onhand': Quantity,
+                              'safety_stock': SafetyStock,
+                              'ltd': LTD,
+                              'mfg_id': '1',
+                              'catalog_id': '1',
+                              'product_name': ''}, db)
 
 def getFulfillerStatus(fID, fLID, db):
    cursor = db.cursor()
