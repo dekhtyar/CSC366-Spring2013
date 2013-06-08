@@ -91,8 +91,12 @@ class TeamRossSOAP {
   // **********************************************************************
   // Ian
   // **********************************************************************
-  function deallocateInventory() {
+  function deallocateInventory($UpdateItem) {
+    foreach ($UpdateItem['Items'] as $CurrElem)
+      $CurrElem['Quantity'] = $CurrElem['Quantity'] * -1;
 
+    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
+                         $UpdateItem['Items']) ? 0 : -1;
   }
 
   // **********************************************************************
@@ -147,8 +151,8 @@ class TeamRossSOAP {
     $bins = $this->api->getBinStatuses;
     $returnArr = array();
 
-    foreach( $bins as $bin)
-      if($bin['BinStatus'])
+    foreach ($bins as $bin)
+      if ($bin['BinStatus'])
         $returnArr[]['BinStatus'] = $bin['status'];
 
     return array('getBinStatusesReturn' => $returnArr);
@@ -158,8 +162,18 @@ class TeamRossSOAP {
   // **********************************************************************
   // Ian
   // *********************************************************************
-  function getInventory() {
-
+  function getInventory($GetInventoryRequest) {
+    return $this->api->getInventory($GetInventoryRequest['FulfillerId'],
+            $GetInventoryRequest['Catalog'],
+            $GetInventoryRequest['Quantities'],
+            $GetInventoryRequest['LocationNames'],
+            $GetInventoryRequest['Location'],
+            $GetInventoryRequest['Type'],
+            $GetInventoryRequest['Limit'],
+            $GetInventoryRequest['IgnoreSafetyStock'],
+            $GetInventoryRequest['IncludeNegativeInventory'],
+            $GetInventoryRequest['OrderByLTD']
+          );
   }
 
   // **********************************************************************

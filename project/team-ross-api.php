@@ -52,7 +52,7 @@ class TeamRossAPI {
     $stmt->bindValue(':safetyStockLimitDefault', $safetyStock);
     if (!$stmt->execute()) {
       $success = FALSE;
-    } 
+    }
 
     // Create catalog if missing
     if (!$this->getCatalog($catalogId))
@@ -70,7 +70,7 @@ class TeamRossAPI {
     $relational->bindParam(':catalogId', $catalogId);
     $relational->bindParam(':manufacturerId', $mfgId);
     $relational->bindParam(':internalLocationId', $intLID);
-    
+
     if (!$relational->execute())  {
       $success = FALSE;
     }
@@ -175,15 +175,15 @@ class TeamRossAPI {
     ");
 
     $stmt3 = $this->db->prepare("
-      INSERT INTO LocationSellsProducts (internalLocationId, productUpc, 
+      INSERT INTO LocationSellsProducts (internalLocationId, productUpc,
       storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
-      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, 
+      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd,
       '0', :onHand, :fulfillerId)
       ");
 
     $stmt4 = $this->db->prepare(
-        "SELECT externalLocationId 
-          FROM Locations 
+        "SELECT externalLocationId
+          FROM Locations
           WHERE externalLocationId=:externalLocationId
             AND fulfillerId=:fulfillerId");
 
@@ -192,7 +192,7 @@ class TeamRossAPI {
 
     $stmt4->execute();
     $fetch = $stmt4->fetch(PDO::FETCH_ASSOC);
-  
+
     // UPDATE INVENTORY FOR EACH ITEM
     foreach ($items as $item) {
       $stmt1->bindParam(':binName', $item['bin_name']);
@@ -359,12 +359,12 @@ class TeamRossAPI {
       SELECT FulfillerId, ExternalLocationID
       FROM (
 
-      SELECT 
-	lc.fulfillerId AS FulFillerId, 
-	l.externalLocationId AS ExternalLocationID,
-	( 3959 * acos( cos( radians(:latitude) ) * cos( radians( l.latitude ) ) * 
-	cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * 
-	sin( radians( l.latitude ) ) ) ) AS distance
+      SELECT
+  lc.fulfillerId AS FulFillerId,
+  l.externalLocationId AS ExternalLocationID,
+  ( 3959 * acos( cos( radians(:latitude) ) * cos( radians( l.latitude ) ) *
+  cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) *
+  sin( radians( l.latitude ) ) ) ) AS distance
       FROM Locations l INNER JOIN LocationOffersCatalogs lc
       ON lc.internalLocationId = l.interalLocationId
       WHERE lc.fulfillerId = :fulfillerId
@@ -415,5 +415,57 @@ class TeamRossAPI {
     }
 
     return $success;
+  }
+
+  public function getInventory($fulfillerID, $catalog, $quantities, $locationNames, $type, $limit, $ignoreSafetyStock, $includeNegInv, $orderByLTD) {
+    $str = "SELECT externalLocationId AS LocationName,
+             catalogId AS CatalogID,
+             manufacturerId AS ManufacturerID,
+             onHand AS OnHand,
+             (onHand – allocated) – safetyStock AS Available,
+             sku AS PartNumber,
+             productUpc AS UPC,
+             ltd AS LTD,
+             safetyStock AS SafetyStock
+      FROM ((Locations
+      NATURAL JOIN LocationSellsProducts)
+      NATURAL JOIN LocationOffersCatalog)
+      NATURAL JOIN FulfillerCarriesProduct
+      WHERE fulfillerId = :fulfillerID
+      AND catalogId = :catalogID
+      AND manufacturerId = :manufacturerID
+      AND externalLocationId = :locationName";
+
+    // Build rest of query string
+    if (!$includeNegInv) {
+      $str = $str . " AND (allocated";
+
+      if (!$ignoreSafetyStock) {
+        $str = $str . " + safetyStock";
+      }
+      $str = $str . ") < onHand";
+    }
+    if ($orderByLTD)
+      $str = $str . " ORDER BY ltd";
+    $str = $str . "LIMIT 0, :limit;";
+
+    $stmt = $this->db->prepare($str);
+
+    $stmt->bindParam(':fulfillerID', $fulfillerID);
+    $stmt->bindParam(':catalogID', $catalog['CatalogID']);
+    $stmt->bindParam(':manufacturerID', $catalog['ManufacturerID']);
+    $stmt->bindParam(':type', $type);
+    $stmt->bindParam(':quantities', $quantities);
+    $stmt->bindParam(':limit', $limit);
+
+    $arr = array();
+    foreach ($locationNames as $currName) {
+      $stmt->bindParam(':locationName', $currName);
+
+      $stmt->execute();
+      while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+    }
+
+    return $arr;
   }
 }
