@@ -44,9 +44,9 @@ public static void main(String[] args) {
          Object[] location = null;
          String type = "ALL";
          int limit = 1000;
-         Boolean ignoreSafetyStock = null;
-         Boolean includeNegativeInventory = null;
-         boolean orderByLtd = false;
+         Boolean ignoreSafetyStock = true;
+         Boolean includeNegativeInventory = true;
+         boolean orderByLtd = true;
          /*int fulfillerId = 69170;
          int[] manCatalog = {11416, 0};
          Object[][] quantities = {{"8888076828", "8888076828", 1}};

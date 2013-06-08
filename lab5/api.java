@@ -971,7 +971,7 @@ public class api {
       String loc = " AND (";
       String sql1;
       String sql2;
-        
+      int num;  
         
       for(int ndx = 0; locationIds != null && ndx < locationIds.length; ndx++) {
          loc += " l.ExternalFulfillerLocationId = ?";
@@ -988,13 +988,14 @@ public class api {
       loc = sql + " AND (";
         
         
-      if(orderByLtd) {
-         sql += " ORDER BY lp.Ltd";
-      }
+      /*if(orderByLtd) {
+         sql += " ORDER BY lp.LTD";
+      }*/
         
       sql1 = "SELECT l.ExternalFulfillerLocationId " + sql;
         
       for(int ndx = 0; ndx < quantities.length; ndx++) {
+         num = 6;
          try {
             PreparedStatement ps = conn.prepareStatement(sql1);
                 
@@ -1003,11 +1004,13 @@ public class api {
             ps.setInt(3, manCatalog[1]);
             ps.setString(4, quantities[ndx][0].toString());
             ps.setString(5, quantities[ndx][1].toString());
-               
-            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
-                
+            
+            if(!(includeNegativeInventory != null && includeNegativeInventory)) {
+               ps.setInt(num++, (new Integer(quantities[ndx][2].toString())).intValue());
+            }
+
             for(int i = 0; i < locationIds.length; i++) {
-               ps.setString(7 + i, locationIds[i]);
+               ps.setString(num + i, locationIds[i]);
             }
             
             System.out.println(ps.toString());
@@ -1075,11 +1078,11 @@ public class api {
       }
         
       if(orderByLtd) {
-         sql2 += " ORDER BY lp.Ltd";
+         sql2 += " ORDER BY lp.LTD";
       }
-        
+      
       for(int ndx = 0; ndx < quantities.length; ndx++) {
-           
+         num = 6; 
          try {
             PreparedStatement ps = conn.prepareStatement(sql2);
                 
@@ -1088,11 +1091,13 @@ public class api {
             ps.setInt(3, manCatalog[1]);
             ps.setString(4, quantities[ndx][0].toString());
             ps.setString(5, quantities[ndx][1].toString());
-               
-            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
-                
+            
+            if(!(includeNegativeInventory != null && includeNegativeInventory)) {
+               ps.setInt(num++, (new Integer(quantities[ndx][2].toString())).intValue());
+            } 
+
             for(int i = 0; i < locations.size(); i++) {
-               ps.setString(7 + i, locations.get(i));
+               ps.setString(num + i, locations.get(i));
             }
             
             //System.out.println(ps.toString());    
@@ -1159,7 +1164,7 @@ public class api {
       }
         
       if(orderByLtd) {
-         sql += " ORDER BY lp.Ltd";
+         sql += " ORDER BY lp.LTD";
       }
         
       for(int ndx = 0; ndx < quantities.length; ndx++) {
@@ -1172,8 +1177,12 @@ public class api {
             ps.setInt(3, manCatalog[1]);
             ps.setString(4, quantities[ndx][0].toString());
             ps.setString(5, quantities[ndx][1].toString());
-                
-            if(type.equals("ANY")) {
+            
+
+            if(includeNegativeInventory != null && includeNegativeInventory) {
+               ;
+            }    
+            else if(type.equals("ANY")) {
                ps.setInt(6, 1);
             }
             else {
