@@ -26,7 +26,7 @@ func fulfillInventory(w http.ResponseWriter, r *http.Request) (err error) {
 		return err
 	}
 	if !isPossible {
-		return errors.New("All of the specified items were not allocated enough to be fulfilled.")
+		return errors.New("All of the specified items were not available for fulfillment.")
 	}
 
 	err = fulfillAllItems(tx, req)
@@ -51,16 +51,9 @@ func isFulfillmentPossible(tx *sql.Tx, req soap.UpdateRequest) (bool, error) {
 	return isDeallocationPossible(tx, req)
 }
 
-/*
-	req.FulfillerID
-	req.FulfillerLocationCatalog.ManufacturerID
-	req.FulfillerLocationCatalog.CatalogID
-	req.FulfillerLocationCatalog.ExternalLocationID
-	req.Items[] ...
-		Item.PartNumber, UPC, Quantity, ExternalLocationID
-*/
 func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 	for _, item := range req.Items {
+		// FIXME remove possible SQL injection
 		whereClause_UPCorSKU := ""
 		if item.PartNumber != "" {
 			whereClause_UPCorSKU += " AND fp.SKU = '" + item.PartNumber + "' "
@@ -69,23 +62,60 @@ func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 			whereClause_UPCorSKU += " AND fp.UPC = '" + item.UPC + "' "
 		}
 
-		_, err = tx.Exec(`
-			UPDATE BinProducts
-			SET Allocated = Allocated - $1,
-				OnHand = OnHand - $1
-			WHERE EXISTS (
-				SELECT 'exists'
-				FROM FulfillerProducts fp
-					JOIN Bins b ON (b.ID = BinProducts.BinID)
-					JOIN Locations l ON (l.ID = b.LocationID)
-					JOIN Products p ON (p.UPC = fp.UPC)
-				WHERE fp.FulfillerID = BinProducts.FulfillerID
-					AND fp.SKU = BinProducts.SKU
-					AND l.ExternalFulfillerID = $2`+whereClause_UPCorSKU+`
-				)`,
-			item.Quantity, item.ExternalLocationID)
+		// collect all bin IDs
+		rows, err := tx.Query(`
+			SELECT DISTINCT b.ID
+			FROM BinProducts bp
+				JOIN FulfillerProducts fp ON (fp.FulfillerId = bp.FulfillerID AND fp.SKU = bp.SKU)
+				JOIN Bins b ON (b.ID = bp.BinID)
+				JOIN Locations l ON (l.ID = b.LocationID)
+				JOIN Products p ON (p.UPC = fp.UPC)
+			WHERE l.ExternalFulfillerID = $1`+whereClause_UPCorSKU,
+			item.ExternalLocationID)
 		if err != nil {
-			return
+			return err
+		}
+
+		binIDs, err := readIntSliceAndCloseRows(rows)
+		if err != nil {
+			return err
+		}
+
+		// loop over the bins with the item
+		quantityToFulfill := item.Quantity
+		for _, binID := range binIDs {
+			// determine maximum amount to fulfill
+			rows, err = tx.Query(`
+				SELECT Allocated AS MaxToFulfill
+				FROM BinProducts
+				WHERE BinID = $1`,
+				binID)
+
+			maxToFulfill, err := readIntAndCloseRows(rows)
+			if err != nil {
+				return err
+			}
+
+			if maxToFulfill > 0 {
+				var toFulfill int
+				if maxToFulfill > quantityToFulfill {
+					toFulfill = quantityToFulfill
+				} else {
+					toFulfill = maxToFulfill
+				}
+				quantityToFulfill = quantityToFulfill - toFulfill
+
+				// fulfill
+				_, err = tx.Exec(`
+					UPDATE BinProducts
+					SET Allocated = Allocated - $1,
+						OnHand = OnHand - $1
+					WHERE BinID = $2`,
+					toFulfill, binID)
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 

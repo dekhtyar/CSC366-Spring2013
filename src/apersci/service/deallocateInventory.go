@@ -50,7 +50,7 @@ func deallocateInventory(w http.ResponseWriter, r *http.Request) (err error) {
 func isDeallocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool, err error) {
 	isPossible = true
 	for _, item := range req.Items {
-
+		// FIXME remove possible SQL injection
 		whereClause_UPCorSKU := ""
 		if item.PartNumber != "" {
 			whereClause_UPCorSKU += " AND fp.SKU = '" + item.PartNumber + "' "
@@ -60,25 +60,26 @@ func isDeallocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool
 		}
 
 		rows, err := tx.Query(`
-			SELECT bp.Allocated
+			SELECT SUM(bp.Allocated)
 			FROM BinProducts bp
 				JOIN FulfillerProducts fp ON (fp.FulfillerID = bp.FulfillerID AND fp.SKU = bp.SKU)
 				JOIN Bins b ON (b.ID = bp.BinID)
 				JOIN Locations l ON (l.ID = b.LocationID)
 				JOIN Products p ON (p.UPC = fp.UPC)
-			WHERE l.ExternalFulfillerID = $1`+whereClause_UPCorSKU,
+			WHERE l.ExternalFulfillerID = $1`+whereClause_UPCorSKU+`
+			GROUP BY p.UPC`,
 			item.ExternalLocationID)
 		if err != nil {
 			return isPossible, err
 		}
 
-		allocatedCount, err := readIntAndCloseRows(rows)
+		allocated, err := readIntAndCloseRows(rows)
 		if err != nil {
 			return isPossible, err
 		}
 
 		// check for available amount
-		if allocatedCount < item.Quantity {
+		if allocated < item.Quantity {
 			isPossible = false
 			break
 		}
@@ -87,16 +88,9 @@ func isDeallocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool
 	return
 }
 
-/*
-	req.FulfillerID
-	req.FulfillerLocationCatalog.ManufacturerID
-	req.FulfillerLocationCatalog.CatalogID
-	req.FulfillerLocationCatalog.ExternalLocationID
-	req.Items[] ...
-		Item.PartNumber, UPC, Quantity, ExternalLocationID
-*/
 func deallocateAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 	for _, item := range req.Items {
+		// FIXME remove possible SQL injection
 		whereClause_UPCorSKU := ""
 		if item.PartNumber != "" {
 			whereClause_UPCorSKU += " AND fp.SKU = '" + item.PartNumber + "' "
@@ -105,22 +99,59 @@ func deallocateAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 			whereClause_UPCorSKU += " AND fp.UPC = '" + item.UPC + "' "
 		}
 
-		_, err = tx.Exec(`
-			UPDATE BinProducts
-			SET Allocated = Allocated - $1
-			WHERE EXISTS (
-				SELECT 'exists'
-				FROM FulfillerProducts fp
-					JOIN Bins b ON (b.ID = BinProducts.BinID)
-					JOIN Locations l ON (l.ID = b.LocationID)
-					JOIN Products p ON (p.UPC = fp.UPC)
-				WHERE fp.FulfillerID = BinProducts.FulfillerID
-					AND fp.SKU = BinProducts.SKU
-					AND l.ExternalFulfillerID = $2`+whereClause_UPCorSKU+`
-				)`,
-			item.Quantity, item.ExternalLocationID)
+		// collect all bin IDs
+		rows, err := tx.Query(`
+			SELECT DISTINCT b.ID
+			FROM BinProducts bp
+				JOIN FulfillerProducts fp ON (fp.FulfillerId = bp.FulfillerID AND fp.SKU = bp.SKU)
+				JOIN Bins b ON (b.ID = bp.BinID)
+				JOIN Locations l ON (l.ID = b.LocationID)
+				JOIN Products p ON (p.UPC = fp.UPC)
+			WHERE l.ExternalFulfillerID = $1`+whereClause_UPCorSKU,
+			item.ExternalLocationID)
 		if err != nil {
-			return
+			return err
+		}
+
+		binIDs, err := readIntSliceAndCloseRows(rows)
+		if err != nil {
+			return err
+		}
+
+		// loop over the bins with the item
+		quantityToDeallocate := item.Quantity
+		for _, binID := range binIDs {
+			// determine maximum amount to deallocate
+			rows, err = tx.Query(`
+				SELECT Allocated AS MaxToDeallocate
+				FROM BinProducts
+				WHERE BinID = $1`,
+				binID)
+
+			maxToDeallocate, err := readIntAndCloseRows(rows)
+			if err != nil {
+				return err
+			}
+
+			if maxToDeallocate > 0 {
+				var toDeallocate int
+				if maxToDeallocate > quantityToDeallocate {
+					toDeallocate = quantityToDeallocate
+				} else {
+					toDeallocate = maxToDeallocate
+				}
+				quantityToDeallocate = quantityToDeallocate - toDeallocate
+
+				// deallocate
+				_, err = tx.Exec(`
+					UPDATE BinProducts
+					SET Allocated = Allocated - $1
+					WHERE BinID = $2`,
+					toDeallocate, binID)
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 
