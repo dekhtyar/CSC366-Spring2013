@@ -36,17 +36,18 @@ public static void main(String[] args) {
       //testGetBinStatuses(48590);
 
       if(test) {
-         /*int fulfillerId = 48590;
+         int fulfillerId = 48590;
          int[] manCatalog = {11416, 0};
-         Object[][] quantities = {{"201162421", "201162421", 1}};
+         Object[][] quantities = {{"200235977", "200235977", 1},
+                                  {"200235976", "200235976", 1}};
          String[] locationIds = {};
          Object[] location = null;
-         String type = "ANY";
+         String type = "ALL";
          int limit = 1000;
          Boolean ignoreSafetyStock = null;
          Boolean includeNegativeInventory = null;
-         boolean orderByLtd = false;*/
-         int fulfillerId = 69170;
+         boolean orderByLtd = false;
+         /*int fulfillerId = 69170;
          int[] manCatalog = {11416, 0};
          Object[][] quantities = {{"8888076828", "8888076828", 1}};
          String[] locationIds = {};
@@ -55,7 +56,7 @@ public static void main(String[] args) {
          int limit = 1000;
          Boolean ignoreSafetyStock = null;
          Boolean includeNegativeInventory = null;
-         boolean orderByLtd = false;
+         boolean orderByLtd = false;*/
       
          System.out.println("Testing getInventory");
          ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,

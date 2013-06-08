@@ -965,7 +965,7 @@ public class api {
         "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
         "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
         "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
-        "AND p.ManufacturerId = ? AND p.CatalogId = ? " +
+        //"AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
         "AND rp.SKU = ? AND rp.UPC = ?" +
         ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
@@ -1001,46 +1001,63 @@ public class api {
             ps.setInt(1, fulfillerId);
             ps.setInt(2, manCatalog[0]);
             ps.setInt(3, manCatalog[1]);
-            ps.setInt(4, manCatalog[0]);
-            ps.setInt(5, manCatalog[1]);
-            ps.setString(6, quantities[ndx][0].toString());
-            ps.setString(7, quantities[ndx][1].toString());
+            ps.setString(4, quantities[ndx][0].toString());
+            ps.setString(5, quantities[ndx][1].toString());
                
-            ps.setInt(8, (new Integer(quantities[ndx][2].toString())).intValue());
+            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
                 
             for(int i = 0; i < locationIds.length; i++) {
-               ps.setString(9 + i, locationIds[i]);
+               ps.setString(7 + i, locationIds[i]);
             }
-                
+            
+            System.out.println(ps.toString());
             ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
-                
+            locations3.clear();
+
             while(hasNext) {
                String l = r.getString(1);
-               if(ndx == 0) {
-                  locations2.add(l);
+               //System.out.println("ndx: " + ndx + "   l: " + l);
+
+               if(ndx > 0) {
+                  locations3.add(l);
                }
                else {
-                  locations3.add(l);
+                  locations2.add(l);
                }
                hasNext = r.next();
             }
                 
             for(int i = 0; i < locations3.size(); i++) {
                String l = locations3.get(i);
+
+               //System.out.println("locations2.size()" + locations2.size());
+
                if(locations2.contains(l)) {
                   locations.add(l);
+                  //System.out.println("Adding to locations");
                }
+               /*else {
+                  System.out.println("l: " + l + " is not in locations2");
+               }*/
             }
-                
-            locations2 = locations;
-            locations3.clear();
+
+            if(ndx > 0) { 
+               locations2 = new ArrayList<String>();
+               locations2.addAll(locations);
+            }
          }
          catch(Exception e) {
             System.out.println(e.toString());
+            e.printStackTrace();
          }
       }
-        
+
+      loc = " AND (";      
+
+      /*System.out.println("locations.size(): " + locations.size());
+      System.out.println("locations2.size(): " + locations2.size());
+      System.out.println("locations3.size(): " + locations3.size());*/
       for(int i = 0; i < locations.size(); i++) {
          loc += " l.ExternalFulfillerLocationId = ?";
             
@@ -1051,7 +1068,7 @@ public class api {
         
       sql2 = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
               "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
-              "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit ";
+              "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " + sql;
         
       if(locations.size() > 0) {
          sql2 += loc + ")";
@@ -1069,17 +1086,16 @@ public class api {
             ps.setInt(1, fulfillerId);
             ps.setInt(2, manCatalog[0]);
             ps.setInt(3, manCatalog[1]);
-            ps.setInt(4, manCatalog[0]);
-            ps.setInt(5, manCatalog[1]);
-            ps.setString(6, quantities[ndx][0].toString());
-            ps.setString(7, quantities[ndx][1].toString());
+            ps.setString(4, quantities[ndx][0].toString());
+            ps.setString(5, quantities[ndx][1].toString());
                
-            ps.setInt(8, (new Integer(quantities[ndx][2].toString())).intValue());
+            ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
                 
-            for(int i = 0; i < locationIds.length; i++) {
-               ps.setString(9 + i, locationIds[i]);
+            for(int i = 0; i < locations.size(); i++) {
+               ps.setString(7 + i, locations.get(i));
             }
-                
+            
+            //System.out.println(ps.toString());    
             ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
             int count = 0;
@@ -1097,6 +1113,7 @@ public class api {
          }
          catch(Exception e) {
             System.out.println(e.toString());
+            e.printStackTrace();
          }
             
       }
@@ -1124,7 +1141,7 @@ public class api {
         "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
         "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
         "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
-        "AND p.ManufacturerId = ? AND p.CatalogId = ? " +
+        //"AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
         "AND rp.SKU = ? AND rp.UPC = ?" +
         ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
@@ -1153,20 +1170,18 @@ public class api {
             ps.setInt(1, fulfillerId);
             ps.setInt(2, manCatalog[0]);
             ps.setInt(3, manCatalog[1]);
-            ps.setInt(4, manCatalog[0]);
-            ps.setInt(5, manCatalog[1]);
-            ps.setString(6, quantities[ndx][0].toString());
-            ps.setString(7, quantities[ndx][1].toString());
+            ps.setString(4, quantities[ndx][0].toString());
+            ps.setString(5, quantities[ndx][1].toString());
                 
             if(type.equals("ANY")) {
-               ps.setInt(8, 1);
+               ps.setInt(6, 1);
             }
             else {
-               ps.setInt(8, (new Integer(quantities[ndx][2].toString())).intValue());
+               ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
             }
                 
             for(int i = 0; i < locationIds.length; i++) {
-                ps.setString(9 + i, locationIds[i]);
+                ps.setString(7 + i, locationIds[i]);
             }
                 
             System.out.println(ps.toString());
