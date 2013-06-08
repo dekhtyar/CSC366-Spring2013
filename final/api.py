@@ -47,6 +47,62 @@ def createBin(row, db):
        #print e
        #print parameters
 
+#@param: FulfillerID, FulfillerLocationID, searchTerm, NumResults
+#unused: resultsStart (pagination) optional
+#return: array of Bins (fulfillerID, binID, fulfillerlocationID, bintype, binstatus, name), and ResultCount
+#NOTE: assume ResultsStart must be 0, searchTerm?, returning rowcount
+def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsStart):
+   cursor = db.cursor()
+
+   try:
+          sqlCommand = """SELECT *
+			  FROM Bins b
+			  WHERE b.FulfillerID = %s AND b.FulfillerLocationID = %s
+			  LIMIT %d, %d""" 
+                        % (FulfillerID, FulfillerLocationID, ResultsStart, NumResults)
+         cursor.execute(sqlCommand)
+         results = cursor.fetchall()
+		 resultCount = cursor.rowcount()
+
+   except Exception, e:
+      print e
+
+   return results,rowCount
+
+#@param: no input 
+#return: array of BinStatuses
+def getBinStatuses():
+   cursor = db.cursor()
+
+   try:
+          sqlCommand = """SELECT b.BinStatus
+			  FROM Bins b""" 
+                   
+         cursor.execute(sqlCommand)
+         results = cursor.fetchall()
+
+   except Exception, e:
+      print e
+
+   return results
+
+#@param: no inputs
+#return: array of BinTypes
+def getBinTypes():
+   cursor = db.cursor()
+
+   try:
+          sqlCommand = """SELECT b.BinType
+			  FROM Bins b""" 
+
+         cursor.execute(sqlCommand)
+         results = cursor.fetchall()
+
+   except Exception, e:
+      print e
+
+   return results
+
 def createFulfillmentLocation(row, db):
    query = """\
        INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name,
