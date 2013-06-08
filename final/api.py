@@ -297,11 +297,11 @@ def itemAvailable(fulfuller_id, location_id, item, db):
 
     try:
         cur.execute('SELECT SafetyStockLimit FROM StoredAt WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
-                    item['SKU'], fulfiller_id, location_id)
+                    (item['SKU'], fulfiller_id, location_id))
         safety = cur.fetchone()
 
         cur.execute('SELECT OnHand FROM StoredIn WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
-                    item['SKU'], fulfiller_id, location_id)
+                    (item['SKU'], fulfiller_id, location_id))
         for i in range(cur.rowcount):
             onhand = onhand + cur.fetchone()[0]
 
@@ -320,7 +320,7 @@ def allocateItem(fulfiller_id, location_id, item, db):
         cur.execute('UPDATE StoredIn' +
                     'SET OnHand = OnHand - %s, Allocated = Allocated + %s' +
                     'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
-                    quantity, quantity, item['SKU'], fulfiller_id, location_id) 
+                    (quantity, quantity, item['SKU'], fulfiller_id, location_id))
     except Exception, e:
         print e
 
