@@ -50,7 +50,8 @@ def createBin(row, db):
 #@param: FulfillerID, FulfillerLocationID, searchTerm, NumResults
 #unused: resultsStart (pagination) optional
 #return: array of Bins (fulfillerID, binID, fulfillerlocationID, bintype, binstatus, name), and ResultCount
-#NOTE: assume ResultsStart must be 0, searchTerm?, returning rowcount
+#NOTE: assume ResultsStart must be 0, searchTerm?, returning rowcount?, assume if searchTerm is NULL then the LIKE
+#      operator searches everything
 def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsStart):
    cursor = db.cursor()
 
@@ -58,8 +59,9 @@ def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsSta
           sqlCommand = """SELECT *
 			  FROM Bins b
 			  WHERE b.FulfillerID = %s AND b.FulfillerLocationID = %s
+			  	AND b.Name LIKE '%s%'
 			  LIMIT %d, %d""" 
-                        % (FulfillerID, FulfillerLocationID, ResultsStart, NumResults)
+                        % (FulfillerID, FulfillerLocationID, searchTerm, ResultsStart, NumResults)
          cursor.execute(sqlCommand)
          results = cursor.fetchall()
 		 resultCount = cursor.rowcount()
