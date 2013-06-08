@@ -73,11 +73,12 @@ def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsSta
 
 #@param: no input 
 #return: array of BinStatuses
+#Distinct?
 def getBinStatuses():
    cursor = db.cursor()
 
    try:
-          sqlCommand = """SELECT b.BinStatus
+          sqlCommand = """SELECT DINSTINCT b.BinStatus
 			  FROM Bins b""" 
                    
          cursor.execute(sqlCommand)
@@ -90,11 +91,12 @@ def getBinStatuses():
 
 #@param: no inputs
 #return: array of BinTypes
+#Distinct?
 def getBinTypes():
    cursor = db.cursor()
 
    try:
-          sqlCommand = """SELECT b.BinType
+          sqlCommand = """SELECT DINSTINCT b.BinType
 			  FROM Bins b""" 
 
          cursor.execute(sqlCommand)
