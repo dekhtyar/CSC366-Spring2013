@@ -48,6 +48,64 @@ def createBin(row, db):
        print e
        #print parameters
 
+#@param: FulfillerID, FulfillerLocationID, searchTerm, NumResults
+#unused: resultsStart (pagination) optional
+#return: array of Bins (fulfillerID, binID, fulfillerlocationID, bintype, binstatus, name), and ResultCount
+#NOTE: assume ResultsStart must be 0, searchTerm?, returning rowcount?, assume if searchTerm is NULL then the LIKE
+#      operator searches everything
+def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsStart, db):
+   cursor = db.cursor()
+
+   try:
+         sqlCommand = """SELECT *
+                         FROM Bins b
+                         WHERE b.FulfillerID = %s AND b.FulfillerLocationID = %s
+                               AND b.Name LIKE '%s%%'
+                         LIMIT %d, %d""" % (FulfillerID, FulfillerLocationID, searchTerm, ResultsStart, NumResults)
+         cursor.execute(sqlCommand)
+         results = cursor.fetchall()
+         resultsCount = cursor.rowcount
+         return results,resultsCount
+
+   except Exception, e:
+      print e
+
+#@param: no input 
+#return: array of BinStatuses
+#Distinct?
+def getBinStatuses(db):
+   cursor = db.cursor()
+
+   try:
+         sqlCommand = """SELECT DINSTINCT b.BinStatus
+                          FROM Bins b""" 
+                   
+         cursor.execute(sqlCommand)
+         results = cursor.fetchall()
+
+   except Exception, e:
+      print e
+
+   return results
+
+#@param: no inputs
+#return: array of BinTypes
+#Distinct?
+def getBinTypes(db):
+   cursor = db.cursor()
+
+   try:
+         sqlCommand = """SELECT DINSTINCT b.BinType
+              FROM Bins b""" 
+
+         cursor.execute(sqlCommand)
+         results = cursor.fetchall()
+
+   except Exception, e:
+      print e
+
+   return results
+
 def createFulfillmentLocation(row, db):
    query = """\
        INSERT INTO Locations (FulfillerId, FulfillerLocationId, Name,
@@ -207,12 +265,12 @@ def getFulfillerStatus(fID, fLID, db):
    except Exception, e:
       print e
  
-def getFulfillmentLocations(fID, catalogID, ManID, location, maxLocation, db):
+def getFulfillmentLocations(fID, CID, MID, maxLocation, db):
  
    cursor = db.cursor()
    
    try:
-      cursor.execute('SELECT FulfillerId, FulfillerLocationId FROM Location l join SubscribeTo s on l.FulfillerId = s.FulfillerId and l.FulfillerLocationId = s.FulfillerLocationId join Items i on i.ManufacturerId = s.ManufacturerId and i.CatalogueId = s.CatalogueId' , fid, ManID, caralogID)
+      cursor.execute('SELECT FulfillerId, FulfillerLocationId FROM SubscribeTo WHERE FulfillerId = %s and ManufacturerId = %s and CatalogueId = %s ' , fID, MID, CID)
  
  
       listIDs = cursor.fetchall()
