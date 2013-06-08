@@ -109,7 +109,7 @@ type FulfillInventory struct {
 
 type GetFulfillerStatus struct {
 	XMLName     xml.Name `xml:"getFulfillerStatus"`
-	FulfillerID uint
+	FulfillerID uint     `xml:"fulfillerID"`
 }
 
 type GetFulfillerStatusResponse struct {

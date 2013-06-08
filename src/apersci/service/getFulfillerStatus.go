@@ -3,7 +3,6 @@ package main
 import (
 	"apersci/input"
 	"apersci/output"
-	"fmt"
 	"net/http"
 )
 
@@ -30,7 +29,6 @@ func getFulfillerStatus(w http.ResponseWriter, r *http.Request) (err error) {
 	if err != nil {
 		return
 	}
-	fmt.Println(l)
 
 	count, err := readIntAndCloseRows(rows)
 	if err != nil {
@@ -44,8 +42,6 @@ func getFulfillerStatus(w http.ResponseWriter, r *http.Request) (err error) {
 	} else {
 		str = "inactive"
 	}
-	fmt.Println(count)
-	fmt.Println(str)
 
 	err = output.GetFulfillerStatusResponse(w, str)
 	if err != nil {
