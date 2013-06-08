@@ -37,12 +37,12 @@ CREATE TABLE CatalogServedByLocation (
 
 CREATE TABLE StoreBin (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    InternalFulfillerLocationId INT REFERENCES Location(InternalFulfillerLocationId),
+    FulfillerId INT REFERENCES Retailer(FulfillerId),
+    ExternalFulfillerLocationId VARCHAR(25) REFERENCES Location(ExternalFulfillerLocationId),
     Status VARCHAR(25),
     Type VARCHAR(25),
     Name VARCHAR(25),
-    Description VARCHAR(50),
-    UNIQUE(InternalFulfillerLocationId, Name)
+    UNIQUE(FulfillerId, ExternalFulfillerLocationId, Name)
     );
 
 CREATE TABLE Product (
@@ -64,7 +64,7 @@ CREATE TABLE LocationProduct (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     InternalFulfillerLocationId INT REFERENCES Location(InternalFulfillerLocationId),
     RetailerProductId INT REFERENCES RetailerProduct(Id),
-    LTD INT,
+    LTD FLOAT,
     SafeStockLimit INT,
     UNIQUE(InternalFulfillerLocationId, RetailerProductId)
     );
