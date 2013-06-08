@@ -31,6 +31,7 @@ class TeamRossAPI {
 
   public function createFulfillmentLocation($locationName, $extLID, $intLID,
     $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock,$mfgId, $catalogId) {
+    $success = TRUE;
       // Create Location, update if exists
       $stmt = $this->db->prepare("
          INSERT INTO Locations
@@ -39,16 +40,6 @@ class TeamRossAPI {
           VALUES
             (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
             :latitude, :longitude, :status, :safetyStockLimitDefault)
-
-    ON DUPLICATE KEY UPDATE
-        externalLocationId = :externalLocationId,
-               fulfillerId = :fulfillerId,
-               locationType = :locationType ,
-               latitude = :latitude,
-               longitude = :longitude,
-               status = :status,
-               safetyStockLimitDefault = :safetyStockLimitDefault ;
-
       ");
 
     $stmt->bindValue(':externalLocationId', $extLID);
@@ -59,11 +50,16 @@ class TeamRossAPI {
     $stmt->bindValue(':longitude', strval($longitude));
     $stmt->bindValue(':status', $status);
     $stmt->bindValue(':safetyStockLimitDefault', $safetyStock);
+    if (!$stmt->execute()) {
+      $success = FALSE;
+    } 
 
-    $stmt->execute();
     // Create catalog if missing
     if (!$this->getCatalog($catalogId))
       $this->createCatalog($catalogId, $mfgId);
+
+    // Create default Bin
+    $this->createBin($intLID, 'Default', 'Default', $status);
 
     // Create LocationOffersCatalog
     $relational = $this->db->prepare("
@@ -74,8 +70,12 @@ class TeamRossAPI {
     $relational->bindParam(':catalogId', $catalogId);
     $relational->bindParam(':manufacturerId', $mfgId);
     $relational->bindParam(':internalLocationId', $intLID);
+    
+    if (!$relational->execute())  {
+      $success = FALSE;
+    }
 
-    $relational->execute();
+    return (($success == FALSE) ? 0 : 1);
   }
 
   public function createBin($intLID, $name, $binType, $status) {
@@ -140,7 +140,8 @@ class TeamRossAPI {
 
   public function getBinStatuses() {
     $stmt = $this->db->prepare("
-      SELECT distinct status FROM Bins
+      SELECT DISTINCT status FROM Bins
+      WHERE status IS NOT NULL
     ");
 
     $stmt->execute();
@@ -159,7 +160,7 @@ class TeamRossAPI {
     return $fetch['fulfillerId'];
   }
 
-  public function refreshInventory($items) {
+  public function refreshInventory($ExternalLocationId, $FulfillerID, $items) {
     // STATEMENTS
     $stmt1 = $this->db->prepare("
       INSERT INTO BinContainsProducts
@@ -174,37 +175,49 @@ class TeamRossAPI {
     ");
 
     $stmt3 = $this->db->prepare("
-      INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
-      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand, :fulfillerId)
-    ");
+      INSERT INTO LocationSellsProducts (internalLocationId, productUpc, 
+      storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
+      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, 
+      '0', :onHand, :fulfillerId)
+      ");
 
+    $stmt4 = $this->db->prepare(
+        "SELECT externalLocationId 
+          FROM Locations 
+          WHERE externalLocationId=:externalLocationId
+            AND fulfillerId=:fulfillerId");
+
+    $stmt4->bindParam(":fulfillerId", $FulfillerID);
+    $stmt4->bindParam(":externalLocationId", $ExternalLocationId);
+
+    $stmt4->execute();
+    $fetch = $stmt4->fetch(PDO::FETCH_ASSOC);
+  
     // UPDATE INVENTORY FOR EACH ITEM
     foreach ($items as $item) {
-      $fulfillerId = $this->getFulfillerIdFromLocationId($item['internal_fulfiller_location_id']);
-
       $stmt1->bindParam(':binName', $item['bin_name']);
-      $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+      $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
       $stmt1->bindParam(':productUpc', $item['UPC']);
-      $stmt1->bindParam(':fulfillerId', $fulfillerId);
+      $stmt1->bindParam(':fulfillerId', $FulfillerId);
 
-      $stmt2->bindParam(':fulfillerId', $fulfillerId);
+      $stmt2->bindParam(':fulfillerId', $FulfillerId);
       $stmt2->bindParam(':productUpc', $item['UPC']);
       $stmt2->bindParam(':sku', $item['SKU']);
 
-      $stmt3->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+      $stmt3->bindParam(':internalLocationId', $fetch['internalLocationId']);
       $stmt3->bindParam(':productUpc', $item['UPC']);
       $stmt3->bindParam(':storeSku', $item['SKU']);
       $stmt3->bindParam(':safetyStock', $item['safety_stock']);
       $stmt3->bindParam(':ltd', $item['ltd']);
       $stmt3->bindParam(':onHand', $item['onHand']);
-      $stmt3->bindParam(':fulfillerId', $fulfillerId);
+      $stmt3->bindParam(':fulfillerId', $FulfillerId);
 
       // create product if missing
       if (!$this->getProductFromUpc($item['UPC']))
         $this->createProduct($item);
 
       // create bin if missing
-      if (!$this->getBin($item['bin_name'], $item['internal_fulfiller_location_id']))
+      if (!$this->getBin($item['bin_name'], $fetch['internalLocationId']))
         print "Bin doesn't exist.\n";
 
       // execute queries
@@ -373,5 +386,34 @@ class TeamRossAPI {
     $stmt->execute();
 
     return $stmt->fetchALL(PDO::FETCH_ASSOC);
+  }
+
+  public function adjustInventory($fulfillerId, $externalLocationId, $items) {
+    $success = True;
+
+    $stmt = $this->db->prepare("
+      UPDATE LocationSellsProducts
+        onHand = :quantity
+      WHERE productUpc = :upc
+        AND internalLocatioId =
+          (SELECT FIRST(internalLocationId)
+          FROM Locations
+          WHERE fulfillerId = :fulfillerId
+            AND  externalLocationId = :externalLocationId);
+    ");
+
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":externalLocationId", $externalLocationId);
+
+    foreach ($items as $item) {
+      $stmt->bindParam(":upc", $item['UPC']);
+      $stmt->bindParam(":quantity", $item['Quantity']);
+
+      if (!$stmt->execute()) {
+        $success = False;
+      }
+    }
+
+    return $success;
   }
 }

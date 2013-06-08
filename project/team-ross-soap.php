@@ -24,8 +24,8 @@ class TeamRossSOAP {
   // GROUP
   // **********************************************************************
   function createFulfiller($FulfillerRequest) {
-    return $this->api->createFulfiller($FulfillerRequest['FullfillerID'],
-      $Fulfillerrequest['Name']) ? 0 : -1;
+    return array('createFulfillerReturn' => $this->api->createFulfiller($FulfillerRequest->FullfillerID,
+      $FulfillerRequest->Name) ? 0 : -1);
   }
 
   // **********************************************************************
@@ -39,54 +39,53 @@ class TeamRossSOAP {
   // RILEY
   // **********************************************************************
   function createFulfillmentLocation($CreateFulfillmentLocationRequest) {
-    $safetyStockLimitDefault = 0; // FIXME
+    $safetyStockLimitDefault = 0;
     $mfgIdDefault = 0;
     $catalogIdDefaut = 0;
 
     $countrycode = CreateFulfillmentLocationRequest['CountryCode']; // FIXME: Doesn't exist in DB!
 
     // no longer checks if FulfillmentLocation exists. Just updates!
-    return $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest['LocationName'],
-					  $CreateFulfillmentLocationRequest['ExternalLocationID'],
-					  $CreateFulfillmentLocationRequest['RetailerLocationID'],
-					  $CreateFulfillmentLocationRequest['FulfillerID'],
-					  $CreateFulfillmentLocationRequest['LocationType'],
-					  $CreateFulfillmentLocationRequest['Latitude'],
-					  $CreateFulfillmentLocationRequest['Longitude'],
-					  $CreateFulfillmentLocationRequest['Status'],
-					  $safetyStockLimitDefault,
-					  $mfgIdDefault,
-					  $catalogIdDefault
-      );
+    return array('createFulfillmentLocationReturn' => $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest->LocationName,
+            $CreateFulfillmentLocationRequest->ExternalLocationID,
+            $CreateFulfillmentLocationRequest->RetailerLocationID,
+            $CreateFulfillmentLocationRequest->FulfillerID,
+            $CreateFulfillmentLocationRequest->LocationType,
+            $CreateFulfillmentLocationRequest->Latitude,
+            $CreateFulfillmentLocationRequest->Longitude,
+            $CreateFulfillmentLocationRequest->Status,
+            $safetyStockLimitDefault,
+            $mfgIdDefault,
+            $catalogIdDefault
+          )
+        );
   }
 
   // **********************************************************************
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-    return $this->api->findLocations($GetFulfillmentLocationsRequest['FulfillerId'],
-				    $GetFulfillmentLocationsRequest['Catalog'],
-				    $GetFulfillmentLocationsRequest['Location'],
-				    $GetFulfillmentLocationsRequest['MaxLocations']
-    );
-
+    return array('getFulfillmentLocationsReturn' => $this->api->findLocations($GetFulfillmentLocationsRequest->FulfillerID,
+                    $GetFulfillmentLocationsRequest->Catalog,
+                    $GetFulfillmentLocationsRequest->Location,
+                    $GetFulfillmentLocationsRequest->MaxLocations
+                  )
+                );
   }
 
   // **********************************************************************
   // Matt T
   // **********************************************************************
   function getFulfillmentLocationTypes() {
-    //Unclear how id is selected. Sounds like should be
-    //ExternalLocationID which is external fulf location id?
-    //return $this->api->getFulfillerLocationType($extId)
+    return array("FULFILLER", "RETAILER","RETAILER" );
   }
 
   // **********************************************************************
   // Matt S
   // **********************************************************************
   function allocateInventory($UpdateRequest) {
-		return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-			$UpdateItem['Items']) ? 0 : -1;
+    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
+      $UpdateItem['Items']) ? 0 : -1;
   }
 
   // **********************************************************************
@@ -109,8 +108,8 @@ class TeamRossSOAP {
   function createBin($CreateBinRequest) {
     return array(
       'createBinReturn' => $this->api->createBin($CreateBinRequest->FulfillerId,
- 		$CreateBinRequest->Name, $CreateBinRequest->BinType,
-		$CreateBinRequest->BinStatus) ? 0 : -1
+                           $CreateBinRequest->Name, $CreateBinRequest->BinType,
+                           $CreateBinRequest->BinStatus) ? 0 : -1
     );
   }
 
@@ -131,15 +130,12 @@ class TeamRossSOAP {
   // Matt S
   // **********************************************************************
   function getBinTypes() {
-		$bins = $this->api->getBinTypes();
+    $bins = $this->api->getBinTypes();
     $returnArr = array();
 
-    print_r($bins);
-
-    foreach ($bins as $bin) {
+    foreach ($bins as $bin)
       if ($bin['binType'])
         $returnArr[]['BinType'] = $bin['binType'];
-    }
 
     return array('getBinTypesReturn' => $returnArr);
   }
@@ -148,7 +144,14 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getBinStatuses() {
-    return $this->api->getBinStatuses();
+    $bins = $this->api->getBinStatuses;
+    $returnArr = array();
+
+    foreach( $bins as $bin)
+      if($bin['BinStatus'])
+        $returnArr[]['BinStatus'] = $bin['status'];
+
+    return array('getBinStatusesReturn' => $returnArr);
 
   }
 
@@ -163,13 +166,19 @@ class TeamRossSOAP {
   // Group
   // **********************************************************************
   function adjustInventory() {
-
+    if ($this->api->adjustInventory($AdjustRequest['FulfillerId'],
+      $AdjustRequest['ExternalLocationID'], $AdjustRequest['items'])) {
+      return "SUCCESS!";
+    }
+    return "FAILURE!";
   }
 
   // **********************************************************************
   // MATT T
   // **********************************************************************
   function refreshInventory( $RefreshRequest ) {
-    return $this->api->refreshInventory($RefreshRequest['items']);
+    $eid = $RefreshRequest['ExternalLocationID'];
+    $fid = $RefreshRequest['FulfillerID'];
+    return $this->api->refreshInventory($eid, $fid, $RefreshRequest['items']);
   }
 }
