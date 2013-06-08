@@ -52,7 +52,7 @@ def createBin(row, db):
 #return: array of Bins (fulfillerID, binID, fulfillerlocationID, bintype, binstatus, name), and ResultCount
 #NOTE: assume ResultsStart must be 0, searchTerm?, returning rowcount?, assume if searchTerm is NULL then the LIKE
 #      operator searches everything
-def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsStart):
+def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsStart, db):
    cursor = db.cursor()
 
    try:
@@ -74,7 +74,7 @@ def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsSta
 #@param: no input 
 #return: array of BinStatuses
 #Distinct?
-def getBinStatuses():
+def getBinStatuses(db):
    cursor = db.cursor()
 
    try:
@@ -92,7 +92,7 @@ def getBinStatuses():
 #@param: no inputs
 #return: array of BinTypes
 #Distinct?
-def getBinTypes():
+def getBinTypes(db):
    cursor = db.cursor()
 
    try:
