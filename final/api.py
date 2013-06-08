@@ -69,7 +69,7 @@ def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsSta
    except Exception, e:
       print e
 
-   return results,rowCount
+   return results,resultCount
 
 #@param: no input 
 #return: array of BinStatuses
