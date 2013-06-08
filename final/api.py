@@ -240,12 +240,12 @@ def getFulfillerStatus(fID, fLID, db):
    except Exception, e:
       print e
  
-def getFulfillmentLocations(fID, catalogID, ManID, location, maxLocation, db):
+def getFulfillmentLocations(fID, CID, MID, maxLocation, db):
  
    cursor = db.cursor()
    
    try:
-      cursor.execute('SELECT l.FulfillerId, l.FulfillerLocationId FROM Locations l join SubscribeTo s on l.FulfillerId = s.FulfillerId and l.FulfillerLocationId = s.FulfillerLocationId join Items i on i.ManufacturerId = s.ManufacturerId and i.CatalogueId = s.CatalogueId' , fid, ManID, caralogID)
+      cursor.execute('SELECT FulfillerId, FulfillerLocationId FROM SubscribeTo WHERE FulfillerId = %s and ManufacturerId = %s and CatalogueId = %s ' , fID, MID, CID)
  
  
       listIDs = cursor.fetchall()
