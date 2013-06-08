@@ -8,8 +8,8 @@ public class Test {
    private static Connection conn;
    private static api apiCall = new api();
    private static boolean debug = false;
-   private static boolean setup = false;
-   private static boolean test = true;
+   private static boolean setup = true;
+   private static boolean test = false;
    private static boolean cleanup = false;
 
 public static void main(String[] args) {
@@ -369,12 +369,12 @@ try {
 
       try {
          String sql = "SELECT b.Id, l.FulfillerId FROM StoreBin b, Location l " +
-                      "WHERE b.Name = ? AND b.InternalFulfillerLocationId = ? " +
-                       " AND b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
+                      "WHERE b.Name = ? AND b.ExternalFulfillerLocationId  = ? " +
+                       " AND b.ExternalFulfillerLocationId  = l.ExternalFulfillerLocationId ";
          PreparedStatement ps = conn.prepareStatement(sql);
 
          ps.setString(1, binName);
-         ps.setInt(2, internalFulfillerLocationId);
+         ps.setString(2, externalLocationId);
 
          ResultSet r = ps.executeQuery();
 
@@ -390,8 +390,8 @@ try {
          //System.out.println("binId does not exist in the DB");
          System.out.println(e.toString());
       }
-			   
-      apiCall.refreshInventory(internalFulfillerLocationId, externalLocationId, SKU, UPC, binId, onhand, ltd, safetyStock);
+
+      apiCall.refreshInventory(fulfillerId, externalLocationId, SKU, UPC, binId, onhand, ltd, safetyStock);
       }
 }
 
