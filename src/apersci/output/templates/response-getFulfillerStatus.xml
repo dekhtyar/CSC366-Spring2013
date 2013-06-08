@@ -2,7 +2,7 @@
    <soapenv:Header/>
    <soapenv:Body>
       <v4:getFulfillerStatusResponse>
-          <v4:getFulfillerStatusReturn>{{.getFulFillerStatusReturn}}</v4:getFulfillerStatusReturn>
+          <v4:getFulfillerStatusReturn>{{.}}</v4:getFulfillerStatusReturn>
       </v4:getFulfillerStatusResponse>
    </soapenv:Body>
 </soapenv:Envelope>
