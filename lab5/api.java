@@ -138,7 +138,7 @@ public class api {
     public void allocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         String check = "SELECT b.Id " +
         "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - c.SafeStockLimit >= ? " +
+        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - lp.SafeStockLimit >= ? " +
         "ORDER BY c.OnHand";
         
         String allocate = "UPDATE ContainedInBin " +
@@ -164,7 +164,7 @@ public class api {
     public void fulfillInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         String check = "SELECT b.Id " +
         "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - c.SafeStockLimit >= ? " +
+        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - lp.SafeStockLimit >= ? " +
         "ORDER BY c.OnHand, c.Allocated";
         
         String fulfill = "UPDATE ContainedInBin " +
@@ -330,9 +330,9 @@ public class api {
         }
     }
     
-    public int createBin (int fulfillerId, Integer binId, int fulfillerLocationId,String binType, String binStatus, String binName)
+    public int createBin (int fulfillerId, Integer binId, int externalLocationId, String binType, String binStatus, String binName)
     {
-        if(fulfillerId < 0 || fulfillerLocationId < 0
+        if(fulfillerId < 0 || externalLocationId < 0
            ||(binId != null && binId < 0)) {
             return -1;
         }
@@ -351,12 +351,12 @@ public class api {
             else {
                 ps.setInt(1, binId);
             }
-            
-            ps.setInt(2, fulfillerLocationId);
-            ps.setString(3, binStatus);
-            ps.setString(4, binType);
-            ps.setString(5, binName);
-            ps.setString(6, "");
+           
+            ps.setInt(2, fulfillerId); 
+            ps.setInt(3, externalLocationId);
+            ps.setString(4, binStatus);
+            ps.setString(5, binType);
+            ps.setString(6, binName);
             
             ps.executeUpdate();
             
