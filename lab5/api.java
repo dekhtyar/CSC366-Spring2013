@@ -471,9 +471,9 @@ public class api {
         
         return getBinAttributes(query, fulfillerId);
     }
-    
-    public int getRPId(int FulfillerId, String UPC, String SKU)
-    {
+   
+   public int getRPId(int FulfillerId, String UPC, String SKU)
+   {
         PreparedStatement s0;
         ResultSet id;
         String find = "SELECT R.Id FROM RetailerProduct R " +
@@ -482,8 +482,8 @@ public class api {
         try {
 	        s0 = conn.prepareStatement(find);
 	        id = s0.executeQuery();
-            
-	        if (id.first()) {
+		
+	        if (id.first()) { 
 	            return id.getInt(1);
 	        }
 	        return 0;
@@ -493,43 +493,43 @@ public class api {
 	    }
 		
 	    return 0;
-    }
-    
-    public int getLPId(int InternalFulfillerId, double LTD, int SafetyStock, String UPC, String SKU)
-    {
+   }
+   
+   public int getLPId(int InternalFulfillerId, double LTD, int SafetyStock, String UPC, String SKU)
+   {
         PreparedStatement s0;
         ResultSet id;
         ResultSet fulfiller;
         int fId = -1;
         int rpId = -1;
         
-        /*  String getRP = "SELECT R.FulfillerId " +
-         "FROM Retailer R, LocationProduct LP, RetailerProduct RP, Location L " +
-         "WHERE LP.RetailerProductId = RP.Id AND RP.UPC = '" + UPC + "' AND RP.FulfillerId = L.FulfillerId " +
-         "AND L.InternalFulfillerLocationId = " + InternalFulfillerId + " AND L.FulfillerId = R.FulfillerId"; */
+      /*  String getRP = "SELECT R.FulfillerId " +
+        "FROM Retailer R, LocationProduct LP, RetailerProduct RP, Location L " +
+        "WHERE LP.RetailerProductId = RP.Id AND RP.UPC = '" + UPC + "' AND RP.FulfillerId = L.FulfillerId " +
+        "AND L.InternalFulfillerLocationId = " + InternalFulfillerId + " AND L.FulfillerId = R.FulfillerId"; */
         
         String getRP = "SELECT R.FulfillerId " +
-        "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L " +
-        "where LP.RetailerProductId = RP.Id AND RP.FulfillerId = R.FulfillerId " +
-        "AND R.FulfillerId = L.FulfillerId";
+	     "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L " +
+		 "where LP.RetailerProductId = RP.Id AND RP.FulfillerId = R.FulfillerId " +
+		 "AND R.FulfillerId = L.FulfillerId";
 		
         String find = "SELECT L.Id FROM LocationProduct L " +
-        "WHERE L.RetailerProductId = ? AND L.InternalFulfillerLocationId = " + InternalFulfillerId + " AND L.LTD = " +
-        LTD + " AND L.SafeStockLimit = " + SafetyStock;
+        "WHERE L.RetailerProductId = ? AND L.InternalFulfillerLocationId = " + InternalFulfillerId; //+ " AND L.LTD = " + 
+       // LTD + " AND L.SafeStockLimit = " + SafetyStock;
         
         try {
             s0 = conn.prepareStatement(getRP);
             fulfiller = s0.executeQuery();
-            
+
             if (fulfiller.first())
                 fId = fulfiller.getInt(1);
-            
+
             rpId = getRPId(fId, UPC, SKU);
-            
+
             s0 = conn.prepareStatement(find);
             s0.setInt(1, rpId);
             id = s0.executeQuery();
-            
+		
             if (id.first())
                 return id.getInt(1);
             return -1;
@@ -539,10 +539,10 @@ public class api {
         }
 		
         return -1;
-    }
-    
-    public int updateProduct(String UPC, int internalFulfillerLocationId)
-    {
+   }
+   
+   public int updateProduct(String UPC, int internalFulfillerLocationId)
+   {
         PreparedStatement s0;
 		PreparedStatement s1;
 		PreparedStatement s2;
@@ -553,17 +553,17 @@ public class api {
 		ResultSet manuIdHolder;
 		ResultSet upcHolder;
 		
-		//System.out.println("updating Product");
+	//	System.out.println("updating Product");
 		
 		String catalog = "SELECT C.CatalogId " +
-        "FROM CatalogServedByLocation C " +
-        "WHERE C.InternalFulfillerLocationId = ?";
+		 "FROM CatalogServedByLocation C " +
+		 "WHERE C.InternalFulfillerLocationId = ?";
 		String manufacturer = "SELECT C.ManufacturerId " +
-        "FROM CatalogServedByLocation C " +
-        "WHERE C.InternalFulfillerLocationId = ?";
+		 "FROM CatalogServedByLocation C " +
+		 "WHERE C.InternalFulfillerLocationId = ?";
 		String findUPC = "SELECT P.UPC " +
-        "FROM Product P " +
-        "WHERE P.UPC = '" + UPC + "'";
+		 "FROM Product P " +
+		 "WHERE P.UPC = '" + UPC + "'";
 		
 		try {
             s0 = conn.prepareStatement(catalog);
@@ -576,7 +576,7 @@ public class api {
 			
 			s2 = conn.prepareStatement(findUPC);
 			upcHolder = s2.executeQuery();
-            
+						
 			if (catHolder.first())
 			    catId = catHolder.getInt(1);
 			if (manuIdHolder.first())
@@ -590,9 +590,9 @@ public class api {
 		
 		if (!searchUPC.equals(null) && searchUPC.length() > 0) { // upc exists. use update
 		    String sql = "UPDATE Product P " +
-            "SET P.CatalogId = ? AND P.ManufacturerId = ? " +
-            "WHERE P.UPC = '" + UPC + "'";
-            
+			 "SET P.CatalogId = ? AND P.ManufacturerId = ? " +
+			 "WHERE P.UPC = '" + UPC + "'";
+			 
 			try {
 			    PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setInt(1, catId);
@@ -618,47 +618,47 @@ public class api {
 			}
 		}
 		return 1;
-    }
-    
-    public int updateRetailerProduct(String UPC, String SKU)
-    {
+   }
+   
+   public int updateRetailerProduct(String UPC, String SKU)
+   {
 		PreparedStatement s0;
 		PreparedStatement s1;
 		int FulfillerId = -1;
 		String searchUPC = "";
 		ResultSet FulfillerHolder;
 		ResultSet upcHolder;
-        
-	    //System.out.println("updating Retailer Product");
+	   
+	   // System.out.println("updating Retailer Product");
 		String findUPC = "SELECT RP.UPC " +
-        "FROM RetailerProduct RP " +
-        "where RP.UPC = '" + UPC + "'";
+	     "FROM RetailerProduct RP " +
+		 "where RP.UPC = '" + UPC + "'";
 		String fulfiller = "SELECT P.FulfillerId " +
-        "FROM RetailerProduct P " +
-        "WHERE P.UPC = '" + UPC + "' AND P.SKU = '" + SKU + "'";// AND P.FulfillerId = ?";
+		 "FROM RetailerProduct P " +
+		 "WHERE P.UPC = '" + UPC + "' AND P.SKU = '" + SKU + "'";// AND P.FulfillerId = ?";
 		
 		try {
 	        s0 = conn.prepareStatement(findUPC);
 	        upcHolder = s0.executeQuery();
-            
+		   
 		    if (upcHolder.first())
 		        searchUPC = upcHolder.getString(1);
-            
+				
 		    s1 = conn.prepareStatement(fulfiller);
 		    FulfillerHolder = s1.executeQuery();
-            
+		   
 		    if (FulfillerHolder.first())
 		        FulfillerId = FulfillerHolder.getInt(1);
 	    }
 		catch (Exception e) {
 		    System.out.println("updateRetailerProduct: " + e);
 		}
-        
+				
 		if (FulfillerId != -1 || (!searchUPC.equals(null) && searchUPC.length() > 0)) {
 		    String sql = "UPDATE RetailerProduct RP " +
-            "SET RP.SKU = ? " +
-            "WHERE RP.UPC = '" + UPC + "' AND RP.FulfillerId = " + FulfillerId;
-            
+			 "SET RP.SKU = ? " +
+			 "WHERE RP.UPC = '" + UPC + "' AND RP.FulfillerId = " + FulfillerId;
+			 
 			try {
 			    PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setString(1, SKU);
@@ -683,12 +683,12 @@ public class api {
 			}
 		}
 		return 1;
-        
-    }
-    
-    public int updateLocationProduct(int internalFulfillerLocationId, double ltd, int safetyStock, String UPC, String SKU)
-    {
-        PreparedStatement s0;
+   
+   }
+   
+   public int updateLocationProduct(int internalFulfillerLocationId, double ltd, int safetyStock, String UPC, String SKU)
+   {
+      PreparedStatement s0;
 		PreparedStatement s1;
 		int FulfillerId = -1;
 		int rpId = -1;
@@ -698,10 +698,10 @@ public class api {
 		//System.out.println("updating LocationProduct");
 		
 		String fulfiller = "SELECT R.FulfillerId " +
-        "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L " +
-        "where LP.RetailerProductId = RP.Id AND RP.FulfillerId = R.FulfillerId " +
-        "AND R.FulfillerId = L.FulfillerId";
-        
+	     "FROM LocationProduct LP, RetailerProduct RP,Retailer R, Location L " +
+		 "where LP.RetailerProductId = RP.Id AND RP.FulfillerId = R.FulfillerId " +
+		 "AND R.FulfillerId = L.FulfillerId";
+		 
 		try {
             s0 = conn.prepareStatement(fulfiller);
 	        FulfillerHolder = s0.executeQuery();
@@ -718,15 +718,15 @@ public class api {
 		
 		if (id != -1) { // this entry already exists. use update
 		    String sql = "UPDATE LocationProduct LP " +
-            "SET LP.LTD = ? AND LP.SafeStockLimit = ? AND LP.RetailerProductId = ? " +
-            "WHERE LP.RetailerProductId = " + rpId + " AND LP.Id = " + id;
-            
+			 "SET LP.LTD = ? AND LP.SafeStockLimit = ? AND LP.RetailerProductId = ? " +
+			 "WHERE LP.RetailerProductId = " + rpId + " AND LP.Id = " + id;
+			 
 			try {
 			    s1 = conn.prepareStatement(sql);
 			    s1.setDouble(1, ltd);
 			    s1.setInt(2, safetyStock);
 			    s1.setInt(3, rpId);
-                
+			
 			    s1.executeUpdate();
 			}
 			catch (Exception e) {
@@ -735,8 +735,8 @@ public class api {
 		}
 		else { // insert
 		    String LP = "INSERT INTO LocationProduct (InternalFulfillerLocationId, RetailerProductId, " +
-            "LTD, SafeStockLimit) VALUES(?, ?, ?, ?)";
-            
+			 "LTD, SafeStockLimit) VALUES(?, ?, ?, ?)";
+			 
 			try {
 			    s1 = conn.prepareStatement(LP);
 			    s1.setInt(1, internalFulfillerLocationId);
@@ -750,27 +750,33 @@ public class api {
 			    System.out.println("insert into locationProduct: " + e);
 			}
 		}
-        
+				
 		return 1;
 		
-    }
-    
-    public int updateContainedInBin(int binId, int onHand, int internalFulfillerLocationId, double ltd,
-                                    int safetyStock, String UPC, String SKU)
-    {
+   }
+   
+   public int updateContainedInBin(int binId, int onHand, int internalFulfillerLocationId, double ltd, 
+    int safetyStock, String UPC, String SKU)
+   {
 		PreparedStatement s0;
 		PreparedStatement s1;
 		int lpId = -1;
 		int id = -1;
+      int binNum = -1;
+      int match = -1;
 		ResultSet idHolder;
+      ResultSet checkHolder;
 		
 		//System.out.println("updating ContainedInBin");
 		
 		lpId = getLPId(internalFulfillerLocationId, ltd, safetyStock, UPC, SKU);
 		
 		String bin = "SELECT S.Id " +
-        "FROM StoreBin S " +
-        "WHERE S.InternalFulfillerLocationId = " + internalFulfillerLocationId;
+		 "FROM StoreBin S " +
+		 "WHERE S.InternalFulfillerLocationId = " + internalFulfillerLocationId;
+       
+      String check = "SELECT C.BinId FROM ContainedInBin C " +
+       " WHERE C.BinId = ? AND C.LocationProductId = ?";
 		
 		try {
 		    s0 = conn.prepareStatement(bin);
@@ -782,12 +788,32 @@ public class api {
 		catch (Exception e) {
 		    System.out.println("updateContainedInBin: " + e);
 		}
-		
-		if (id != -1 && lpId != -1) { // use update
+
+      // check if this exists in CIB already
+		if (id != -1 && lpId != -1) { 
+          try {
+             s0 = conn.prepareStatement(check);
+             s0.setInt(1, id);
+             s0.setInt(2, lpId);
+             checkHolder = s0.executeQuery();
+             
+             if (checkHolder.first())
+                binNum = checkHolder.getInt(1);
+             if (binNum == id)
+                match = 1;
+             else
+                match = 0;
+          }
+          catch (Exception e) {
+             System.out.println("check failed in ContainedInBin: " + e);
+          }
+      }
+      
+      if (match == 1) { // use update
 		    String sql = "UPDATE ContainedInBin CB " +
-            "SET CB.OnHand = ? " +
-            "WHERE CB.BinId = " + binId + " AND CB.LocationProductId = " + lpId;
-            
+	             "SET CB.OnHand = ? " +
+		     "WHERE CB.BinId = " + binId + " AND CB.LocationProductId = " + lpId;
+	             		 
 		    try {
 			    s1 = conn.prepareStatement(sql);
 			    s1.setInt(1, onHand);
@@ -803,64 +829,105 @@ public class api {
 			
 		    try {
 			    s1 = conn.prepareStatement(CIB);
-                s1.setInt(1, binId);
+		            s1.setInt(1, binId);
 			    s1.setInt(2, lpId);
 			    s1.setInt(3, onHand);
 			    s1.setInt(4, 0);
 			    s1.executeUpdate();
 		    }
 		    catch (Exception e) {
-                // use default bin
-                useDefaultBin(internalFulfillerLocationId, onHand);
-		    }
+             // use default bin
+             useDefaultBin(internalFulfillerLocationId, onHand, lpId);
+		    }		
 		}
 		
 		return 1;
 		
-    }
-    
-    public int useDefaultBin(int internalFulfillerLocationId, int onHand)
-    {
-        PreparedStatement s0;
-        ResultSet idHolder;
-        
-        /* default bin is binId = 0 */
-        String sql = "UPDATE ContainedInBin CB " +
+   }
+
+   public int useDefaultBin(int internalFulfillerLocationId, int onHand, int lpId)
+   {
+       PreparedStatement s0;
+       ResultSet idHolder;
+       ResultSet bin;
+       ResultSet defaultBin;
+       int binId = -1;
+       int defaultId = 0;
+
+       // Add the extra variable
+       String find = "SELECT S.Id FROM StoreBin S " +
+       "WHERE S. Name = 'Default'";
+
+       String search = "SELECT CB.Id FROM ContainedInBin CB " +
+        "WHERE CB.Id = ? AND CB.LocationProductId = " + lpId;
+
+       /* default bin is binId = 0 */
+       String sql = "UPDATE ContainedInBin CB " +
         "SET CB.OnHand = " + onHand + " AND CB.Allocated = 0 " +
-        "WHERE CB.BinId = 0";
-        
-        try {
-            s0 = conn.prepareStatement(sql);
-            s0.executeUpdate();
-        }
-        catch (Exception e) {
-            System.out.println("useDefaultBin: " + e);
-        }
-        return 1;
-    }
-    
-    public int refreshInventory(int internalFulfillerLocationId, String LocationName, String SKU, String UPC,
-                                int binId, int onhand, double ltd, int safetyStock)
-    {
-        int i;
-        
+        "WHERE CB.BinId = ?"; 
+
+       String sql2 = "INSERT INTO ContainedInBin CB (BinId, LocationProductId, OnHand, Allocated) VALUES(?, ?, ?, ?)";
+
+       try {
+          s0 = conn.prepareStatement(find);
+          defaultBin = s0.executeQuery();
+
+          if (defaultBin.first())
+             defaultId = defaultBin.getInt(1);
+
+          s0 = conn.prepareStatement(search);
+          s0.setInt(1, defaultId);
+          bin = s0.executeQuery();
+
+          if (bin.first())
+             binId = bin.getInt(1);
+
+          if (binId == defaultId) {// exists in CB, update
+             s0 = conn.prepareStatement(sql);
+             s0.setInt(1, binId);
+             s0.executeUpdate();
+          }
+          else {
+             s0 = conn.prepareStatement(sql2);
+             s0.setInt(1, defaultId);
+             s0.setInt(2, lpId);
+             s0.setInt(3, onHand);
+             s0.setInt(4, 0);
+             s0.executeUpdate();
+          }
+
+       }
+       catch (Exception e) {
+          System.out.println("useDefaultBin: " + e);
+       }
+	   return 1;
+   }
+   
+   public int refreshInventory(int internalFulfillerLocationId, String LocationName, String SKU, String UPC,
+      int binId, int onhand, double ltd, int safetyStock)
+   {
+        int i = 0;
+
         setUpConnection();
         RefreshItem[] item = new RefreshItem[1];
         item[0] = new RefreshItem(SKU, UPC, binId, onhand, ltd, safetyStock);
 		
-        for (i = 0; i < item.length; i++) {
+       // for (i = 0; i < item.length; i++) {
             updateProduct(item[i].UPC, internalFulfillerLocationId);
             updateRetailerProduct(item[i].UPC, item[i].partNumber);
             updateLocationProduct(internalFulfillerLocationId, item[i].LTD, item[i].SafetyStock, item[i].UPC, item[i].partNumber);
-            updateContainedInBin(item[i].BinID, item[i].Quantity, internalFulfillerLocationId, item[i].LTD, item[i].SafetyStock,
-                                 item[i].UPC, item[i].partNumber);
-        }
-		
-        closeConnection();
-        return 1;
-    }
-    
-    public int adjustInventory (int internalFulfillerLocationId, int binId, int onhand, double ltd, int safetyStock, int adjust) {
+            updateContainedInBin(item[i].BinID, item[i].Quantity, internalFulfillerLocationId, item[i].LTD, item[i].SafetyStock, 
+             item[i].UPC, item[i].partNumber);
+//	      }
+
+      System.out.println("num: " + num);
+      num++;
+
+      closeConnection();
+      return 1;
+   }
+   
+   public int adjustInventory (int internalFulfillerLocationId, int binId, int onhand, double ltd, int safetyStock, int adjust) {
         
 		if (onhand+adjust > safetyStock) {
 			System.out.println("Adjusting larger than safety stock");
@@ -1186,5 +1253,4 @@ public class api {
     public double toRad(double value) {
         return value * Math.PI / 180;
     }
-    
 }
