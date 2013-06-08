@@ -56,20 +56,18 @@ def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsSta
    cursor = db.cursor()
 
    try:
-          sqlCommand = """SELECT *
-			  FROM Bins b
-			  WHERE b.FulfillerID = %s AND b.FulfillerLocationID = %s
-			  	AND b.Name LIKE '%s%'
-			  LIMIT %d, %d""" 
-                        % (FulfillerID, FulfillerLocationID, searchTerm, ResultsStart, NumResults)
+         sqlCommand = """SELECT *
+                         FROM Bins b
+                         WHERE b.FulfillerID = %s AND b.FulfillerLocationID = %s
+                               AND b.Name LIKE '%s%%'
+                         LIMIT %d, %d""" % (FulfillerID, FulfillerLocationID, searchTerm, ResultsStart, NumResults)
          cursor.execute(sqlCommand)
          results = cursor.fetchall()
-		 resultCount = cursor.rowcount()
+         resultsCount = cursor.rowcount
+         return results,resultsCount
 
    except Exception, e:
       print e
-
-   return results,resultCount
 
 #@param: no input 
 #return: array of BinStatuses
@@ -78,8 +76,8 @@ def getBinStatuses(db):
    cursor = db.cursor()
 
    try:
-          sqlCommand = """SELECT DINSTINCT b.BinStatus
-			  FROM Bins b""" 
+         sqlCommand = """SELECT DINSTINCT b.BinStatus
+                          FROM Bins b""" 
                    
          cursor.execute(sqlCommand)
          results = cursor.fetchall()
@@ -96,8 +94,8 @@ def getBinTypes(db):
    cursor = db.cursor()
 
    try:
-          sqlCommand = """SELECT DINSTINCT b.BinType
-			  FROM Bins b""" 
+         sqlCommand = """SELECT DINSTINCT b.BinType
+              FROM Bins b""" 
 
          cursor.execute(sqlCommand)
          results = cursor.fetchall()
