@@ -28,12 +28,12 @@ public static void main(String[] args) {
       }
 
 
-      //Object[][] fulfillerLocationCatalog = {{}};
-      //Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
-      //testAllocateInventory(0, fulfillerLocationCatalog, items);
-      //testGetBins(54802, "", 100000, 10);
-      //testGetBinTypes(48590);
-      //testGetBinStatuses(48590);
+      Object[][] fulfillerLocationCatalog = {{}};
+      Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
+      testAllocateInventory(0, fulfillerLocationCatalog, items);
+      testGetBins(0, "54802", "", 100000, 10);
+      testGetBinTypes(48590);
+      testGetBinStatuses(48590);
 
       if(test) {
          int fulfillerId = 48590;
@@ -257,8 +257,8 @@ StringTokenizer token;
                 int i = 0;
       int ret;
 
-int internalFulfillerLocationId, externalLocationId;
-String binName, binType, binStatus;
+int internalFulfillerLocationId;
+String externalLocationId, binName, binType, binStatus;
 
 try {
          in = new Scanner(new File(filename));
@@ -277,10 +277,11 @@ try {
            //while(token.hasMoreTokens()) {
               temp = token.nextToken();
               if(temp.equals("NOT USED"))
-                 externalLocationId = 0;
+                 externalLocationId = null;
               else
+		 externalLocationId = temp.toString();
                  //externalLocationId = (new Integer(token.nextToken())).intValue();
-                 externalLocationId = (new Integer(temp)).intValue();
+                 //externalLocationId = (new Integer(temp)).intValue();
 
       internalFulfillerLocationId = (new Integer(token.nextToken())).intValue();
       binName = token.nextToken();
@@ -294,8 +295,28 @@ try {
                ", " + binType + ", " + binStatus);
          }
      
-ret = apiCall.createBin(externalLocationId, null, internalFulfillerLocationId,
-            binType, binStatus, binName);
+        int fulfillerId = -1;
+
+        try {
+           String sql = "SELECT FulfillerId FROM Location WHERE InternalFulfillerLocationId = ?";
+
+           PreparedStatement ps = conn.prepareStatement(sql);
+           ps.setInt(1, internalFulfillerLocationId);
+
+           ResultSet r = ps.executeQuery();
+
+           if(r.next()) {
+              fulfillerId = r.getInt(1);
+           }
+        }
+        catch(Exception e) {
+           System.out.println(e.toString());
+        }
+
+
+
+	ret = apiCall.createBin(fulfillerId, null, externalLocationId,
+         binType, binStatus, binName);
 
             //System.out.println(i);
             //i++;
@@ -344,10 +365,12 @@ try {
      
                // item = new apiCall.RefreshItem[1];
                // item[0] = new apiCall.RefreshItem(SKU, UPC, null, onhand, ltd, safetyStock);
-      
+      int fulfillerId = -1;      
+
       try {
-         String sql = "SELECT Id FROM StoreBin " +
-                      "WHERE Name = ? AND InternalFulfillerLocationId = ?";
+         String sql = "SELECT b.Id, l.FulfillerId FROM StoreBin b, Location l " +
+                      "WHERE b.Name = ? AND b.InternalFulfillerLocationId = ? " +
+                       " AND b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
          PreparedStatement ps = conn.prepareStatement(sql);
 
          ps.setString(1, binName);
@@ -357,9 +380,10 @@ try {
 
          if(r.next()) {
             binId = r.getInt(1);
+            fulfillerId = r.getInt(2);
          }
          else {
-            binId = apiCall.createBin(0, binId, internalFulfillerLocationId, null, null, binName);
+            binId = apiCall.createBin(fulfillerId, binId, externalLocationId, null, null, binName);
          }
       }
       catch(Exception e) {
@@ -371,8 +395,8 @@ try {
       }
 }
 
-   public static void testGetBins(int fulfillerLocationId, String searchTerm, int numResults, int resultsStart) {
-      ArrayList<Object[]> bins = apiCall.getBins(fulfillerLocationId, searchTerm, numResults, resultsStart);
+   public static void testGetBins(int fulfillerId, String externalLocationId, String searchTerm, int numResults, int resultsStart) {
+      ArrayList<Object[]> bins = apiCall.getBins(fulfillerId, externalLocationId, searchTerm, numResults, resultsStart);
 
       /*(for(int ndx = 0; ndx < bins.size(); ndx++) {
 }*/
