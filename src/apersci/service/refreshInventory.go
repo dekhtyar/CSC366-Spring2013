@@ -3,6 +3,7 @@ package main
 import (
 	"apersci/input"
 	"apersci/output"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -37,12 +38,15 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) (err error) {
 
 		var binid uint
 
-		rows.Next()
-		err = rows.Scan(&binid)
-		if err != nil {
-			return err
+		if rows.Next() {
+			err = rows.Scan(&binid)
+			if err != nil {
+				return err
+			}
+			rows.Close()
+		} else {
+			return errors.New("Unable to find specified bin.\n")
 		}
-		rows.Close()
 
 		rows, err = tx.Query("SELECT DISTINCT fulfillerId FROM Locations WHERE id = $1", locationid)
 		if err != nil {
