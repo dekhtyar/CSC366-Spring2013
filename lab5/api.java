@@ -218,7 +218,7 @@ public class api {
         
         createNewCatalogServedByLocation(internalFulfillerLocationId, manufacturerId,
                                          catalogId);
-        createBin (fulfillerId, 0, internalFulfillerLocationId, "General",
+        createBin (fulfillerId, null, externalLocationId, "General",
                    "Pickable", "Default");
         
         if(closeConnection() == false)
@@ -330,10 +330,9 @@ public class api {
         }
     }
     
-    public int createBin (int fulfillerId, Integer binId, int externalLocationId, String binType, String binStatus, String binName)
+    public int createBin (int fulfillerId, Integer binId, String externalLocationId, String binType, String binStatus, String binName)
     {
-        if(fulfillerId < 0 || externalLocationId < 0
-           ||(binId != null && binId < 0)) {
+        if(fulfillerId < 0 || (binId != null && binId < 0)) {
             return -1;
         }
         
@@ -353,7 +352,7 @@ public class api {
             }
            
             ps.setInt(2, fulfillerId); 
-            ps.setInt(3, externalLocationId);
+            ps.setString(3, externalLocationId);
             ps.setString(4, binStatus);
             ps.setString(5, binType);
             ps.setString(6, binName);
@@ -378,7 +377,7 @@ public class api {
         return binId;
     }
     
-    public ArrayList<Object[]> getBins (int fulfillerLocationId, String searchTerm, int numResults, int resultsStart)
+    public ArrayList<Object[]> getBins (int fulfillerId, String externalLocationId, String searchTerm, int numResults, int resultsStart)
     {
         ArrayList<Object[]> bins = new ArrayList<Object[]>();
         
@@ -390,20 +389,24 @@ public class api {
             return null;
         
         try {
-            String query = "SELECT Id, InternalFulfillerLocationId, Status, Type, Name " +
+            String query = "SELECT Id, ExternalLocationId, Type, Status, Name " +
             "FROM StoreBin " +
-            "WHERE InternalFulfillerLocationId = " + fulfillerLocationId;
-            if(!searchTerm.equals(null) && searchTerm.length() > 0) {
+            "WHERE FulfillerId = ? AND ExternalLocationId = ?";
+
+            if(searchTerm != null && searchTerm.length() > 0) {
                 query += " AND Name = '" + searchTerm + "'";
             }
             
-            Statement s = conn.createStatement();
-            ResultSet r = s.executeQuery(query);
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, fulfillerId);
+            ps.setString(2, externalLocationId);
+
+            ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
             int ndx = 0;
             
             while(hasNext && ndx < resultsStart + numResults) {
-                Object[] returnObj = {r.getInt(1), r.getString(2), r.getString(3), r.getString(4)};
+                Object[] returnObj = {fulfillerId, r.getInt(1), r.getString(2), r.getString(3), r.getString(4), r.getString(5)};
                 
                 if(ndx >= resultsStart) {
                     bins.add(returnObj);
@@ -457,7 +460,7 @@ public class api {
         String query = "SELECT b.Type " +
         "FROM StoreBin b, Location l " +
         "WHERE l.FulfillerId = ? AND " +
-        "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
+        "b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
         
         return getBinAttributes(query, fulfillerId);
     }
@@ -467,7 +470,7 @@ public class api {
         String query = "SELECT b.Status " +
         "FROM StoreBin b, Location l " +
         "WHERE l.FulfillerId = ? AND " +
-        "b.InternalFulfillerLocationId = l.InternalFulfillerLocationId";
+        "b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
         
         return getBinAttributes(query, fulfillerId);
     }
