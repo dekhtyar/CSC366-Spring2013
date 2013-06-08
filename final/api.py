@@ -290,3 +290,53 @@ def getFulfillmentLocationTypes(fID, fLID, db):
      return locationType
    except Exception, e:
      print e
+
+def itemAvailable(fulfuller_id, location_id, item, db):
+    cur = db.cur()
+    onhand = 0
+
+    try:
+        cur.execute('SELECT SafetyStockLimit FROM StoredAt WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
+                    item['SKU'], fulfiller_id, location_id)
+        safety = cur.fetchone()
+
+        cur.execute('SELECT OnHand FROM StoredIn WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
+                    item['SKU'], fulfiller_id, location_id)
+        for i in range(cur.rowcount):
+            onhand = onhand + cur.fetchone()[0]
+
+        if item['quantity'] >= (onhand - safety):
+            return True
+    except Exception, e:
+        print e
+
+    return False
+
+def allocateItem(fulfiller_id, location_id, item, db):
+    cur = db.cur()
+    quantity = item['quantity']
+
+    try:
+        cur.execute('UPDATE StoredIn' +
+                    'SET OnHand = OnHand - %s, Allocated = Allocated + %s' +
+                    'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
+                    quantity, quantity, item['SKU'], fulfiller_id, location_id) 
+    except Exception, e:
+        print e
+
+def allocateInventory(fulfiller_id, catalog_id, location_id, items, db):
+    cur = db.cur()
+
+    for item in items:
+        if not itemAvailable(fulfiller_id, location_id, item, db):
+            print 'Insufficient available inventory. Aborting...'
+            return
+
+    for item in items:
+        allocateItem(fulfiller_id, location_id, item, db)
+
+def deallocateInventory(fulfiller_id, catalog_id, location_id, items, db):
+    cursor = db.cursor()
+
+def fulfillInventory(fulfiller_id, catalog_id, location_id, items, db):
+    cursor = db.cursor()
