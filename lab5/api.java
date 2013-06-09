@@ -107,7 +107,7 @@ public class api {
 
                 if(fulfillerLocationCatalog[0] != null) {
                    ps.setInt(3, (Integer)fulfillerLocationCatalog[0][0]);
-                   ps.setInt(3, (Integer)fulfillerLocationCatalog[0][1]);
+                   ps.setInt(4, (Integer)fulfillerLocationCatalog[0][1]);
                 }
                 
                 ResultSet r = ps.executeQuery();
