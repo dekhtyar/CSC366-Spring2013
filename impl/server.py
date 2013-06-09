@@ -1,108 +1,59 @@
-from CoreServiceService_services import *
-from CoreServiceService_services_server import *
-from ZSI.ServiceContainer import ServiceSOAPBinding
-from ZSI.ServiceContainer import AsServer
-from operations import *
+from flask import Flask, request
+from lxml import etree
+from fault import build_fault, SoapFault
+from response import build_response
+import ops
+import datatypes
 
-class PinkyBrainService(CoreServiceService):
-    # Andrew
-    def soap_createFulfiller(self, ps):
-        self.request = ps.Parse(createFulfillerRequest.typecode)
-        return createFulfiller(self.request) 
- 
-    # Halli
-    def soap_getFulfillerStatus(self, ps):
-        self.request = ps.Parse(getFulfillerStatusRequest.typecode)
-        return getFulfillerStatusResponse()
+app = Flask(__name__)
+namespaces = {'soapenv': "http://schemas.xmlsoap.org/soap/envelope/",
+              'v4': "http://v4.core.coexprivate.api.shopatron.com"}
 
-    # Andrew
-    def soap_createFulfillmentLocation(self, ps):
-        self.request = ps.Parse(createFulfillmentLocationRequest.typecode)
-        return createFulfillmentLocation(self.request)
 
-    # Halli
-    def soap_getFulfillmentLocations(self, ps):
-        self.request = ps.Parse(getFulfillmentLocationsRequest.typecode)
-        return getFulfillmentLocationsResponse()
+def recursive_dict(element):
+   return element.tag.split("}")[1], \
+         dict(map(recursive_dict, element)) or element.text
 
-    # Halli
-    def soap_getFulfillmentLocationTypes(self, ps):
-        self.request = ps.Parse(getFulfillmentLocationTypesRequest.typecode)
-        response = getFulfillmentLocationTypesResponse()
-        
-        type = FulfillmentLocationType()
-        types = (type,)
-        #types = ('FULFILLER', 'RETAILER', 'MANUFACTURER')
+#def recursive_dict(element):
+#   if (len(element) == 1):
+#      return element.tag.split("}")[1], \
+#            dict(map(recursive_dict, element)) or element.text
+#   else:
+#      ret = []
+#      for child in element:
+#         ret.append(map(recursive_dict, child) or child.text)
+#
+#      return element.tag.split("}")[1], ret
 
-        response.GetFulfillmentLocationTypesReturn = types
 
-        return response
-  
-    # Mitch
-    def soap_allocateInventory(self, ps):
-        self.request = ps.Parse(allocateInventoryRequest.typecode)
-        return allocateInventory(self.request)
+@app.route('/inventoryService/', methods=['POST'])
+@app.route('/inventoryService', methods=['POST'])
+def handleRequest():
+   try:
+      soap_in = etree.fromstring(request.data)
+      op_element = soap_in.xpath("//soapenv:Body/*",
+            namespaces=namespaces)[0]
+      op_name, op_dict = recursive_dict(op_element)
+      print(op_dict)
+   except Exception as e:
+#      print(e)
+      return build_fault(SoapFault("Malformed request XML", SoapFault.BAD_XML))
 
-    # Mitch
-    def soap_deallocateInventory(self, ps):
-        self.request = ps.Parse(deallocateInventoryRequest.typecode)
-        return deallocateInventory(self.request)
+   try:
+      op = getattr(ops, op_name)
+      data = getattr(datatypes, op_name)(op_dict)
+   except:
+      return build_fault(SoapFault("Unkown operation: %s" % op_element.tag,
+         SoapFault.UNKNOWN_OP))
 
-    # Mitch
-    def soap_fulfillInventory(self, ps):
-        self.request = ps.Parse(fulfillInventoryRequest.typecode)
-        return fulfillInventory(self.request)
+   try:
+      template, response_obj = op(data)
+      return build_response(template, response_obj)
+   except SoapFault as fault:
+      return build_fault(fault)
+   except Exception as e:
+#      print(e)
+      return build_fault(SoapFault("Server error"))
 
-    # Andrew
-    def soap_createBin(self, ps):
-        self.request = ps.Parse(createBinRequest.typecode)
-        return createBin(self.request)
-
-    # Halli
-    def soap_getBins(self, ps):
-        self.request = ps.Parse(getBinsRequest.typecode)
-        return getBinsResponse()
-
-    # Halli
-    def soap_getBinTypes(self, ps):
-        self.request = ps.Parse(getBinTypesRequest.typecode)
-        response = getBinTypesResponse()
-       
-        f_bin = ns0.BinType_Def('BinType').pyclass
-        f_bin.BinType = 'TYPE'
-
-        types = [f_bin]
-        response.GetBinTypesReturn = types
-        #b = BinTypes()
-
-        #print(dir(response))# = b
-        #print(dir(response.GetBinTypesReturn))# = b
-
-        return response
-
-    # Halli
-    def soap_getBinStatuses(self, ps):
-        self.request = ps.Parse(getBinStatusesRequest.typecode)
-        return getBinStatusesResponse()
-
-    # Haikal
-    def soap_getInventory(self, ps):
-        self.request = ps.Parse(getInventoryRequest.typecode)
-        response = getInventoryResponse()
-        #print(request.Request.FulfillerID)
-        #for i in request.Request.Quantities.items
-        #   print(i.PartNumber + " " + i.UPC + " " + i.Quantity)
-        return response
-
-    # Andrew
-    def soap_adjustInventory(self, ps):
-        self.request = ps.Parse(AdjustInventorySoapIn.typecode)
-        return AdjustInventorySoapOut()
-
-    # Andrew
-    def soap_refreshInventory(self, ps):
-        self.request = ps.Parse(RefreshInventorySoapIn.typecode)
-        return RefreshInventorySoapOut()
-
-if __name__ == '__main__':
-   AsServer(8080, (PinkyBrainService(),))
+if __name__ == "__main__":
+   app.run(host='0.0.0.0', port=8080)
