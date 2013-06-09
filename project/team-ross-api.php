@@ -74,6 +74,8 @@ class TeamRossAPI {
     $relational->bindParam(':internalLocationId', $intLID);
 
     if (!$relational->execute())  {
+      $out = print_r($relational->errorInfo(), true);
+      error_log($out);
       $success = FALSE;
     }
 
