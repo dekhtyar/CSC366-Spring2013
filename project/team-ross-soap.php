@@ -118,7 +118,7 @@ class TeamRossSOAP {
   function createBin($CreateBinRequest) {
     $request = $CreateBinRequest->request;
     return array('createBinReturn' => $this->api->createBin(
-				$request->FulfillerId, $request->ExternalLocationId
+				$request->FulfillerId, $request->ExternalLocationId,
 				$request->Name, $request->BinType,
 				$request->BinStatus
 			) ? 0 : -1
