@@ -1,7 +1,20 @@
 <?php
   include_once('soap-client.php');
 
-  $argv[1]($client, new \stdClass);
+  switch ($argv[1]):
+
+    case 'create':
+      print "Running createFulfiller, createFulfillmentLocation, and createBin\n\n";
+      createFulfiller($client, new \stdClass);
+      createFulfillmentLocation($client, new \stdClass);
+      createBin($client, new \stdClass);
+      break;
+
+    default:
+      $argv[1]($client, new \stdClass);
+      break;
+
+  endswitch;
 
   function createFulfiller($client, $request) {
     $data = get_csv_data('csv_data/fulfiller_locations.csv');
