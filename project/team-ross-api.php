@@ -166,71 +166,76 @@ class TeamRossAPI {
 
   public function refreshInventory($ExternalLocationId, $FulfillerID, $items) {
     // STATEMENTS
-    $stmt1 = $this->db->prepare("
-      INSERT INTO BinContainsProducts
-        (binName, internalLocationId, productUpc, fulfillerId)
-      VALUES
-        (:binName, :internalLocationId, :productUpc, :fulfillerId)
-    ");
-
-    $stmt2 = $this->db->prepare("
-      INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
-      VALUES(:fulfillerId, :productUpc, :sku)
-    ");
-
-    $stmt3 = $this->db->prepare("
-      INSERT INTO LocationSellsProducts (internalLocationId, productUpc,
-      storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
-      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd,
-      '0', :onHand, :fulfillerId)
+      return error_log('test'); //Not excecuted -- not in log
+    try {
+      $stmt1 = $this->db->prepare("
+        INSERT INTO BinContainsProducts
+          (binName, internalLocationId, productUpc, fulfillerId)
+        VALUES
+          (:binName, :internalLocationId, :productUpc, :fulfillerId)
       ");
 
-    $stmt4 = $this->db->prepare(
-        "SELECT externalLocationId
-          FROM Locations
-          WHERE externalLocationId=:externalLocationId
-            AND fulfillerId=:fulfillerId");
+      $stmt2 = $this->db->prepare("
+        INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
+        VALUES(:fulfillerId, :productUpc, :sku)
+      ");
 
-    $stmt4->bindParam(":fulfillerId", $FulfillerID);
-    $stmt4->bindParam(":externalLocationId", $ExternalLocationId);
+      $stmt3 = $this->db->prepare("
+        INSERT INTO LocationSellsProducts 
+          (storeSku, safetyStock, ltd, allocated)
+          VALUES (:storeSku, :safetyStock, :ltd, '0')
+          WHERE fulfillerId=:fulfillerID
+            AND productUpc=:productUpc
+            AND internalLocationId=:internalLocationId
+        ");
 
-    $stmt4->execute();
-    $fetch = $stmt4->fetch(PDO::FETCH_ASSOC);
+      $stmt4 = $this->db->prepare(
+          "SELECT internalLocationId
+            FROM Locations
+            WHERE externalLocationId=:externalLocationId
+              AND fulfillerId=:fulfillerId");
 
-    // UPDATE INVENTORY FOR EACH ITEM
-    foreach ($items as $item) {
-      $stmt1->bindParam(':binName', $item['bin_name']);
-      $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
-      $stmt1->bindParam(':productUpc', $item['UPC']);
-      $stmt1->bindParam(':fulfillerId', $FulfillerId);
+      $stmt4->bindParam(":fulfillerId", $FulfillerID);
+      $stmt4->bindParam(":externalLocationId", $ExternalLocationId);
 
-      $stmt2->bindParam(':fulfillerId', $FulfillerId);
-      $stmt2->bindParam(':productUpc', $item['UPC']);
-      $stmt2->bindParam(':sku', $item['SKU']);
+      $stmt4->execute();
+      $fetch = $stmt4->fetch(PDO::FETCH_ASSOC);
 
-      $stmt3->bindParam(':internalLocationId', $fetch['internalLocationId']);
-      $stmt3->bindParam(':productUpc', $item['UPC']);
-      $stmt3->bindParam(':storeSku', $item['SKU']);
-      $stmt3->bindParam(':safetyStock', $item['safety_stock']);
-      $stmt3->bindParam(':ltd', $item['ltd']);
-      $stmt3->bindParam(':onHand', $item['onHand']);
-      $stmt3->bindParam(':fulfillerId', $FulfillerId);
+      // UPDATE INVENTORY FOR EACH ITEM
+      foreach ($items as $item) {
+            
+        $stmt1->bindParam(':binName', $item->BinID);
+        $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
+        $stmt1->bindParam(':productUpc', $item->UPC);
+        $stmt1->bindParam(':fulfillerId', $FulfillerId);
+        
+        $stmt2->bindParam(':fulfillerId', $FulfillerId);
+        $stmt2->bindParam(':productUpc', $item->UPC);
+        $stmt2->bindParam(':sku', $item->PartNumber);
+        $stmt3->bindParam(':internalLocationId', $fetch['internalLocationId']);
+        $stmt3->bindParam(':productUpc', $item->UPC);
+        $stmt3->bindParam(':storeSku', $item->PartNumber);
+        $stmt3->bindParam(':safetyStock', $item->SafetyStock);
+        $stmt3->bindParam(':ltd', $item->LTD);
+        $stmt3->bindParam(':fulfillerId', $FulfillerId);
+        
+        // create bin if missing
+        if (!$this->getBin($item->BinID, $fetch['internalLocationId']))
+          print "Bin doesn't exist.\n";
 
-      // create product if missing
-      if (!$this->getProductFromUpc($item['UPC']))
-        $this->createProduct($item);
-
-      // create bin if missing
-      if (!$this->getBin($item['bin_name'], $fetch['internalLocationId']))
-        print "Bin doesn't exist.\n";
-
-      // execute queries
-      else {
-        $stmt1->execute();
-        $stmt2->execute();
-        $stmt3->execute();
+        // execute queries
+        else {
+          $stmt1->execute();
+          $stmt2->execute();
+          $stmt3->execute();
+        }
+        
       }
+    } catch ( Exception $e ) {
+      error_log( $e->what() );
+      return 0;
     }
+    return 2;//array();
   }
 
   private function allocateInventory($fulfillerId, $items) {

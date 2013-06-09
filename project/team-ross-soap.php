@@ -200,8 +200,8 @@ class TeamRossSOAP {
   // MATT T
   // **********************************************************************
   function refreshInventory( $RefreshRequest ) {
-    $eid = $RefreshRequest['ExternalLocationID'];
-    $fid = $RefreshRequest['FulfillerID'];
-    return $this->api->refreshInventory($eid, $fid, $RefreshRequest['items']);
+    $eid = $RefreshRequest->ExternalLocationID;
+    $fid = $RefreshRequest->FulfillerID;
+    return $this->api->refreshInventory($eid, $fid, $RefreshRequest->Items);
   }
 }
