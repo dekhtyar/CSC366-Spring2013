@@ -468,4 +468,61 @@ class TeamRossAPI {
 
     return $arr;
   }
+
+  public function seedInventory($items) {
+    // STATEMENTS
+    $stmt1 = $this->db->prepare("
+      INSERT INTO BinContainsProducts
+        (binName, internalLocationId, productUpc, fulfillerId)
+      VALUES
+        (:binName, :internalLocationId, :productUpc, :fulfillerId)
+    ");
+
+    $stmt2 = $this->db->prepare("
+      INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
+      VALUES(:fulfillerId, :productUpc, :sku)
+    ");
+
+    $stmt3 = $this->db->prepare("
+      INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
+      VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand, :fulfillerId)
+    ");
+
+    // UPDATE INVENTORY FOR EACH ITEM
+    foreach ($items as $item) {
+      $fulfillerId = $this->getFulfillerIdFromLocationId($item['internal_fulfiller_location_id']);
+
+      $stmt1->bindParam(':binName', $item['bin_name']);
+      $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+      $stmt1->bindParam(':productUpc', $item['UPC']);
+      $stmt1->bindParam(':fulfillerId', $fulfillerId);
+
+      $stmt2->bindParam(':fulfillerId', $fulfillerId);
+      $stmt2->bindParam(':productUpc', $item['UPC']);
+      $stmt2->bindParam(':sku', $item['SKU']);
+
+      $stmt3->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+      $stmt3->bindParam(':productUpc', $item['UPC']);
+      $stmt3->bindParam(':storeSku', $item['SKU']);
+      $stmt3->bindParam(':safetyStock', $item['safety_stock']);
+      $stmt3->bindParam(':ltd', $item['ltd']);
+      $stmt3->bindParam(':onHand', $item['onHand']);
+      $stmt3->bindParam(':fulfillerId', $fulfillerId);
+
+      // create product if missing
+      if (!$this->getProductFromUpc($item['UPC']))
+        $this->createProduct($item);
+
+      // create bin if missing
+      if (!$this->getBin($item['bin_name'], $item['internal_fulfiller_location_id']))
+        print "Bin doesn't exist.\n";
+
+      // execute queries
+      else {
+        $stmt1->execute();
+        $stmt2->execute();
+        $stmt3->execute();
+      }
+    }
+  }
 }

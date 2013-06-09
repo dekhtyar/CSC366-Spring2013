@@ -286,7 +286,7 @@ function db_seed($db) {
 
   print ".";
   foreach($data as &$data_chunk) {
-    $api->refreshInventory($data_chunk);
+    $api->seedInventory($data_chunk);
     print ".";
   }
 
