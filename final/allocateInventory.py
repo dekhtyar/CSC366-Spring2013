@@ -1,11 +1,12 @@
 import MySQLdb
 
 def selectItemBins(fulfiller_id, location_id, sku, db):
-    cur = db.cur()
+    cur = db.cursor(MySQLdb.cursors.DictCursor)
 
     try:
         cur.execute('SELECT OnHand, Allocated, Name ' +
-                    'FROM StoredIn WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
+                    'FROM StoredIn ' +
+                    'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
                     (sku, fulfiller_id, location_id))
         return cur.fetchall()
     except Exception, e:
@@ -14,19 +15,21 @@ def selectItemBins(fulfiller_id, location_id, sku, db):
     finally:
         cur.close()
 
-def itemCanBeAllocated(fulfuller_id, location_id, item, db):
-    cur = db.cur()
+def itemCanBeAllocated(fulfiller_id, location_id, item, db):
+    cur = db.cursor()
     onhand = 0
 
     try:
-        cur.execute('SELECT SafetyStockLimit FROM StoredAt WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
+        cur.execute('SELECT SafetyStockLimit ' +
+                    'FROM StoredAt ' +
+                    'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
                     (item['SKU'], fulfiller_id, location_id))
-        safety = cur.fetchone()
+        safety = cur.fetchone()[0]
 
         for bin in selectItemBins(fulfiller_id, location_id, item['SKU'], db):
-            onhand = onhand + bin[0] 
+            onhand = onhand + bin['OnHand']
 
-        if item['quantity'] <= (onhand - safety):
+        if item['Quantity'] <= (onhand - safety):
             return True
     except Exception, e:
         print e
@@ -39,23 +42,24 @@ def allocateFromBin(fulfiller_id, location_id, sku, quantity, name, db):
     cur = db.cursor()
 
     try:
-        cur.execute('UPDATE StoredIn' +
-                    'SET OnHand = OnHand - %s, Allocated = Allocated + %s' +
+        cur.execute('UPDATE StoredIn ' +
+                    'SET OnHand = OnHand - %s, Allocated = Allocated + %s ' +
                     'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s AND Name = %s',
-                    (quantity, quantity, item['SKU'], fulfiller_id, location_id, name))
+                    (quantity, quantity, sku, fulfiller_id, location_id, name))
     except Exception, e:
         print e
     finally:
         cur.close()
 
 def allocateItem(fulfiller_id, location_id, item, db):
-    cur = db.cur()
-    quantity = item['quantity']
+    cur = db.cursor()
+    quantity = item['Quantity']
+    sku = item['SKU']
     bins = selectItemBins(fulfiller_id, location_id, sku, db)
 
     for bin in bins:
-        onhand = bin[0]
-        name = bin[2]
+        onhand = bin['OnHand']
+        name = bin['Name']
         allocation = quantity if onhand >= quantity else onhand
 
         allocateFromBin(fulfiller_id, location_id, sku, allocation, name, db)
@@ -65,7 +69,7 @@ def allocateItem(fulfiller_id, location_id, item, db):
             return
 
 def allocateInventory(fulfiller_id, location_id, items, db):
-    cur = db.cur()
+    cur = db.cursor()
 
     for item in items:
         if not itemCanBeAllocated(fulfiller_id, location_id, item, db):
@@ -74,5 +78,3 @@ def allocateInventory(fulfiller_id, location_id, items, db):
 
     for item in items:
         allocateItem(fulfiller_id, location_id, item, db)
-
-
