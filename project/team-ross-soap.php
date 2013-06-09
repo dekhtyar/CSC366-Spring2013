@@ -43,7 +43,11 @@ class TeamRossSOAP {
     $mfgIdDefault = 0;
     $catalogIdDefaut = 0;
 
+<<<<<<< HEAD
     // $countrycode = CreateFulfillmentLocationRequest['CountryCode']; // FIXME: Doesn't exist in DB!
+=======
+    $countrycode = $CreateFulfillmentLocationRequest['CountryCode']; // FIXME: Doesn't exist in DB!
+>>>>>>> 9759436978b206560e4bee4ceae0e7d23afdaa11
 
     // no longer checks if FulfillmentLocation exists. Just updates!
     return array('createFulfillmentLocationReturn' => $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest->LocationName,
