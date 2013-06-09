@@ -4,7 +4,7 @@
 -- Alex Boltunov  aboltunov@gmail.com
 -- Luke Larson  lplarson@calpoly.edu
 
-CREATE TABLE Manufacturers (
+CREAT TABLE Manufacturers (
    ManufacturerId           INTEGER PRIMARY KEY
 );
 
@@ -15,12 +15,12 @@ CREATE TABLE Catalogues (
 );
 
 CREATE TABLE Fulfillers (
-   FulfillerId              INTEGER PRIMARY KEY,
+   FulfillerId              VARCHAR(50) PRIMARY KEY,
    FulfillerName            VARCHAR(50)
 );
 
 CREATE TABLE Locations (
-   FulfillerId              INTEGER REFERENCES Fulfillers,
+   FulfillerId              VARCHAR(50) REFERENCES Fulfillers,
    FulfillerLocationId      VARCHAR(50),
    Name                     VARCHAR(20),
    Type                     VARCHAR(20),
@@ -42,14 +42,14 @@ CREATE TABLE Items (
 
 CREATE TABLE FulfilledBy (
    UPC                      CHAR(14) REFERENCES Items,
-   FulfillerId              INTEGER REFERENCES Fulfillers,
+   FulfillerId              VARCHAR(50) REFERENCES Fulfillers,
    SKU                      VARCHAR(50),
    PRIMARY KEY (UPC, FulfillerId),
    UNIQUE (SKU, FulfillerId)
 );
 
 CREATE TABLE Bins (
-   FulfillerId              INTEGER,
+   FulfillerId              VARCHAR(50),
    FulfillerLocationId      VARCHAR(50),
    Name                     VARCHAR(20),
    BinType                  VARCHAR(20),
@@ -61,7 +61,7 @@ CREATE TABLE Bins (
 
 CREATE TABLE StoredIn (
    SKU                      VARCHAR(50),
-   FulfillerId              INTEGER,
+   FulfillerId              VARCHAR(50),
    FulfillerLocationId      VARCHAR(50),
    Name                     VARCHAR(20),
    OnHand                   INTEGER,
@@ -75,7 +75,7 @@ CREATE TABLE StoredIn (
 
 CREATE TABLE StoredAt (
    SKU                      VARCHAR(50),
-   FulfillerId              INTEGER,
+   FulfillerId              VARCHAR(50),
    FulfillerLocationId      VARCHAR(50),
    LTD                      FLOAT,
    SafetyStockLimit         INTEGER,
@@ -87,7 +87,7 @@ CREATE TABLE StoredAt (
 ); 
 
 CREATE TABLE SubscribeTo (
-   FulfillerId              INTEGER,
+   FulfillerId              VARCHAR(50),
    FulfillerLocationId      VARCHAR(50),
    ManufacturerId           INTEGER,
    CatalogueId              INTEGER,

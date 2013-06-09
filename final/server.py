@@ -229,11 +229,27 @@ class Service(CoreServiceService):
 
         return res
 
+    #def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsStart, db):
+    #   cursor = db.cursor()
+    #
+    #   try:
+    #         sqlCommand = """SELECT *
+    #                         FROM Bins b
+    #                         WHERE b.FulfillerID = %s AND b.FulfillerLocationID = %s
+    #                               AND b.Name LIKE '%s%%'
+    #                         LIMIT %d, %d""" % (FulfillerID, FulfillerLocationID, searchTerm, ResultsStart, NumResults)
+    #         cursor.execute(sqlCommand)
+    #         results = cursor.fetchall()
+    #         resultsCount = cursor.rowcount
+    #         return results,resultsCount
+    #
+    #   except Exception, e:
+    #      print e
     def soap_getBins(self, ps):
         res = CoreServiceService.soap_getBins(self, ps)
         req = self.request
 
-        r = req.new_request()
+        r = req.get_element_request()
 
         FulfillerID = r.get_element_FulfillerID()
         FulfillerLocationID = r.get_element_FulfillerLocationID()
@@ -243,8 +259,40 @@ class Service(CoreServiceService):
         print "soap_getBins:", FulfillerID, FulfillerLocationID, NumResults, ResultsStart, SearchTerm
 
         # Call API function with arguments above
+        results, resultsCount = api.getBins(FulfillerID, FulfillerLocationID,
+                                            SearchTerm, NumResults, ResultsStart, db)
+        print results
 
+        getBinsReturn = res.new_getBinsReturn()
+        Bins = getBinsReturn.new_Bins()
+        
+        #FulfillerId              VARCHAR(50),
+        #FulfillerLocationId      VARCHAR(50),
+        #Name                     VARCHAR(20),
+        #BinType                  VARCHAR(20),
+        #BinStatus                VARCHAR(20),
+        #'set_element_BinID', 'set_element_BinStatus', 'set_element_BinType', 'set_element_FulfillerID', 'set_element_FulfillerLocationID', 'set_element_Name'
+        items = []
+        for result in results:
+            item = Bins.new_items()
+            #item.set_element_BinID()
+            item.set_element_BinStatus(result[4])
+            item.set_element_BinType(result[3])
+            item.set_element_FulfillerID(int(result[0]))
+            item.set_element_FulfillerLocationID(int(result[1])) # num required, not a string
+            item.set_element_Name(result[2])
+            items.append(item)
+
+        Bins.set_element_items(items)
+        #print 'Bins', dir(Bins)
+        #print 'Bins.new_items()', dir(Bins.new_items())
+
+        getBinsReturn.set_element_ResultCount(resultsCount)
+        getBinsReturn.set_element_Bins(Bins)
+
+        res.set_element_getBinsReturn([getBinsReturn])
         # Set these values with results from calliing API function
+        #print dir(getBinsReturn)
 
         return res
 
@@ -321,7 +369,7 @@ class Service(CoreServiceService):
 
 
 if __name__ == "__main__" :
-    db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory_test")
+    db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
     port = 443 
     AsServer(port, (Service(),))
     db.close()
