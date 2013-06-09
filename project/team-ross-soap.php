@@ -24,9 +24,9 @@ class TeamRossSOAP {
   // GROUP
   // **********************************************************************
   function createFulfiller($FulfillerRequest) {
+		$request = $FulfillerRequest->request;
     return array('createFulfillerReturn' => 
-			$this->api->createFulfiller($FulfillerRequest->request->FulfillerID,
-			$FulfillerRequest->request->Name) ? 0 : -1);
+			$this->api->createFulfiller($request->FulfillerID, $request->Name) ? 0 : -1);
   }
 
   // **********************************************************************
@@ -40,6 +40,8 @@ class TeamRossSOAP {
   // RILEY
   // **********************************************************************
   function createFulfillmentLocation($CreateFulfillmentLocationRequest) {
+		$request = $FulfillerRequest->request;
+		
     $safetyStockLimitDefault = 0;
     $mfgIdDefault = 0;
     $catalogIdDefaut = 0;
@@ -47,14 +49,16 @@ class TeamRossSOAP {
     $countrycode = $CreateFulfillmentLocationRequest->CountryCode; // FIXME: Doesn't exist in DB!
 
     // no longer checks if FulfillmentLocation exists. Just updates!
-    return array('createFulfillmentLocationReturn' => $this->api->createFulfillmentLocation($CreateFulfillmentLocationRequest->LocationName,
-            $CreateFulfillmentLocationRequest->ExternalLocationID,
-            $CreateFulfillmentLocationRequest->RetailerLocationID,
-            $CreateFulfillmentLocationRequest->FulfillerID,
-            $CreateFulfillmentLocationRequest->LocationType,
-            $CreateFulfillmentLocationRequest->Latitude,
-            $CreateFulfillmentLocationRequest->Longitude,
-            $CreateFulfillmentLocationRequest->Status,
+    return array('createFulfillmentLocationReturn' =>
+			$this->api->createFulfillmentLocation(
+						$request->LocationName,
+            $request->ExternalLocationID,
+            $request->RetailerLocationID,
+            $request->FulfillerID,
+            $request->LocationType,
+            $request->Latitude,
+            $request->Longitude,
+            $request->Status,
             $safetyStockLimitDefault,
             $mfgIdDefault,
             $catalogIdDefault
@@ -66,7 +70,8 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-    return array('getFulfillmentLocationsReturn' => $this->api->findLocations($GetFulfillmentLocationsRequest->FulfillerID,
+    return array('getFulfillmentLocationsReturn' => 
+				$this->api->findLocations($GetFulfillmentLocationsRequest->FulfillerID,
                     $GetFulfillmentLocationsRequest->Catalog,
                     $GetFulfillmentLocationsRequest->Location,
                     $GetFulfillmentLocationsRequest->MaxLocations
@@ -111,10 +116,12 @@ class TeamRossSOAP {
   // MATT S
   // **********************************************************************
   function createBin($CreateBinRequest) {
-    return array(
-      'createBinReturn' => $this->api->createBin($CreateBinRequest->FulfillerId,
-                           $CreateBinRequest->Name, $CreateBinRequest->BinType,
-                           $CreateBinRequest->BinStatus) ? 0 : -1
+		$request = $CreateBinRequest->request;
+    return array('createBinReturn' => $this->api->createBin(
+				$request->FulfillerId,
+				$request->Name, $request->BinType,
+				$request->BinStatus
+			) ? 0 : -1
     );
   }
 
@@ -122,11 +129,12 @@ class TeamRossSOAP {
   // IAN
   // **********************************************************************
   function getBins($GetBinsRequest) {
-    $bins = $this->api->getBins($GetBinRequest['SearchTerm'], $GetBinRequest['FulfillerLocationID']);
+		$request = $GetBinsRequest->request;
+    $bins = $this->api->getBins($request['SearchTerm'], $request['FulfillerLocationID']);
 
     return array(
       'getBinsReturn' => array(
-        'Bins' => array_slice($bins, $GetBinRequest['ResultsStart'], $GetBinRequest['NumResults']),
+        'Bins' => array_slice($bins, $request['ResultsStart'], $request['NumResults']),
         'ResultCount' => count($bins)
       ));
   }
