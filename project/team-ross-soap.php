@@ -40,7 +40,7 @@ class TeamRossSOAP {
   // RILEY
   // **********************************************************************
   function createFulfillmentLocation($CreateFulfillmentLocationRequest) {
-		$request = $FulfillerRequest->request;
+		$request = $CreateFulfillmentLocationRequest->request;
 		
     $safetyStockLimitDefault = 0;
     $mfgIdDefault = 0;
