@@ -87,10 +87,11 @@ class TeamRossAPI {
       INSERT INTO Bins
         (internalLocationId, binName, binType, status)
       VALUES
-        ((SELECT FIRST(internalLocationId)
+        ((SELECT internalLocationId
 					FROM Locations
 					WHERE fulfillerId = :fulfillerId 
-					AND externalLocationId = :externalLocationId),
+					AND externalLocationId = :externalLocationId
+					LIMIT 1),
 					:binName, :binType, :status);
     ");
 
@@ -100,7 +101,12 @@ class TeamRossAPI {
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
 
-    return $stmt->execute();
+		if (!$stmt->execute()) {
+			$out = print_r($stmt->errorInfo(), True);
+			error_log($out);
+			return False;
+		}
+		return True;
   }
 
   private function getBin($binName, $internalLocationId) {

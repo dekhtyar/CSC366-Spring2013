@@ -90,10 +90,9 @@
     $request->request = new \stdClass;
 
     foreach ($data as $bin) {
-			$request->request->FulfillerId = 48590;
-      $request->request->ExternalLocationId = $bin['external_fulfiller_location_id'];
+			$request->request->FulfillerID = 48590;
+      $request->request->ExternalLocationID = $bin['external_fulfiller_location_id'];
       $request->request->BinID = $bin['bin_name'];
-      $request->request->ExternalLocationID = null;
       $request->request->BinType = $bin['bin_type'];
       $request->request->BinStatus = $bin['bin_status'];
       $request->request->Name = $bin['bin_name'];
