@@ -2,6 +2,9 @@
 
 import sys
 import api
+from allocateInventory import allocateInventory
+from deallocateInventory import deallocateInventory
+from fulfillInventory import fulfillInventory
 import MySQLdb
 from ZSI.ServiceContainer import AsServer
 from CoreServiceService_services_server import *
@@ -38,7 +41,7 @@ class Service(CoreServiceService):
         fulfillerID = req.get_element_fulfillerID()
         print "soap_getFulfillerStatus:", fulfillerID
 
-        getFulfillerStatusReturn = getFulfillerStatus(fulfillerID, fLID, db):
+        getFulfillerStatusReturn = getFulfillerStatus(fulfillerID, fLID, db)
 
         res.set_element_getFulfillerStatusReturn(getFulfillerStatusReturn)
         return res
@@ -119,69 +122,85 @@ class Service(CoreServiceService):
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Needs more testing, but seems to be working
     def soap_allocateInventory(self, ps):
         res = CoreServiceService.soap_allocateInventory(self, ps)
         req = self.request
+        request = req.get_element_request()
 
-        r = req.new_request()
+        FulfillerID = request.get_element_FulfillerID()
+        FulfillerLocationCatalog = request.get_element_FulfillerLocationCatalog()
+        ExternalLocationID = FulfillerLocationCatalog.get_element_ExternalLocationID()
+        items = request.get_element_Items().get_element_items()
+        Items = []
 
-        FulfillerID = r.get_element_FulfillerID()
-        FulfillerLocationCatalog = r.get_element_FulfillerLocationCatalog()
-        Items = r.get_element_Items()
-        print "soap_allocateInventory:", FulfillerID, FulfillerLocationCatalog, Items
+        for item in items:
+            Items.append({
+                'SKU': item.get_element_PartNumber(),
+                'UPC': item.get_element_UPC(),
+                'Quantity': item.get_element_Quantity()
+            })
+
+        print "soap_allocateInventory:", FulfillerID, ExternalLocationID, Items
 
         # Call API function with arguments above
+        allocateInventory(FulfillerID, ExternalLocationID, Items, db)
 
         # Set these values with results from calliing API function
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Needs more testing, but seems to be working
     def soap_deallocateInventory(self, ps):
         res = CoreServiceService.soap_deallocateInventory(self, ps)
         req = self.request
+        request = req.get_element_request()
 
-        r = req.new_request()
+        FulfillerID = request.get_element_FulfillerID()
+        FulfillerLocationCatalog = request.get_element_FulfillerLocationCatalog()
+        ExternalLocationID = FulfillerLocationCatalog.get_element_ExternalLocationID()
+        items = request.get_element_Items().get_element_items()
+        Items = []
 
-        FulfillerID = r.get_element_FulfillerID()
-        FulfillerLocationCatalog = r.get_element_FulfillerLocationCatalog()
-        Items = r.get_element_Items()
-        print "soap_deallocateInventory:", FulfillerID, FulfillerLocationCatalog, Items
+        for item in items:
+            Items.append({
+                'SKU': item.get_element_PartNumber(),
+                'UPC': item.get_element_UPC(),
+                'Quantity': item.get_element_Quantity()
+            })
+
+        print "soap_deallocateInventory:", FulfillerID, ExternalLocationID, Items
 
         # Call API function with arguments above
+        deallocateInventory(FulfillerID, ExternalLocationID, Items, db)
 
         # Set these values with results from calliing API function
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Needs more testing, but seems to be working
     def soap_fulfillInventory(self, ps):
         res = CoreServiceService.soap_fulfillInventory(self, ps)
         req = self.request
-
         request = req.get_element_request()
-        FulfillerLocationCatalog = request.get_element_FulfillerLocationCatalog()
-        ManufacturerCatalog = FulfillerLocationCatalog.get_element_ManufacturerCatalog()
 
-        CatalogID = ManufacturerCatalog.get_element_CatalogID()
-        ManufacturerID = ManufacturerCatalog.get_element_ManufacturerID()
-
-        FulfillerLocationID = FulfillerLocationCatalog.get_element_FulfillerLocationID()
-        Items = request.get_element_Items()
-        items = Items.get_element_items()
-        ItemFulfillerLocationID = items[0].get_element_FulfillerLocationID()
-        OrderID = items[0].get_element_OrderID()
-        OrderItemID = items[0].get_element_OrderItemID()
-        PartNumber = items[0].get_element_PartNumber()
-        Quantity = items[0].get_element_Quantity()
-        ShipmentID = items[0].get_element_ShipmentID()
-        UPC = items[0].get_element_UPC()
         FulfillerID = request.get_element_FulfillerID()
+        FulfillerLocationCatalog = request.get_element_FulfillerLocationCatalog()
+        ExternalLocationID = FulfillerLocationCatalog.get_element_ExternalLocationID()
+        items = request.get_element_Items().get_element_items()
+        Items = []
 
-        print "soap_fulfillInventory:", CatalogID, ManufacturerID, FulfillerLocationID, ItemFulfillerLocationID, OrderID, OrderItemID, PartNumber, Quantity, ShipmentID, UPC, FulfillerID 
+        for item in items:
+            Items.append({
+                'SKU': item.get_element_PartNumber(),
+                'UPC': item.get_element_UPC(),
+                'Quantity': item.get_element_Quantity()
+            })
+
+        print "soap_fulfillInventory:", FulfillerID, ExternalLocationID, Items
 
         # Call API function with arguments above
+        fulfillInventory(FulfillerID, ExternalLocationID, Items, db)
 
         # Set these values with results from calliing API function
 
@@ -368,7 +387,6 @@ class Service(CoreServiceService):
 
 if __name__ == "__main__" :
     db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
-    port = 445 
+    port = 443
     AsServer(port, (Service(),))
     db.close()
-
