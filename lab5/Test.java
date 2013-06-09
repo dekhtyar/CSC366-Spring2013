@@ -31,7 +31,7 @@ public static void main(String[] args) {
          Object[][] fulfillerLocationCatalog = {{}};
          Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
          testAllocateInventory(0, fulfillerLocationCatalog, items);
-         testGetBins(48590, "2", "", 100000, 0);
+         testGetBins(48590, "600", "", 100000, 0);
          testGetBinTypes(48590);
          testGetBinStatuses(48590);
 
