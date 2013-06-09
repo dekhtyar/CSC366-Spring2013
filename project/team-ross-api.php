@@ -104,7 +104,10 @@ class TeamRossAPI {
       WHERE binName = :binName
       AND internalLocationId = :internalLocationId
     ");
-
+  
+    if( $binName == 0 ) {
+      $binName = 'Default';
+    }  
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
@@ -120,6 +123,9 @@ class TeamRossAPI {
       AND internalLocationId = :internalLocationId
     ");
 
+    if( $binName = 0 ) {
+      $binName = 'Default';
+    }  
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
@@ -166,28 +172,35 @@ class TeamRossAPI {
 
   public function refreshInventory($ExternalLocationId, $FulfillerID, $items) {
     // STATEMENTS
-      return error_log('test'); //Not excecuted -- not in log
     try {
       $stmt1 = $this->db->prepare("
         INSERT INTO BinContainsProducts
           (binName, internalLocationId, productUpc, fulfillerId)
         VALUES
           (:binName, :internalLocationId, :productUpc, :fulfillerId)
+          ON DUPLICATE KEY UPDATE 
+            binName=VALUES(binName),
+            internalLocationId=VALUES(internalLocationId),
+            productUpc=VALUES(productUpc),
+            fulfillerId=VALUES(fulfillerId)
       ");
 
       $stmt2 = $this->db->prepare("
         INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
         VALUES(:fulfillerId, :productUpc, :sku)
+          ON DUPLICATE KEY UPDATE
+            fulfillerId=VALUES(fulfillerId),
+            productUpc=VALUES(productUpc),
+            sku=VALUES(sku)
       ");
 
       $stmt3 = $this->db->prepare("
-        INSERT INTO LocationSellsProducts 
-          (storeSku, safetyStock, ltd, allocated)
-          VALUES (:storeSku, :safetyStock, :ltd, '0')
+        UPDATE LocationSellsProducts SET
+          storeSku=:storeSku, safetyStock=:safetyStock, ltd=:ltd 
           WHERE fulfillerId=:fulfillerID
             AND productUpc=:productUpc
             AND internalLocationId=:internalLocationId
-        ");
+              ");
 
       $stmt4 = $this->db->prepare(
           "SELECT internalLocationId
@@ -207,17 +220,12 @@ class TeamRossAPI {
         $stmt1->bindParam(':binName', $item->BinID);
         $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
         $stmt1->bindParam(':productUpc', $item->UPC);
-        $stmt1->bindParam(':fulfillerId', $FulfillerId);
+        $stmt1->bindParam(':fulfillerId', $FulfillerID);
         
-        $stmt2->bindParam(':fulfillerId', $FulfillerId);
+        $stmt2->bindParam(':fulfillerId', $FulfillerID);
         $stmt2->bindParam(':productUpc', $item->UPC);
         $stmt2->bindParam(':sku', $item->PartNumber);
-        $stmt3->bindParam(':internalLocationId', $fetch['internalLocationId']);
-        $stmt3->bindParam(':productUpc', $item->UPC);
-        $stmt3->bindParam(':storeSku', $item->PartNumber);
-        $stmt3->bindParam(':safetyStock', $item->SafetyStock);
-        $stmt3->bindParam(':ltd', $item->LTD);
-        $stmt3->bindParam(':fulfillerId', $FulfillerId);
+        
         
         // create bin if missing
         if (!$this->getBin($item->BinID, $fetch['internalLocationId']))
@@ -232,10 +240,10 @@ class TeamRossAPI {
         
       }
     } catch ( Exception $e ) {
-      error_log( $e->what() );
-      return 0;
+      error_log( $e->getMessage() );
+      return false;
     }
-    return 2;//array();
+    return true;//array();
   }
 
   private function allocateInventory($fulfillerId, $items) {

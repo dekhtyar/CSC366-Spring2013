@@ -131,15 +131,15 @@
 
   function refreshInventory($client, $Request) {
 
-    $Request->ExternalLocationID = 69170;
-    $Request->FulfillerID = 440008;
-    $item = array();
-    $item['PartNumber'] = 8888010248;
-    $item['UPC'] = 8888010248;  
-    $item['BinID'] = 'Default';
-    $item['Quantity'] = 99;
-    $item['LTD'] = 20;
-    $item['SafetyStock'] = 10;
+    $Request->ExternalLocationID = 440008; 
+    $Request->FulfillerID = 69170;
+    $item = new \stdClass;
+    $item->PartNumber = 8888010248;
+    $item->UPC = 8888010248;  
+    $item->BinID = 'Default';
+    $item->Quantity = 99;
+    $item->LTD = 20;
+    $item->SafetyStock = 10;
     $Request->Items  = array( $item );
 
     print_r($client->refreshInventory($Request));

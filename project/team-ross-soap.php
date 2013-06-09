@@ -12,6 +12,9 @@ class TeamRossSOAP {
 
     try {
       $db = new PDO("mysql:host=$hostname;dbname=$database", $username, $password);
+      //Both of these to throw exceptions
+      $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+      $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       $this->api = new TeamRossAPI($db);
     }
     catch (PDOException $e) {
@@ -200,6 +203,7 @@ class TeamRossSOAP {
   // MATT T
   // **********************************************************************
   function refreshInventory( $RefreshRequest ) {
+    $out = print_r( $RefreshRequest, true );
     $eid = $RefreshRequest->ExternalLocationID;
     $fid = $RefreshRequest->FulfillerID;
     return $this->api->refreshInventory($eid, $fid, $RefreshRequest->Items);
