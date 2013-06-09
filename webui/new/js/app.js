@@ -145,11 +145,13 @@ angular.module('apersci', ['apersci.services', 'apersci.controllers', 'apersci.f
     },
     getBins: {
         getBins: {
-            FulfillerID:        { __label:'Fulfiller ID',         __placeholder:'positiveInteger', __value:'' },
-            ExternalLocationID: { __label:'External Location ID', __placeholder:'string',          __value:'' },
-            SearchTerm:         { __label:'Search Term',          __placeholder:'string',          __value:'' },
-            NumResults:         { __label:'Num Results',          __placeholder:'positiveInteger', __value:'' },
-            ResultsStart:       { __label:'Results Start',        __placeholder:'positiveInteger', __value:'' }
+            request: {
+                FulfillerID:        { __label:'Fulfiller ID',         __placeholder:'positiveInteger', __value:'' },
+                ExternalLocationID: { __label:'External Location ID', __placeholder:'string',          __value:'' },
+                SearchTerm:         { __label:'Search Term',          __placeholder:'string',          __value:'' },
+                NumResults:         { __label:'Num Results',          __placeholder:'positiveInteger', __value:'' },
+                ResultsStart:       { __label:'Results Start',        __placeholder:'positiveInteger', __value:'' }
+            }
         }
     },
     getFulfillerStatus: {
