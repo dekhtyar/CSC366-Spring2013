@@ -10,9 +10,9 @@ import MySQLdb
 def createFulfiller(row, db):
    # name,fulfiller_id,external_fulfiller_location_id,internal_fulfiller_location_id,description,latitude,longitude,status,safety_stock,mfg_id,catalog_id
    query = """\
-       INSERT INTO Fulfillers (FulfillerId) VALUES (%s)"""
+       INSERT INTO Fulfillers (FulfillerId, FulfillerName) VALUES (%s, %s)"""
 
-   parameters = (row['fulfiller_id'],)
+   parameters = (row['fulfiller_id'], row['name'])
 
    try:
        with db as cursor:
@@ -114,7 +114,7 @@ def createFulfillmentLocation(row, db):
 
    parameters = (row['fulfiller_id'], row['external_fulfiller_location_id'],
                  row['name'], row['description'], row['latitude'], row['longitude'],
-                 row['status'], row['safety_stock'])
+                 1 if row['status'] == 'active' else 2, row['safety_stock'])
 
    # This doesn't work because request doesn't contain the manufacturer or catalogue information
    #SubscribeTo_query = """\

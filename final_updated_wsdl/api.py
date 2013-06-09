@@ -43,9 +43,10 @@ def createBin(row, db):
 
            cursor.execute(query, parameters)
            print 'createBin: inserted', parameters 
+       return 1
    except MySQLdb.IntegrityError, e:
-       pass
        print e
+       return 2 # Can't be 0 because WSDL has an underflow constraint
        #print parameters
 
 #@param: FulfillerID, FulfillerLocationID, searchTerm, NumResults
@@ -65,8 +66,7 @@ def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsSta
          cursor.execute(sqlCommand)
          results = cursor.fetchall()
          resultsCount = cursor.rowcount
-         return results,resultsCount
-
+         return results, resultsCount
    except Exception, e:
       print e
 
@@ -134,9 +134,10 @@ def createFulfillmentLocation(row, db):
        createBin({'fulfiller_id': row['fulfiller_id'],
                   'external_fulfiller_location_id': row['external_fulfiller_location_id'],
                   'bin_name': 'Default', 'bin_type': 'General', 'bin_status': 'Pickable'}, db)
+       return 1
    except MySQLdb.IntegrityError, e:
-       pass
        print e
+       return 0
        #print parameters
 
 def createManufacturerCatalog(row, db):
@@ -151,7 +152,6 @@ def createManufacturerCatalog(row, db):
            cursor.execute(query1, parameters1)
            print 'createManufacturerCatalog: inserted', parameters1
    except MySQLdb.IntegrityError, e:
-       pass
        print e
        #print parameters1
 
@@ -160,7 +160,6 @@ def createManufacturerCatalog(row, db):
            cursor.execute(query2, parameters2)
            print 'createManufacturerCatalog: inserted', parameters2 
    except MySQLdb.IntegrityError, e:
-       pass
        print e
        #print parameters2
 
@@ -168,11 +167,11 @@ def refreshInventoryElem(row, db):
     cur = db.cursor()
 
     # Find the fulfiller_id
-    #cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s',
-    #            (row['external_fulfiller_location_id'],))
+    cur.execute('SELECT FulfillerId FROM Locations WHERE FulfillerLocationId = %s',
+                (row['external_fulfiller_location_id'],))
     
-    #location = cur.fetchone()
-    fulfiller_id = 0 if row['fulfiller_id'] is None else row['fulfiller_id']
+    location = cur.fetchone()
+    fulfiller_id = 0 if location is None else location[0]
 
     sql_stored_at_where = 'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s'
     sql_stored_in_where = sql_stored_at_where+' AND Name = %s' 
@@ -229,7 +228,7 @@ def refreshInventory(request, db):
     Items = request.get_element_Items()
     items = Items.get_element_items()
     FulfillerID = request.get_element_FulfillerID()
-    LocationName = request.get_element_LocationName()
+    ExternalLocationID = request.get_element_ExternalLocationID()
 
     for item in items:
         BinID = item.get_element_BinID() # bin_name?
@@ -239,10 +238,10 @@ def refreshInventory(request, db):
         SafetyStock = item.get_element_SafetyStock()
         UPC = item.get_element_UPC()
         refreshInventoryElem({'fulfiller_id': FulfillerID,
-                              'external_fulfiller_location_id': '600', # Where do we get this?
+                              'external_fulfiller_location_id': ExternalLocationID, 
                               'SKU': PartNumber,
                               'UPC': UPC,
-                              'bin_name': '', # Where do we get this?
+                              'bin_name': '', # Missing?
                               'onhand': Quantity,
                               'safety_stock': SafetyStock,
                               'ltd': LTD,

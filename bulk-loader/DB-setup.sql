@@ -15,7 +15,8 @@ CREATE TABLE Catalogues (
 );
 
 CREATE TABLE Fulfillers (
-   FulfillerId              VARCHAR(50) PRIMARY KEY
+   FulfillerId              VARCHAR(50) PRIMARY KEY,
+   FulfillerName            VARCHAR(50) 
 );
 
 CREATE TABLE Locations (
