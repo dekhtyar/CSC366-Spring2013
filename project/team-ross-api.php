@@ -51,8 +51,8 @@ class TeamRossAPI {
     $stmt->bindValue(':status', $status);
     $stmt->bindValue(':safetyStockLimitDefault', $safetyStock);
     if (!$stmt->execute()) {
-			$out = print_r($stmt->errorInfo(), True);
-			error_log($out);
+      $out = print_r($stmt->errorInfo(), True);
+      error_log($out);
       $success = FALSE;
     }
 
