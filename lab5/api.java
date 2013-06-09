@@ -99,30 +99,39 @@ public class api {
             try {
                 String sku = items[ndx][0].toString();
                 Integer quantity = (Integer)items[ndx][2];
-                
+                                
+
                 PreparedStatement ps = conn.prepareStatement(check);
                 ps.setString(1, sku);
                 ps.setInt(2, quantity);
+
+                if(fulfillerLocationCatalog[0] != null) {
+                   ps.setInt(3, (Integer)fulfillerLocationCatalog[0][0]);
+                   ps.setInt(3, (Integer)fulfillerLocationCatalog[0][1]);
+                }
                 
                 ResultSet r = ps.executeQuery();
                 int binId;
+                String externalLocationId;
                 
                 if(!r.next()) {
                     System.out.println("Product does not exist and cannot be allocated");
                     continue;
                 }
                 
-                binId = r.getInt(1);;
-                
+                binId = r.getInt(1);
+                externalLocationId = r.getString(2);
+
                 PreparedStatement ps2 = conn.prepareStatement(update);
                 ps2.setInt(1, quantity);
                 
-                if(charCount > 2) {
+                if(charCount > 3) {
                     ps2.setInt(2, quantity);
                 }
                 
-                ps2.setInt(charCount, binId);
-                
+                ps2.setInt(charCount-1, binId);
+                ps2.setString(charCount, externalLocationId);
+ 
                 int rows = ps.executeUpdate();
                 
                 System.out.println(rows + " updated");
@@ -138,40 +147,57 @@ public class api {
     }
     
     public void allocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
-        String check = "SELECT b.Id " +
-        "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - lp.SafeStockLimit >= ? " +
+        String check =
+        "SELECT b.Id, lp.LocationProductId " +
+        "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, " +
+         "RetailerProduct rp" +
+        "WHERE b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
+         "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
+         "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? " +
+         ((fulfillerLocationCatalog[0] == null)? "" :
+         "AND p.ManufacturerId = ? AND p.CatalogId = ? ") +
         "ORDER BY c.OnHand";
         
         String allocate = "UPDATE ContainedInBin " +
-        "SET Allocated = Allocated + ? " +
-        "WHERE BinId = ?";
+                          "SET Allocated = Allocated + ? " +
+                          "WHERE BinId = ? AND LocationProductId = ?";
         
         updateInventory(check, allocate, fulfillerId, fulfillerLocationCatalog, items);
     }
     
     public void deallocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
-        String check = "SELECT b.Id " +
-        "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.Allocated >= ? " +
+        String check =
+        "SELECT b.Id, lp.LocationProductId " +
+        "FROM StoreBin b, ContainedInBin c, Product p, LocationProduct lp, " +
+         "RetailerProduct rp " +
+        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id " +
+         "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
+         "AND c.Allocated >= ? " +
+         ((fulfillerLocationCatalog[0] == null)? "" :
+         "AND p.ManufacturerId = ? AND p.CatalogId = ? ") +
         "ORDER BY c.Allocated";
         
         String deallocate = "UPDATE ContainedInBin " +
-        "SET Allocated = Allocated - ? " +
-        "WHERE BinId = ?";
+                            "SET Allocated = Allocated - ? " +
+                            "WHERE BinId = ? AND LocationProductId = ?";
         
         updateInventory(check, deallocate, fulfillerId, fulfillerLocationCatalog, items);
     }
     
     public void fulfillInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
-        String check = "SELECT b.Id " +
+        String check =
+        "SELECT b.Id, lp.LocationProductId " +
         "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND c.OnHand - c.Allocated - lp.SafeStockLimit >= ? " +
+        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id " +
+         "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
+         "AND c.OnHand - c.Allocated - lp.SafeStockLimit >= ? " +
+         ((fulfillerLocationCatalog[0] == null)? "" :
+         "AND p.ManufacturerId = ? AND p.CatalogId = ? ") +
         "ORDER BY c.OnHand, c.Allocated";
         
         String fulfill = "UPDATE ContainedInBin " +
-        "SET OnHand = OnHand - ?, Allocated = Allocated - ? " +
-        "WHERE BinId = ?";
+                         "SET OnHand = OnHand - ?, Allocated = Allocated - ? " +
+                         "WHERE BinId = ? AND LocationProductId = ?";
         
         updateInventory(check, fulfill, fulfillerId, fulfillerLocationCatalog, items);
     }
