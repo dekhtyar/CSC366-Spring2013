@@ -7,7 +7,7 @@
       print "Running createFulfiller, createFulfillmentLocation, and createBin\n\n";
       createFulfiller($client, new \stdClass);
       createFulfillmentLocation($client, new \stdClass);
-      // createBin($client, new \stdClass);
+      createBin($client, new \stdClass);
       break;
 
     default:
@@ -90,9 +90,9 @@
     $request->request = new \stdClass;
 
     foreach ($data as $bin) {
-      $request->request->FulfillerID = $bin['internal_fulfiller_location_id'];
+			$request->request->FulfillerID = 48590;
+      $request->request->ExternalLocationID = $bin['external_fulfiller_location_id'];
       $request->request->BinID = $bin['bin_name'];
-      $request->request->ExternalLocationID = null;
       $request->request->BinType = $bin['bin_type'];
       $request->request->BinStatus = $bin['bin_status'];
       $request->request->Name = $bin['bin_name'];

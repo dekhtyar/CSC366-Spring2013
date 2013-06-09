@@ -82,20 +82,31 @@ class TeamRossAPI {
     return (($success == FALSE) ? 0 : 1);
   }
 
-  public function createBin($intLID, $name, $binType, $status) {
+  public function createBin($fulfillerId, $externalLocationId, $name, $binType, $status) {
     $stmt = $this->db->prepare("
       INSERT INTO Bins
         (internalLocationId, binName, binType, status)
       VALUES
-        (:internalLocationId, :binName, :binType, :status);
+        ((SELECT internalLocationId
+					FROM Locations
+					WHERE fulfillerId = :fulfillerId 
+					AND externalLocationId = :externalLocationId
+					LIMIT 1),
+					:binName, :binType, :status);
     ");
 
-    $stmt->bindValue(':internalLocationId', $intLID);
+    $stmt->bindValue(':fulfillerId', $fulfillerId);
+    $stmt->bindValue(':externalLocationId', $externalLocationId);
     $stmt->bindValue(':binName', $name);
     $stmt->bindValue(':binType', $binType);
     $stmt->bindValue(':status', $status);
 
-    return $stmt->execute();
+		if (!$stmt->execute()) {
+			$out = print_r($stmt->errorInfo(), True);
+			error_log($out);
+			return False;
+		}
+		return True;
   }
 
   private function getBin($binName, $internalLocationId) {
