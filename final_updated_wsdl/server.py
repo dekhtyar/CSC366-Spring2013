@@ -8,6 +8,7 @@ from CoreServiceService_services_server import *
 
 class Service(CoreServiceService):
 
+    # STATUS: Ensure this still works with wsdl update
     def soap_createFulfiller(self, ps):
         res = CoreServiceService.soap_createFulfiller(self, ps)
         req = self.request
@@ -29,6 +30,7 @@ class Service(CoreServiceService):
         
         return res
 
+    # STATUS: Waiting for getFulfillerStatus to be rewritten without needing location id
     def soap_getFulfillerStatus(self, ps):
         res = CoreServiceService.soap_getFulfillerStatus(self, ps)
         req = self.request
@@ -36,14 +38,12 @@ class Service(CoreServiceService):
         fulfillerID = req.get_element_fulfillerID()
         print "soap_getFulfillerStatus:", fulfillerID
 
-        # Call API function with arguments above
-
-        # Set these values with results from calliing API function
-        getFulfillerStatusReturn = 0
+        getFulfillerStatusReturn = getFulfillerStatus(fulfillerID, fLID, db):
 
         res.set_element_getFulfillerStatusReturn(getFulfillerStatusReturn)
         return res
 
+    # STATUS: Ensure this still works with wsdl update
     def soap_createFulfillmentLocation(self, ps):
         res = CoreServiceService.soap_createFulfillmentLocation(self, ps)
         req = self.request
@@ -75,6 +75,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_getFulfillmentLocations(self, ps):
         res = CoreServiceService.soap_getFulfillmentLocations(self, ps)
         req = self.request
@@ -107,6 +108,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_getFulfillmentLocationTypes(self, ps):
         res = CoreServiceService.soap_getFulfillmentLocationTypes(self, ps)
         req = self.request
@@ -117,6 +119,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_allocateInventory(self, ps):
         res = CoreServiceService.soap_allocateInventory(self, ps)
         req = self.request
@@ -134,6 +137,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_deallocateInventory(self, ps):
         res = CoreServiceService.soap_deallocateInventory(self, ps)
         req = self.request
@@ -151,6 +155,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_fulfillInventory(self, ps):
         res = CoreServiceService.soap_fulfillInventory(self, ps)
         req = self.request
@@ -182,6 +187,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: This function has been removed
     def soap_getItemLocationsByFulfiller(self, ps):
         res = CoreServiceService.soap_getItemLocationsByFulfiller(self, ps)
         req = self.request
@@ -200,7 +206,8 @@ class Service(CoreServiceService):
         # Set these values with results from calliing API function
 
         return res
-
+ 
+    # STATUS: Ensure this still works with wsdl update
     def soap_createBin(self, ps):
         res = CoreServiceService.soap_createBin(self, ps)
         req = self.request
@@ -229,22 +236,7 @@ class Service(CoreServiceService):
 
         return res
 
-    #def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsStart, db):
-    #   cursor = db.cursor()
-    #
-    #   try:
-    #         sqlCommand = """SELECT *
-    #                         FROM Bins b
-    #                         WHERE b.FulfillerID = %s AND b.FulfillerLocationID = %s
-    #                               AND b.Name LIKE '%s%%'
-    #                         LIMIT %d, %d""" % (FulfillerID, FulfillerLocationID, searchTerm, ResultsStart, NumResults)
-    #         cursor.execute(sqlCommand)
-    #         results = cursor.fetchall()
-    #         resultsCount = cursor.rowcount
-    #         return results,resultsCount
-    #
-    #   except Exception, e:
-    #      print e
+    # STATUS: Working with latest wsdl. 
     def soap_getBins(self, ps):
         res = CoreServiceService.soap_getBins(self, ps)
         req = self.request
@@ -297,6 +289,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_getBinTypes(self, ps):
         res = CoreServiceService.soap_getBinTypes(self, ps)
         req = self.request
@@ -308,6 +301,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_getBinStatuses(self, ps):
         res = CoreServiceService.soap_getBinStatuses(self, ps)
         req = self.request
@@ -318,6 +312,7 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_getInventory(self, ps):
         res = CoreServiceService.soap_getInventory(self, ps)
         req = self.request
@@ -342,11 +337,13 @@ class Service(CoreServiceService):
 
         return res
 
+    # STATUS: Needs to be properly connected to API call
     def soap_adjustInventory(self, ps):
         res = CoreServiceService.soap_adjustInventory(self, ps)
         req = self.request
         return res
 
+    # STATUS: Ensure this still works with wsdl update
     def soap_refreshInventory(self, ps):
         res = CoreServiceService.soap_refreshInventory(self, ps)
         req = self.request
@@ -371,7 +368,7 @@ class Service(CoreServiceService):
 
 if __name__ == "__main__" :
     db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
-    port = 444 
+    port = 445 
     AsServer(port, (Service(),))
     db.close()
 

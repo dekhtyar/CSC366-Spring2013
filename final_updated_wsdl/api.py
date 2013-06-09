@@ -254,13 +254,13 @@ def getFulfillerStatus(fID, fLID, db):
    cursor = db.cursor()
    
    try: 
-      cursor.execute('SELECT Status FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
+      cursor.execute('SELECT Status FROM Locations WHERE FulfillerId = %s AND ExternalLocationId = %s',fID,fLID)
    
       status = cursor.fetchone()
       if status == 'active': 
          return 1
       else: 
-         return  2  
+         return 2  
       
    except Exception, e:
       print e

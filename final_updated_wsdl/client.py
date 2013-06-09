@@ -12,11 +12,13 @@ loc = CoreServiceServiceLocator()
 port = loc.getCoreService()
 #print dir(port)
 
+# TODO: Need to rewrite getFulfillerStatus to only take a fulfiller id
 #req = getFulfillerStatusRequest()
-#req.set_element_fulfillerID(1)
+#req.set_element_fulfillerID(48590)
 #res = port.getFulfillerStatus(req)
 #print 'getFulfillerStatus', res.get_element_getFulfillerStatusReturn()
-#
+
+# NOTE: This function has been removed
 #req = getItemLocationsByFulfillerRequest()
 #request = req.new_request()
 #FulfillerIDs = request.new_FulfillerIDs()
@@ -29,11 +31,12 @@ port = loc.getCoreService()
 #req.set_element_request(request)
 #res = port.getItemLocationsByFulfiller(req)
 #print 'getItemLocationsByFulfiller'
-#
-#req = getBinTypesRequest()
-#res = port.getBinTypes(req)
-#print 'getBinTypes'
-#
+
+# STATUS: Currently connecting server to this api call
+req = getBinTypesRequest()
+res = port.getBinTypes(req)
+print 'getBinTypes'
+
 #req = getFulfillmentLocationsRequest()
 #request = req.new_request()
 #Catalog = request.new_Catalog()
@@ -141,27 +144,27 @@ port = loc.getCoreService()
 #res = port.refreshInventory(req)
 #print 'refreshInventory', res # res is a string
 
-req = getBinsRequest()
-request = req.new_request()
-request.set_element_FulfillerID(48590)
-request.set_element_ExternalLocationID(600)
-request.set_element_NumResults(30)
-request.set_element_ResultsStart(1)
-request.set_element_SearchTerm('5305')
-req.set_element_request(request)
-res = port.getBins(req)
-getBinsReturn = res.get_element_getBinsReturn()
-ResultCount = getBinsReturn.get_element_ResultCount()
-Bins = getBinsReturn.get_element_Bins()
-items = Bins.get_element_items()
-for item in items:
-    FulfillerID = item.get_element_FulfillerID()
-    ExternalLocationID = item.get_element_ExternalLocationID()
-    BinStatus = item.get_element_BinStatus()
-    BinType = item.get_element_BinType()
-    Name = item.get_element_Name()
-    print 'getBins: Bin:', FulfillerID, ExternalLocationID, BinStatus, BinType, Name
-print 'getBins: ResultCount:', ResultCount
+#req = getBinsRequest()
+#request = req.new_request()
+#request.set_element_FulfillerID(48590)
+#request.set_element_ExternalLocationID(600)
+#request.set_element_NumResults(30)
+#request.set_element_ResultsStart(1)
+#request.set_element_SearchTerm('5305')
+#req.set_element_request(request)
+#res = port.getBins(req)
+#getBinsReturn = res.get_element_getBinsReturn()
+#ResultCount = getBinsReturn.get_element_ResultCount()
+#Bins = getBinsReturn.get_element_Bins()
+#items = Bins.get_element_items()
+#for item in items:
+#    FulfillerID = item.get_element_FulfillerID()
+#    ExternalLocationID = item.get_element_ExternalLocationID()
+#    BinStatus = item.get_element_BinStatus()
+#    BinType = item.get_element_BinType()
+#    Name = item.get_element_Name()
+#    print 'getBins: Bin:', FulfillerID, ExternalLocationID, BinStatus, BinType, Name
+#print 'getBins: ResultCount:', ResultCount
 
 #req = getFulfillmentLocationTypesRequest()
 #res = port.getFulfillmentLocationTypes(req)
