@@ -64,7 +64,7 @@ def allocateItem(fulfiller_id, location_id, item, db):
         if quantity == 0:
             return
 
-def allocateInventory(fulfiller_id, catalog_id, location_id, items, db):
+def allocateInventory(fulfiller_id, location_id, items, db):
     cur = db.cur()
 
     for item in items:
