@@ -8,8 +8,8 @@ public class Test {
    private static Connection conn;
    private static api apiCall = new api();
    private static boolean debug = false;
-   private static boolean setup = true;
-   private static boolean test = false;
+   private static boolean setup = false;
+   private static boolean test = true;
    private static boolean cleanup = false;
 
 public static void main(String[] args) {
@@ -27,15 +27,14 @@ public static void main(String[] args) {
          parseFulfillerInventory("fulfiller inventory not available.csv");
       }
 
-
-      Object[][] fulfillerLocationCatalog = {{}};
-      Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
-      testAllocateInventory(0, fulfillerLocationCatalog, items);
-      testGetBins(0, "54802", "", 100000, 10);
-      testGetBinTypes(48590);
-      testGetBinStatuses(48590);
-
       if(test) {
+         Object[][] fulfillerLocationCatalog = {{}};
+         Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
+         testAllocateInventory(0, fulfillerLocationCatalog, items);
+         testGetBins(48590, "2", "", 100000, 0);
+         testGetBinTypes(48590);
+         testGetBinStatuses(48590);
+
          int fulfillerId = 48590;
          int[] manCatalog = {11416, 0};
          Object[][] quantities = {{"200235977", "200235977", 1},
@@ -396,6 +395,9 @@ try {
 }
 
    public static void testGetBins(int fulfillerId, String externalLocationId, String searchTerm, int numResults, int resultsStart) {
+      
+      System.out.println("Testing getBins");
+
       ArrayList<Object[]> bins = apiCall.getBins(fulfillerId, externalLocationId, searchTerm, numResults, resultsStart);
 
       /*(for(int ndx = 0; ndx < bins.size(); ndx++) {
@@ -446,6 +448,9 @@ System.out.println(binTypes.get(ndx)[0] + " " + description);
    }
  
    public static void testAllocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+
+      System.out.println("Testing allocateInventory");
+
       apiCall.allocateInventory(fulfillerId, fulfillerLocationCatalog, items);
    } 
 

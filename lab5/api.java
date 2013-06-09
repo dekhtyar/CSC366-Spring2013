@@ -384,16 +384,16 @@ public class api {
         ArrayList<Object[]> bins = new ArrayList<Object[]>();
         
         if(numResults < 0 || resultsStart < 0) {
-            return null;
+            return bins;
         }
         
         if(setUpConnection() == false)
-            return null;
+            return bins;
         
         try {
-            String query = "SELECT Id, ExternalLocationId, Type, Status, Name " +
+            String query = "SELECT Id, ExternalFulfillerLocationId, Type, Status, Name " +
             "FROM StoreBin " +
-            "WHERE FulfillerId = ? AND ExternalLocationId = ?";
+            "WHERE FulfillerId = ? AND ExternalFulfillerLocationId = ?";
 
             if(searchTerm != null && searchTerm.length() > 0) {
                 query += " AND Name = '" + searchTerm + "'";
@@ -419,7 +419,7 @@ public class api {
             }
         }
         catch (Exception e) {
-            return null;
+            return bins;
         }
         
         closeConnection();
