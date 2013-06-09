@@ -118,16 +118,16 @@ type GetFulfillerStatusResponse struct {
 }
 
 type AdjustRequest struct {
-	XMLName            xml.Name `xml:"AdjustRequest"`
-	FulfillerID        uint
-	ExternalLocationID string
+	XMLName            xml.Name     `xml:"AdjustRequest"`
+	FulfillerID        uint         `xml:"FulfillerID"`
+	ExternalLocationID string       `xml:"ExternalLocationID"`
 	Items              []AdjustItem `xml:">items"`
 }
 
 type AdjustItem struct {
 	PartNumber string
 	UPC        string
-	BinID      uint
+	BinID      string //BinID really Bin Name
 	Quantity   int
 }
 

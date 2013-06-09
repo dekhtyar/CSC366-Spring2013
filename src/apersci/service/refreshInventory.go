@@ -78,7 +78,7 @@ func refreshInventory(w http.ResponseWriter, r *http.Request) (err error) {
 		rows.Close()
 
 		if count > 0 {
-			_, err = tx.Exec("UPDATE BinProducts SET onhandinventory = $1 WHERE sku = $2 AND binId = $3",
+			_, err = tx.Exec("UPDATE BinProducts SET onHand = $1 WHERE sku = $2 AND binId = $3",
 				i.Quantity, i.PartNumber, binid)
 			if err != nil {
 				return err
