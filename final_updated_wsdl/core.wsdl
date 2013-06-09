@@ -1,0 +1,777 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 sp1 (http://www.altova.com) by Dave Cumberland (Shopatron) -->
+<wsdl:definitions xmlns:impl="http://v4.core.coexprivate.api.shopatron.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://v4.core.coexprivate.api.shopatron.com">
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://v4.core.coexprivate.api.shopatron.com" elementFormDefault="qualified">
+			<!-- header -->
+			<!-- function -->
+			<element name="createFulfiller">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:FulfillerRequest"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="createFulfillerResponse">
+				<complexType>
+					<sequence>
+						<element name="createFulfillerReturn" type="xsd:int"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getFulfillerStatus">
+				<complexType>
+					<sequence>
+						<element name="fulfillerID" type="xsd:int"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getFulfillerStatusResponse">
+				<complexType>
+					<sequence>
+						<element name="getFulfillerStatusReturn" type="xsd:int"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="createFulfillmentLocation">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:FulfillmentLocation"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="createFulfillmentLocationResponse">
+				<complexType>
+					<sequence>
+						<element name="createFulfillmentLocationReturn" type="xsd:int"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getFulfillmentLocations">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:OrderRequest"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getFulfillmentLocationsResponse">
+				<complexType>
+					<sequence>
+						<element name="getFulfillmentLocationsReturn" type="impl:AssignmentResponse" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getFulfillmentLocationTypes">
+				<complexType/>
+			</element>
+			<element name="getFulfillmentLocationTypesResponse">
+				<complexType>
+					<sequence>
+						<element name="getFulfillmentLocationTypesReturn" type="impl:FulfillmentLocationType" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="allocateInventory">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:UpdateRequest"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="allocateInventoryResponse">
+				<complexType/>
+			</element>
+			<element name="deallocateInventory">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:UpdateRequest"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="deallocateInventoryResponse">
+				<complexType/>
+			</element>
+			<element name="fulfillInventory">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:UpdateRequest"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="fulfillInventoryResponse">
+				<complexType/>
+			</element>
+			<element name="createBin">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:Bin"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="createBinResponse">
+				<complexType>
+					<sequence>
+						<element name="createBinReturn" type="xsd:positiveInteger"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getBins">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:BinRequest"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getBinsResponse">
+				<complexType>
+					<sequence>
+						<element name="getBinsReturn" type="impl:BinResponse"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getBinTypes">
+				<complexType/>
+			</element>
+			<element name="getBinTypesResponse">
+				<complexType>
+					<sequence>
+						<element name="getBinTypesReturn" type="impl:BinType" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getBinStatuses">
+				<complexType/>
+			</element>
+			<element name="getBinStatusesResponse">
+				<complexType>
+					<sequence>
+						<element name="getBinStatusesReturn" type="impl:BinStatus" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getInventory">
+				<complexType>
+					<sequence>
+						<element name="request" type="impl:InventoryRequest"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="getInventoryResponse">
+				<complexType>
+					<sequence>
+						<element name="getInventoryReturn" type="impl:InventoryResponse" minOccurs="0" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<!-- Models -->
+			<complexType name="AssignmentResponse">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="ExternalLocationID" type="xsd:string" />
+				</sequence>
+			</complexType>
+			<complexType name="Bin">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="BinID" type="xsd:positiveInteger" nillable="true"/>
+					<element name="ExternalLocationID" type="xsd:string" />
+					<element name="BinType" type="xsd:string"/>
+					<element name="BinStatus" type="xsd:string"/>
+					<element name="Name" type="xsd:string" nillable="true"/>
+				</sequence>
+			</complexType>
+			<complexType name="BinRequest">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="ExternalLocationID" type="xsd:string" />
+					<element name="SearchTerm" type="xsd:string" nillable="true"/>
+					<element name="NumResults" type="xsd:positiveInteger" nillable="true"/>
+					<element name="ResultsStart" type="xsd:positiveInteger" nillable="true"/> <!-- pagination -->
+				</sequence>
+			</complexType>
+			<complexType name="BinResponse">
+				<sequence>
+					<element name="Bins" type="impl:ArrayOf_impl_Bin" nillable="false"/>
+					<element name="ResultCount" type="xsd:positiveInteger" nillable="false"/>
+				</sequence>
+			</complexType>
+			<complexType name="BinType">
+				<sequence>
+					<element name="BinType" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="BinStatus">
+				<sequence>
+					<element name="BinStatus" type="xsd:string" nillable="false"/>
+				</sequence>
+			</complexType>
+			<complexType name="FulfillerRequest">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="Name" type="xsd:string" nillable="true"/>
+				</sequence>
+			</complexType>
+			<complexType name="FulfillmentLocation">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="RetailerLocationID" type="xsd:positiveInteger" nillable="true"/> <!-- internal location ID -->
+					<element name="ExternalLocationID" type="xsd:string" nillable="true"/>
+					<element name="LocationName" type="xsd:string" nillable="true"/>
+					<element name="LocationType" type="xsd:string"/> <!-- see FulfillmentLocationIdentifierType -->
+					<element name="Latitude" type="xsd:double"/>
+					<element name="Longitude" type="xsd:double"/>
+					<element name="Status">
+						<simpleType>
+							<restriction base="xsd:int">
+								<enumeration value="1">
+									<annotation>
+										<documentation>Location Active</documentation>
+									</annotation>
+								</enumeration>
+								<enumeration value="2">
+									<annotation>
+										<documentation>Location Not Active</documentation>
+									</annotation>
+								</enumeration>
+							</restriction>
+						</simpleType>
+					</element>
+					<element name="CountryCode" type="xsd:string" nillable="true"/>
+				</sequence>
+			</complexType>
+			<complexType name="FulfillmentLocationCatalog">
+				<sequence>
+					<element name="ManufacturerCatalog" type="impl:ManufacturerCatalog" nillable="true"/>
+					<element name="ExternalLocationID" type="xsd:string" />
+				</sequence>
+			</complexType>
+			<simpleType name="FulfillmentLocationIdentifierType"> <!-- not used but documents FulfillmentLocation > Type -->
+				<annotation>
+					<documentation/>
+				</annotation>
+				<restriction base="xsd:string">
+					<enumeration value="FULFILLER"/>
+					<enumeration value="RETAILER"/>
+					<enumeration value="MANUFACTURER"/>
+				</restriction>
+			</simpleType>
+			<complexType name="FulfillmentLocationType">
+				<sequence>
+					<element name="LocationType" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="InventorySearchRequest">
+				<sequence>
+					<element name="FulfillerIDs" type="impl:ArrayOf_xsd_FulfillerID"/>
+					<element name="LocationID" type="xsd:positiveInteger" nillable="true"/> <!-- internal location ID -->
+					<element name="PostalCode" type="xsd:string" nillable="true"/>
+					<element name="PartNumber" type="xsd:string"/> <!-- SKU, identical to the now removed LocationUPC -->
+					<element name="UPC" type="xsd:string"/>
+				</sequence>
+			</complexType>
+			<complexType name="InventorySearchResponse">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="ExternalLocationID" type="xsd:string" />
+					<element name="LocationName" type="xsd:string"/>
+					<element name="PartNumber" type="xsd:string"/>
+					<element name="UPC" type="xsd:string"/>
+					<element name="Available" type="xsd:int"/>
+					<element name="OnHand" type="xsd:int"/>
+					<element name="Allocated" type="xsd:int"/>
+					<element name="Distance" type="xsd:double"/>
+				</sequence>
+			</complexType>
+			<complexType name="ItemQuantity">
+				<sequence>
+					<element name="PartNumber" type="xsd:string"/>
+					<element name="UPC" type="xsd:string"/>
+					<element name="Quantity" type="xsd:int"/>
+				</sequence>
+			</complexType>
+			<complexType name="ManufacturerCatalog">
+				<sequence>
+					<element name="ManufacturerID" type="xsd:positiveInteger"/>
+					<element name="CatalogID" type="xsd:positiveInteger"/>
+				</sequence>
+			</complexType>
+			<complexType name="OrderRequest">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="Catalog" type="impl:ManufacturerCatalog"/>
+					<element name="Location" type="impl:RequestLocation" nillable="true"/>
+					<element name="MaxLocations" type="xsd:positiveInteger" nillable="true"/>
+				</sequence>
+			</complexType>
+			<complexType name="RequestLocation">
+				<sequence>
+					<element name="Unit" type="xsd:string" default="MILES" nillable="true"/> <!-- see UnitType -->
+					<element name="Radius" type="xsd:positiveInteger" nillable="true"/>
+					<element name="PostalCode" type="xsd:string" nillable="true"/>
+					<element name="Latitude" type="xsd:double" nillable="true"/>
+					<element name="Longitude" type="xsd:double" nillable="true"/>
+					<element name="CountryCode" type="xsd:string" nillable="true"/>
+				</sequence>
+			</complexType>
+			<complexType name="UpdateItem">
+				<sequence>
+					<element name="PartNumber" type="xsd:string"/>
+					<element name="UPC" type="xsd:string"/>
+					<element name="Quantity" type="xsd:int"/>
+					<!-- these next three items are 100% optional, and may be used for LTD calculation -->
+					<element name="OrderID" type="xsd:positiveInteger"/> <!-- for a single Order -->
+					<element name="OrderItemID" type="xsd:positiveInteger"/> <!-- for a single item in an Order, still globally unique -->
+					<element name="ShipmentID" type="xsd:positiveInteger"/> <!-- group of Order Items -->
+					<element name="ExternalLocationID" type="xsd:string" nillable="true"/>
+				</sequence>
+			</complexType>
+			<complexType name="UpdateRequest">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="FulfillerLocationCatalog" type="impl:FulfillmentLocationCatalog"/>
+					<element name="Items" type="impl:ArrayOf_impl_UpdateItem"/>
+				</sequence>
+			</complexType>
+			<complexType name="RefreshItem">
+				<sequence>
+					<element name="PartNumber" type="xsd:string"/>
+					<element name="UPC" type="xsd:string"/>
+					<element name="BinID" type="xsd:int"/>
+					<element name="Quantity" type="xsd:int"/>
+					<element name="LTD" type="xsd:double"/>
+					<element name="SafetyStock" type="xsd:int"/>
+				</sequence>
+			</complexType>
+			<complexType name="InventoryRequest">
+				<sequence>
+					<element name="FulfillerID" type="xsd:positiveInteger"/>
+					<element name="Catalog" type="impl:ManufacturerCatalog" nillable="false"/>
+					<element name="Quantities" type="impl:ArrayOf_impl_ItemQuantity" nillable="false"/>
+					<element name="LocationIDs" type="impl:ArrayOfLocationIDs" nillable="true"/>
+					<element name="Location" type="impl:RequestLocation" nillable="true"/>
+					<element name="Type" type="impl:InventoryRequestType" nillable="false" minOccurs="1"/>
+					<element name="Limit" type="xsd:int" default="10000"/> <!-- limit refers to the maximum amount of responses to send -->
+					<element name="IgnoreSafetyStock" type="xsd:boolean" default="false" nillable="true"/>
+					<element name="IncludeNegativeInventory" type="xsd:boolean" default="false" nillable="true"/>
+					<element name="OrderByLTD" type="boolean"/>
+				</sequence>
+			</complexType>
+			<complexType name="InventoryResponse">
+				<sequence>
+					<element name="LocationName" type="xsd:string"/>
+					<element name="CatalogID" type="xsd:int"/>
+					<element name="ManufacturerID" type="xsd:int"/>
+					<element name="OnHand" type="xsd:int"/>
+					<element name="Available" type="xsd:int"/>
+					<element name="PartNumber" type="xsd:string"/>
+					<element name="UPC" type="xsd:string"/>
+					<element name="LTD" type="xsd:double"/>
+					<element name="SafetyStock" type="xsd:int"/>
+					<element name="CountryCode" type="xsd:string"/>
+					<element name="Distance" type="xsd:double"/>
+				</sequence>
+			</complexType>
+			<simpleType name="InventoryRequestType">
+				<annotation>
+					<documentation/>
+				</annotation>
+				<restriction base="xsd:string">
+					<enumeration value="ALL"/>
+					<enumeration value="PARTIAL"/>
+					<enumeration value="ANY"/>
+					<enumeration value="ALL_STORES"/>
+				</restriction>
+			</simpleType>
+			<!-- Arrays -->
+			<complexType name="ArrayOf_xsd_FulfillerID">
+				<sequence>
+					<element name="items" type="xsd:positiveInteger" minOccurs="1" maxOccurs="unbounded"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOf_impl_ItemQuantity">
+				<sequence>
+					<element name="items" type="impl:ItemQuantity" minOccurs="1" maxOccurs="unbounded"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOf_impl_UpdateItem">
+				<sequence>
+					<element name="items" type="impl:UpdateItem" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOf_impl_Bin">
+				<sequence>
+					<element name="items" type="impl:Bin" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOf_impl_RefreshItem">
+				<sequence>
+					<element name="items" type="impl:RefreshItem" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</complexType>
+			<complexType name="ArrayOfLocationIDs">
+				<sequence>
+					<element name="ExternalLocationID" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</complexType>
+			<!--Inventory intake-->
+			<!-- elements -->
+			<element name="AdjustRequest">
+				<complexType>
+					<sequence>
+						<element name="FulfillerID" type="xsd:positiveInteger"/>
+						<element name="ExternalLocationID" type="xsd:string" />
+						<element name="Items" type="impl:ArrayOf_impl_AdjustItem" nillable="true"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="AdjustResponse" type="xsd:string"/>
+			<element name="RefreshRequest">
+				<complexType>
+					<sequence>
+						<element name="FulfillerID" type="xsd:positiveInteger"/>
+						<element name="ExternalLocationID" type="xsd:string" />
+						<element name="Items" type="impl:ArrayOf_impl_RefreshItem" nillable="true"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="RefreshResponse" type="xsd:string"/>
+			<!-- types -->
+			<simpleType name="UnitType"> <!-- not used but documents RequestLocation > Unit -->
+				<annotation>
+					<documentation/>
+				</annotation>
+				<restriction base="xsd:string">
+					<enumeration value="MILES"/>
+					<enumeration value="KM"/>
+				</restriction>
+			</simpleType>
+			<complexType name="AdjustItem">
+				<sequence>
+					<element name="PartNumber" type="xsd:string"/>
+					<element name="UPC" type="xsd:string"/>
+					<element name="BinID" type="xsd:int"/>
+					<element name="Quantity" type="xsd:int"/>
+				</sequence>
+			</complexType>
+			<!-- arrays -->
+			<complexType name="ArrayOf_impl_AdjustItem">
+				<sequence>
+					<element name="items" type="impl:AdjustItem" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</complexType>
+			<!--Inventory intake complete-->
+		</schema>
+	</wsdl:types>
+	<wsdl:message name="createFulfillerRequest">
+		<wsdl:part name="parameters" element="impl:createFulfiller"/>
+	</wsdl:message>
+	<wsdl:message name="createFulfillerResponse">
+		<wsdl:part name="parameters" element="impl:createFulfillerResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getFulfillerStatusRequest">
+		<wsdl:part name="parameters" element="impl:getFulfillerStatus"/>
+	</wsdl:message>
+	<wsdl:message name="getFulfillerStatusResponse">
+		<wsdl:part name="parameters" element="impl:getFulfillerStatusResponse"/>
+	</wsdl:message>
+	<wsdl:message name="createFulfillmentLocationRequest">
+		<wsdl:part name="parameters" element="impl:createFulfillmentLocation"/>
+	</wsdl:message>
+	<wsdl:message name="createFulfillmentLocationResponse">
+		<wsdl:part name="parameters" element="impl:createFulfillmentLocationResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getFulfillmentLocationsResponse">
+		<wsdl:part name="parameters" element="impl:getFulfillmentLocationsResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getFulfillmentLocationsRequest">
+		<wsdl:part name="parameters" element="impl:getFulfillmentLocations"/>
+	</wsdl:message>
+	<wsdl:message name="getFulfillmentLocationTypesResponse">
+		<wsdl:part name="parameters" element="impl:getFulfillmentLocationTypesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getFulfillmentLocationTypesRequest">
+		<wsdl:part name="parameters" element="impl:getFulfillmentLocationTypes"/>
+	</wsdl:message>
+	<wsdl:message name="allocateInventoryRequest">
+		<wsdl:part name="parameters" element="impl:allocateInventory"/>
+	</wsdl:message>
+	<wsdl:message name="allocateInventoryResponse">
+		<wsdl:part name="parameters" element="impl:allocateInventoryResponse"/>
+	</wsdl:message>
+	<wsdl:message name="deallocateInventoryRequest">
+		<wsdl:part name="parameters" element="impl:deallocateInventory"/>
+	</wsdl:message>
+	<wsdl:message name="deallocateInventoryResponse">
+		<wsdl:part name="parameters" element="impl:deallocateInventoryResponse"/>
+	</wsdl:message>
+	<wsdl:message name="fulfillInventoryRequest">
+		<wsdl:part name="parameters" element="impl:fulfillInventory"/>
+	</wsdl:message>
+	<wsdl:message name="fulfillInventoryResponse">
+		<wsdl:part name="parameters" element="impl:fulfillInventoryResponse"/>
+	</wsdl:message>
+	<wsdl:message name="createBinRequest">
+		<wsdl:part name="parameters" element="impl:createBin"/>
+	</wsdl:message>
+	<wsdl:message name="createBinResponse">
+		<wsdl:part name="parameters" element="impl:createBinResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getBinsRequest">
+		<wsdl:part name="parameters" element="impl:getBins"/>
+	</wsdl:message>
+	<wsdl:message name="getBinsResponse">
+		<wsdl:part name="parameters" element="impl:getBinsResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getBinTypesRequest">
+		<wsdl:part name="parameters" element="impl:getBinTypes"/>
+	</wsdl:message>
+	<wsdl:message name="getBinTypesResponse">
+		<wsdl:part name="parameters" element="impl:getBinTypesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getBinStatusesRequest">
+		<wsdl:part name="parameters" element="impl:getBinStatuses"/>
+	</wsdl:message>
+	<wsdl:message name="getBinStatusesResponse">
+		<wsdl:part name="parameters" element="impl:getBinStatusesResponse"/>
+	</wsdl:message>
+	<wsdl:message name="getInventoryRequest">
+		<wsdl:part name="parameters" element="impl:getInventory"/>
+	</wsdl:message>
+	<wsdl:message name="getInventoryResponse">
+		<wsdl:part name="parameters" element="impl:getInventoryResponse"/>
+	</wsdl:message>
+	<wsdl:message name="AdjustInventorySoapIn">
+		<wsdl:part name="parameter" element="impl:AdjustRequest"/>
+	</wsdl:message>
+	<wsdl:message name="AdjustInventorySoapOut">
+		<wsdl:part name="parameter" element="impl:AdjustResponse"/>
+	</wsdl:message>
+	<wsdl:message name="RefreshInventorySoapIn">
+		<wsdl:part name="parameters" element="impl:RefreshRequest"/>
+	</wsdl:message>
+	<wsdl:message name="RefreshInventorySoapOut">
+		<wsdl:part name="parameter" element="impl:RefreshResponse"/>
+	</wsdl:message>
+	<wsdl:portType name="CoreService">
+		<wsdl:operation name="createFulfiller">
+			<wsdl:documentation>Request to create a single fulfiller which will later contain one or more locations</wsdl:documentation>
+			<wsdl:input name="createFulfillerRequest" message="impl:createFulfillerRequest"/>
+			<wsdl:output name="createFulfillerResponse" message="impl:createFulfillerResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getFulfillerStatus">
+			<wsdl:documentation>Data retrieval to check a fulfiller's status</wsdl:documentation>
+			<wsdl:input name="getFulfillerStatusRequest" message="impl:getFulfillerStatusRequest"/>
+			<wsdl:output name="getFulfillerStatusResponse" message="impl:getFulfillerStatusResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="createFulfillmentLocation">
+			<wsdl:input name="createFulfillmentLocationRequest" message="impl:createFulfillmentLocationRequest"/>
+			<wsdl:output name="createFulfillmentLocationResponse" message="impl:createFulfillmentLocationResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getFulfillmentLocations">
+			<wsdl:input name="getFulfillmentLocationsRequest" message="impl:getFulfillmentLocationsRequest"/>
+			<wsdl:output name="getFulfillmentLocationsResponse" message="impl:getFulfillmentLocationsResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getFulfillmentLocationTypes">
+			<wsdl:input name="getFulfillmentLocationTypesRequest" message="impl:getFulfillmentLocationTypesRequest"/>
+			<wsdl:output name="getFulfillmentLocationTypesResponse" message="impl:getFulfillmentLocationTypesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="allocateInventory">
+			<wsdl:input name="allocateInventoryRequest" message="impl:allocateInventoryRequest"/>
+			<wsdl:output name="allocateInventoryResponse" message="impl:allocateInventoryResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="deallocateInventory">
+			<wsdl:input name="deallocateInventoryRequest" message="impl:deallocateInventoryRequest"/>
+			<wsdl:output name="deallocateInventoryResponse" message="impl:deallocateInventoryResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="fulfillInventory">
+			<wsdl:input name="fulfillInventoryRequest" message="impl:fulfillInventoryRequest"/>
+			<wsdl:output name="fulfillInventoryResponse" message="impl:fulfillInventoryResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="createBin">
+			<wsdl:input name="createBinRequest" message="impl:createBinRequest"/>
+			<wsdl:output name="createBinResponse" message="impl:createBinResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getBins">
+			<wsdl:input name="getBinsRequest" message="impl:getBinsRequest"/>
+			<wsdl:output name="getBinsResponse" message="impl:getBinsResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getBinTypes">
+			<wsdl:input name="getBinTypesRequest" message="impl:getBinTypesRequest"/>
+			<wsdl:output name="getBinTypesResponse" message="impl:getBinTypesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getBinStatuses">
+			<wsdl:input name="getBinStatusesRequest" message="impl:getBinStatusesRequest"/>
+			<wsdl:output name="getBinStatusesResponse" message="impl:getBinStatusesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="getInventory">
+			<wsdl:input name="getInventoryRequest" message="impl:getInventoryRequest"/>
+			<wsdl:output name="getInventoryResponse" message="impl:getInventoryResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="adjustInventory">
+			<wsdl:input message="impl:AdjustInventorySoapIn"/>
+			<wsdl:output message="impl:AdjustInventorySoapOut"/>
+		</wsdl:operation>
+		<wsdl:operation name="refreshInventory">
+			<wsdl:input name="refreshInventoryRequest2" message="impl:RefreshInventorySoapIn"/>
+			<wsdl:output name="refreshInventoryResponse2" message="impl:RefreshInventorySoapOut"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="CoreServiceSoapBinding" type="impl:CoreService">
+		<wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="createFulfiller">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="createFulfillerRequest">
+				<wsdlsoap:header message="impl:createFulfillerRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="createFulfillerResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getFulfillerStatus">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="getFulfillerStatusRequest">
+				<wsdlsoap:header message="impl:getFulfillerStatusRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getFulfillerStatusResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="createFulfillmentLocation">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="createFulfillmentLocationRequest">
+				<wsdlsoap:header message="impl:createFulfillmentLocationRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="createFulfillmentLocationResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getFulfillmentLocations">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="getFulfillmentLocationsRequest">
+				<wsdlsoap:header message="impl:getFulfillmentLocationsRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getFulfillmentLocationsResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getFulfillmentLocationTypes">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="getFulfillmentLocationTypesRequest">
+				<wsdlsoap:header message="impl:getFulfillmentLocationTypesRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getFulfillmentLocationTypesResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="allocateInventory">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="allocateInventoryRequest">
+				<wsdlsoap:header message="impl:allocateInventoryRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="allocateInventoryResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="deallocateInventory">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="deallocateInventoryRequest">
+				<wsdlsoap:header message="impl:deallocateInventoryRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="deallocateInventoryResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="fulfillInventory">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="fulfillInventoryRequest">
+				<wsdlsoap:header message="impl:fulfillInventoryRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="fulfillInventoryResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="createBin">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="createBinRequest">
+				<wsdlsoap:header message="impl:createBinRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="createBinResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getBins">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="getBinsRequest">
+				<wsdlsoap:header message="impl:getBinsRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getBinsResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getBinTypes">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="getBinTypesRequest">
+				<wsdlsoap:header message="impl:getBinTypesRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getBinTypesResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getBinStatuses">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="getBinStatusesRequest">
+				<wsdlsoap:header message="impl:getBinStatusesRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getBinStatusesResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getInventory">
+			<wsdlsoap:operation soapAction=""/>
+			<wsdl:input name="getInventoryRequest">
+				<wsdlsoap:header message="impl:getInventoryRequest" use="literal"/>
+				<wsdlsoap:body parts="parameters" use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getInventoryResponse">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="adjustInventory">
+			<wsdlsoap:operation soapAction="urn:#NewOperation"/>
+			<wsdl:input>
+				<wsdlsoap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="refreshInventory">
+			<wsdlsoap:operation soapAction="urn:#NewOperation"/>
+			<wsdl:input name="refreshInventoryRequest2">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="refreshInventoryResponse2">
+				<wsdlsoap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="CoreServiceService">
+		<wsdl:port name="CoreService" binding="impl:CoreServiceSoapBinding">
+			<wsdlsoap:address location="http://localhost/inventoryService/"/>
+		</wsdl:port>
+	</wsdl:service>
+	<!-- Services -->
+	<!-- Soap Binding -->
+</wsdl:definitions>
