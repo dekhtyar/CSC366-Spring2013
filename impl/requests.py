@@ -1,50 +1,62 @@
+namespaces = {'soapenv': "http://schemas.xmlsoap.org/soap/envelope/",
+              'v4': "http://v4.core.coexprivate.api.shopatron.com"}
+
+def getElement(element, xpath):
+   return element.xpath(xpath, namespaces=namespaces)[0]
+
+def getElementList(element, xpath):
+   return element.xpath(xpath, namespaces=namespaces)
+
 class getFulfillmentLocationTypes(object):
    def __init__(self, element):
       pass
 
 class createFulfiller(object):
    def __init__(self, element):
-      self.FulfillerID = int(element['request']['FulfillerID'])
-      self.Name = element['request']['Name']
+      request = getElement(element, "v4:request")
+
+      self.FulfillerID = int(getElement(request, "v4:FulfillerID").text)
+      self.Name = getElement(request, "v4:Name").text
 
 class createFulfillmentLocation(object):
    def __init__(self, element):
-      request = element['request']
+      request = getElement(element, 'v4:request')
 
-      self.FulfillerID = int(request["FulfillerID"])
-      self.RetailerLocationID = int(request["RetailerLocationID"])
-      self.ExternalLocationID = request["ExternalLocationID"]
-      self.LocationName = request["LocationName"]
-      self.LocationType = request["LocationType"]
-      self.Latitude = float(request["Latitude"])
-      self.Longitude = float(request["Longitude"])
-      self.Status = request["Status"]
-      self.CountryCode = request["CountryCode"]
+      self.FulfillerID = int(getElement(request, "v4:FulfillerID").text)
+      self.RetailerLocationID = int(getElement(request, "v4:RetailerLocationID").text)
+      self.ExternalLocationID = getElement(request, "v4:ExternalLocationID").text
+      self.LocationName = getElement(request, "v4:LocationName").text
+      self.LocationType = getElement(request, "v4:LocationType").text
+      self.Latitude = float(getElement(request, "v4:Latitude").text)
+      self.Longitude = float(getElement(request, "v4:Longitude").text)
+      self.Status = getElement(request, "v4:Status").text
+      self.CountryCode = getElement(request, "v4:CountryCode").text
 
 class createBin(object):
    def __init__(self, element):
-      request = element['request']
+      request = getElement(element, 'v4:request')
 
-      self.FulfillerID = request["FulfillerID"]
-      self.BinID = request["BinID"]
-      self.ExternalLocationID = request["ExternalLocationID"]
-      self.BinType = request["BinType"]
-      self.BinStatus = request["BinStatus"]
-      self.Name = request["Name"]
+      self.FulfillerID = getElement(request, "v4:FulfillerID").text
+      self.BinID = getElement(request, "v4:BinID").text
+      self.ExternalLocationID = getElement(request, "v4:ExternalLocationID").text
+      self.BinType = getElement(request, "v4:BinType").text
+      self.BinStatus = getElement(request, "v4:BinStatus").text
+      self.Name = getElement(request, "v4:Name").text
 
 class RefreshRequestItem(object):
    def __init__(self, element):
-       self.PartNumber = request["PartNumber"]
-       self.UPC = request["UPC"]
-       self.BinID = request["BinID"]
-       self.Quantity = request["Quantity"]
-       self.LTD = request["LTD"]
-       self.SafetyStock = request["SafetyStock"]
+       self.PartNumber = getElement(element, "v4:PartNumber").text
+       self.UPC = getElement(element, "v4:UPC").text
+       self.BinID = getElement(element, "v4:BinID").text
+       self.Quantity = getElement(element, "v4:Quantity").text
+       self.LTD = getElement(element, "v4:LTD").text
+       self.SafetyStock = getElement(element, "v4:SafetyStock").text
 
 class RefreshRequest(object):
    def __init__(self, element):
-      self.FulfillerID = request["FulfillerID"]
-      self.LocationName = request["LocationName"]
+      self.FulfillerID = getElement(element, "v4:FulfillerID").text
+      self.ExternalLocationID = getElement(element,
+            "v4:ExternalLocationID").text
       self.Items = []
-      for item in element["Items"]:
-         self.Items.append(RefreshRequestItem(item["item"]))
+      for item in getElement(element, "v4:Items"):
+         self.Items.append(RefreshRequestItem(item))

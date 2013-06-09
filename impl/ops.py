@@ -157,9 +157,9 @@ def createBin(bin_):
    return datatypes.createBinResponse(1) 
 
 @soap_op
-def adjustInventory(request):
+def AdjustRequest(request):
    pass
 
 @soap_op
-def refreshInventory(request):
+def RefreshRequest(request):
    return datatypes.RefreshResponse(1)

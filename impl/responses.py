@@ -14,5 +14,5 @@ class createBinResponse(object):
       self.createBinReturn = createBinReturn
 
 class RefreshResponse(object):
-   def __init__(self, RefeshResponse):
-      self.RefreshResponse = RefreshResponse
+   def __init__(self, response_str):
+      self.RefreshResponse = response_str
