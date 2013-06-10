@@ -173,7 +173,6 @@ def getFulfillerStatus(request):
       sql.GET_STATUSES.format(
       fulfiller_id   = request.FulfillerID
    ))
-   #statuses = cur.execute(sql.GET_STATUSES, (request.FulfillerID,))
 
    for result in cur:
       if result == ('active',):
