@@ -34,6 +34,14 @@ class Modification:
    DEALLOCATE = 2
    FULFILL    = 3
 
+class BinInfo:
+   fulfiller_id   = 0
+   name           = 1
+   ext_ful_loc_id = 2
+   bin_type       = 3
+   bin_status     = 4
+   bin_id         = 5
+
 # Handles allocateInventory, deallocateInventory, or fulfillInventory requests, per |allocate|.
 def _modifyInventory(request, modification):
    conn = sql.getConnection()
@@ -202,3 +210,25 @@ def getBinStatuses(request):
    for result in cur:
       statuses.append(result[0])
    return datatypes.getBinStatusesResponse(statuses)
+
+@soap_op
+def getBins(request):
+   conn = sql.getConnection()
+   cur = conn.cursor()
+   
+   cur.execute(
+      sql.GET_BINS.format(
+      fulfiller_id   = request.FulfillerID,
+      ext_ful_loc_id = request.ExternalLocationID,
+      name           = request.SearchTerm,
+      num_results    = request.NumResults,
+      results_start  = request.ResultsStart
+   ))
+
+   count = 0
+   items = []
+   for result in cur:
+      items.append(datatypes.item(result[BinInfo.fulfiller_id], 1, result[BinInfo.ext_ful_loc_id],\
+              result[BinInfo.bin_type], result[BinInfo.bin_status], result[BinInfo.name]))
+      count = count + 1
+   return datatypes.getBinsResponse(count, items)

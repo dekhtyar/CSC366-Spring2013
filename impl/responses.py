@@ -28,3 +28,18 @@ class getBinTypesResponse(object):
 class getBinStatusesResponse(object):
    def __init__(self, statuses):
       self.statuses = statuses
+
+class item:
+   def __init__(self, fulfiller_id, bin_id, ext_ful_loc_id, bin_type, bin_status, bin_name):
+      self.FulfillerId = fulfiller_id
+      self.BinID = bin_id
+      self.ExternalLocationID = ext_ful_loc_id
+      self.BinType = bin_type
+      self.BinStatus = bin_status
+      self.Name = bin_name
+
+class getBinsResponse(object):
+   def __init__(self, resultCount, items):
+      self.items = items
+      self.ResultCount = resultCount
+  

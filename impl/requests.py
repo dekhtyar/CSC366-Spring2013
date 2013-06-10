@@ -72,3 +72,13 @@ class getBinTypes(object):
 class getBinStatuses(object):
    def __init__(self, element):
       pass
+
+class getBins(object):
+   def __init__(self, element):
+      request = getElement(element, 'v4:request')
+      
+      self.FulfillerID = getElement(request, "v4:FulfillerID").text
+      self.ExternalLocationID = getElement(request, "v4:ExternalLocationID").text
+      self.SearchTerm = getElement(request, "v4:SearchTerm").text
+      self.NumResults = getElement(request, "v4:NumResults").text
+      self.ResultsStart = getElement(request, "v4:ResultsStart").text

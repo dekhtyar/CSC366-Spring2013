@@ -60,6 +60,15 @@ GET_BIN_STATUSES = '''
    FROM Bin
 '''
 
+GET_BINS = '''
+   SELECT fulfiller_id, name, ext_ful_loc_id, type, status
+   FROM Bin
+   WHERE fulfiller_id   = {fulfiller_id} AND
+         ext_ful_loc_id = {ext_ful_loc_id} AND
+         name           LIKE "%{name}%"
+   LIMIT {results_start}, {num_results}
+'''
+
 CREATE_FULFILLER = '''
    INSERT INTO Fulfiller(id) VALUES (%s)
 '''
