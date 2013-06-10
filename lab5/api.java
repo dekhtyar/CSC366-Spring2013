@@ -81,10 +81,11 @@ public class api {
         return true;
     }
     
-    public void updateInventory(String check, String update, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+    public void updateInventory(String check, String checkLocation, String update, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         
         int charCount = 0;
-        
+        int locationNdx = 4;
+
         if(setUpConnection() == false) {
             return;
         }
@@ -98,21 +99,34 @@ public class api {
         for(int ndx = 0; ndx < items.length; ndx++) {
             try {
                 String sku = items[ndx][0].toString();
-                Integer quantity = (Integer)items[ndx][2];
-                                
+                Integer quantity = (Integer)items[ndx][2];     
 
-                PreparedStatement ps = conn.prepareStatement(check);
-                ps.setString(1, sku);
-                ps.setInt(2, quantity);
+                PreparedStatement ps;
 
-                if(fulfillerLocationCatalog[0] != null) {
-                   ps.setInt(3, (Integer)fulfillerLocationCatalog[0][0]);
-                   ps.setInt(4, (Integer)fulfillerLocationCatalog[0][1]);
+                if(items[ndx][3] == null) {
+                   ps = conn.prepareStatement(check);
+                }
+                else {
+                   ps = conn.prepareStatement(checkLocation);
+                }
+
+                ps.setInt(1, fulfillerId);
+                ps.setString(2, sku);
+                ps.setInt(3, quantity);
+
+                if(fulfillerLocationCatalog != null && fulfillerLocationCatalog.length > 0 && fulfillerLocationCatalog[0] != null && fulfillerLocationCatalog[0].length >= 2) {
+                   ps.setInt(4, (Integer)fulfillerLocationCatalog[0][0]);
+                   ps.setInt(5, (Integer)fulfillerLocationCatalog[0][1]);
+                   locationNdx = 6;
+                }
+
+                if(items[ndx][3] != null) {
+                   ps.setString(locationNdx, items[ndx][3].toString());
                 }
                 
                 ResultSet r = ps.executeQuery();
                 int binId;
-                String externalLocationId;
+                String locationId;
                 
                 if(!r.next()) {
                     System.out.println("Product does not exist and cannot be allocated");
@@ -120,18 +134,18 @@ public class api {
                 }
                 
                 binId = r.getInt(1);
-                externalLocationId = r.getString(2);
+                locationId = r.getString(2);
 
                 PreparedStatement ps2 = conn.prepareStatement(update);
                 ps2.setInt(1, quantity);
                 
-                if(charCount > 3) {
+                if(charCount > 4) {
                     ps2.setInt(2, quantity);
                 }
-                
+               
                 ps2.setInt(charCount-1, binId);
-                ps2.setString(charCount, externalLocationId);
- 
+                ps2.setString(charCount, locationId);
+
                 int rows = ps.executeUpdate();
                 
                 System.out.println(rows + " updated");
@@ -148,58 +162,68 @@ public class api {
     
     public void allocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         String check =
-        "SELECT b.Id, lp.LocationProductId " +
-        "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, " +
-         "RetailerProduct rp" +
-        "WHERE b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
+        "SELECT b.Id, lp.Id " +
+        "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
+        "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
          "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
          "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? " +
-         ((fulfillerLocationCatalog[0] == null)? "" :
-         "AND p.ManufacturerId = ? AND p.CatalogId = ? ") +
-        "ORDER BY c.OnHand";
+         ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
+         "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
+
+        String checkLocation = check
+                  + " AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
+        
+        check += "ORDER BY cb.OnHand";
         
         String allocate = "UPDATE ContainedInBin " +
                           "SET Allocated = Allocated + ? " +
                           "WHERE BinId = ? AND LocationProductId = ?";
         
-        updateInventory(check, allocate, fulfillerId, fulfillerLocationCatalog, items);
+        updateInventory(check, checkLocation, allocate, fulfillerId, fulfillerLocationCatalog, items);
     }
     
     public void deallocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         String check =
-        "SELECT b.Id, lp.LocationProductId " +
-        "FROM StoreBin b, ContainedInBin c, Product p, LocationProduct lp, " +
-         "RetailerProduct rp " +
-        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id " +
+        "SELECT b.Id, lp.Id " +
+        "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
+        "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
          "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
-         "AND c.Allocated >= ? " +
-         ((fulfillerLocationCatalog[0] == null)? "" :
-         "AND p.ManufacturerId = ? AND p.CatalogId = ? ") +
-        "ORDER BY c.Allocated";
+         "AND cb.Allocated >= ? " +
+         ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
+         "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
         
+        String checkLocation = check
+                  + " AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
+
+        check += "ORDER BY cb.Allocated";
+
         String deallocate = "UPDATE ContainedInBin " +
                             "SET Allocated = Allocated - ? " +
                             "WHERE BinId = ? AND LocationProductId = ?";
         
-        updateInventory(check, deallocate, fulfillerId, fulfillerLocationCatalog, items);
+        updateInventory(check, checkLocation, deallocate, fulfillerId, fulfillerLocationCatalog, items);
     }
     
     public void fulfillInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         String check =
-        "SELECT b.Id, lp.LocationProductId " +
-        "FROM StoreBin b, ContainedInBin c, LocationProduct lp, RetailerProduct rp " +
-        "WHERE b.Id = c.BinId AND c.LocationProductId = lp.Id " +
+        "SELECT b.Id, lp.Id " +
+        "FROM StoreBin b, ContainedInBin cb, LocationProduct lp, RetailerProduct rp " +
+        "WHERE b.FulfillerId AND b.Id = c.BinId AND c.LocationProductId = lp.Id " +
          "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
-         "AND c.OnHand - c.Allocated - lp.SafeStockLimit >= ? " +
-         ((fulfillerLocationCatalog[0] == null)? "" :
-         "AND p.ManufacturerId = ? AND p.CatalogId = ? ") +
-        "ORDER BY c.OnHand, c.Allocated";
-        
+         "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? " +
+         ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
+         "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
+
+        String checkLocation = check
+                  + " AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
+
+        check += "ORDER BY cb.OnHand, cb.Allocated";
+
         String fulfill = "UPDATE ContainedInBin " +
                          "SET OnHand = OnHand - ?, Allocated = Allocated - ? " +
                          "WHERE BinId = ? AND LocationProductId = ?";
         
-        updateInventory(check, fulfill, fulfillerId, fulfillerLocationCatalog, items);
+        updateInventory(check, checkLocation, fulfill, fulfillerId, fulfillerLocationCatalog, items);
     }
     
     public void createFulfiller(int fulfillerId, String locationName) {
@@ -1014,7 +1038,7 @@ public class api {
         "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
         "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
         "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
-        //"AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
+        "AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
         "AND rp.SKU = ? AND rp.UPC = ?" +
         ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
@@ -1195,7 +1219,7 @@ public class api {
         "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
         "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
         "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
-        //"AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
+        "AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
         "AND rp.SKU = ? AND rp.UPC = ?" +
         ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
