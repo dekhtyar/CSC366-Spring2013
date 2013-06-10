@@ -1029,6 +1029,7 @@ public class api {
       ArrayList<String> locations = new ArrayList<String>();
       ArrayList<String> locations2 = new ArrayList<String>();
       ArrayList<String> locations3 = new ArrayList<String>();
+      ArrayList<Object[]> distances = null;
       String checkAvailable = " AND cb.OnHand - cb.Allocated" +
       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - lp.SafeStockLimit" : "") + " >= ? ";
       String sql =
@@ -1058,6 +1059,11 @@ public class api {
         
       if(locationIds != null && locationIds.length > 0) {
          sql += loc + ")";
+      }
+      else if(location != null && location.length >= 6 && location[3] != null && location[4] != null) {
+         Object[] mCatalog = {new Integer(manCatalog[0]), new Integer(manCatalog[1])};
+
+         distances = getFulfillmentLocations(fulfillerId, mCatalog, location, 100000);
       }
         
       loc = sql + " AND (";
@@ -1112,7 +1118,17 @@ public class api {
                //System.out.println("locations2.size()" + locations2.size());
 
                if(locations2.contains(l)) {
-                  locations.add(l);
+                  if(distances == null || distances.size() == 0) {
+                     locations.add(l);
+                  }
+                  else {
+                     for(int j = 0; j < distances.size(); j++) {
+                        if(l.equals(distances.get(j)[1])) {
+                           locations.add(l);
+                           break;
+                        }
+                     }
+                  }
                   //System.out.println("Adding to locations");
                }
                /*else {
@@ -1180,12 +1196,30 @@ public class api {
             boolean hasNext = r.next();
             int count = 0;
             while(hasNext && count <= limit) {
-               Object[] returnObj = {r.getString(1), r.getInt(2), r.getInt(3),
+               String locationId = r.getString(1);               
+
+               if(distances == null || distances.size() == 0) {
+                  Object[] returnObj ={locationId, r.getInt(2), r.getInt(3),
                                      r.getInt(4), r.getInt(5), r.getString(6),
                                      r.getString(7), r.getDouble(8),
                                      r.getInt(9), 0, 0};
-                    
-               inventory.add(returnObj);
+
+                  inventory.add(returnObj);
+               }
+               else {
+                  for(int i = 0; i < distances.size(); i++) {
+                     if(locationId.equals(distances.get(i)[1])) {
+                        Object[] returnObj =
+                                     { locationId, r.getInt(2), r.getInt(3),
+                                       r.getInt(4), r.getInt(5), r.getString(6),
+                                       r.getString(7), r.getDouble(8),
+                                       r.getInt(9), 0, distances.get(i)[2]};
+
+                        inventory.add(returnObj);
+                        break;
+                     }
+                  }
+               }
                   
                hasNext = r.next();
                count++;
@@ -1200,13 +1234,14 @@ public class api {
 
       return inventory;
    }
-    
+   
    public ArrayList<Object[]> getSomeInventory(int fulfillerId,
     int[] manCatalog, Object[][] quantities, String[] locationIds,
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
 
       ArrayList<Object[]> inventory = new ArrayList<Object[]>();
+      ArrayList<Object[]> distances = null;
       String checkAvailable = " AND cb.OnHand - cb.Allocated" +
                               ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - lp.SafeStockLimit" : "") + " >= ? ";
       String sql =
@@ -1237,6 +1272,11 @@ public class api {
       if(locationIds != null && locationIds.length > 0) {
          sql += loc + ")";
       }
+      else if(location != null && location.length >= 6 && location[3] != null && location[4] != null) {
+         Object[] mCatalog = {new Integer(manCatalog[0]), new Integer(manCatalog[1])};
+
+         distances = getFulfillmentLocations(fulfillerId, mCatalog, location, 100000);
+      }
         
       if(orderByLtd) {
          sql += " ORDER BY lp.LTD";
@@ -1264,7 +1304,7 @@ public class api {
                ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
             }
                 
-            for(int i = 0; i < locationIds.length; i++) {
+            for(int i = 0; locationIds != null && i < locationIds.length; i++) {
                 ps.setString(7 + i, locationIds[i]);
             }
                 
@@ -1274,12 +1314,30 @@ public class api {
             int count = 0;
                 
             while(hasNext && count <= limit) {
-               Object[] returnObj = {r.getString(1), r.getInt(2), r.getInt(3),
+               String locationId = r.getString(1);               
+
+               if(distances == null || distances.size() == 0) {
+                  Object[] returnObj ={locationId, r.getInt(2), r.getInt(3),
                                      r.getInt(4), r.getInt(5), r.getString(6),
                                      r.getString(7), r.getDouble(8),
                                      r.getInt(9), 0, 0};
-                    
-               inventory.add(returnObj);
+
+                  inventory.add(returnObj);
+               }
+               else {
+                  for(int i = 0; i < distances.size(); i++) {
+                     if(locationId.equals(distances.get(i)[1])) {
+                        Object[] returnObj =
+                                     { locationId, r.getInt(2), r.getInt(3),
+                                       r.getInt(4), r.getInt(5), r.getString(6),
+                                       r.getString(7), r.getDouble(8),
+                                       r.getInt(9), 0, distances.get(i)[2]};
+
+                        inventory.add(returnObj);
+                        break;
+                     }
+                  }
+               }
                     
                hasNext = r.next();
                count++;
