@@ -7,15 +7,14 @@ CREATE TABLE Retailer (
 
 CREATE TABLE Location (
     FulfillerId INT REFERENCES Retailer(FulfillerId),
+    InternalFulfillerLocationId INT PRIMARY KEY
     ExternalFulfillerLocationId VARCHAR(25),
-    InternalFulfillerLocationId INT PRIMARY KEY,
     Name VARCHAR(50),
     Type VARCHAR(25), 
-    Description VARCHAR(50),
     Latitude FLOAT,
     Longitude FLOAT,
     Status VARCHAR(25),
-    SafetyStockLimit INT
+    CountryCode VARCHAR(20)
     );
 
 CREATE TABLE Manufacturer (
