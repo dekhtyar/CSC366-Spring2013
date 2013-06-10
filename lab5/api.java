@@ -1319,7 +1319,122 @@ public class api {
         
       return inventory;
    }
-    
+
+   public ArrayList<Object[]> getFulfillmentLocations(int fulfillerId,
+      Object[] manufacturerCatalog, Object[] requestLocation, int maxLocations)
+   {
+      //Adin, when you are done with this api call you can replace this with your newest code
+      return temporaryFunction(fulfillerId, manufacturerCatalog, requestLocation, maxLocations);
+   }
+
+   public ArrayList<Object[]> temporaryFunction(int fulfillerId,
+      Object[] manufacturerCatalog, Object[] requestLocation, int maxLocations)
+   {
+      Integer radius = (Integer)requestLocation[1];
+      Float locationLat = new Float(0.0), locationLong = new Float(0.0);
+      double distance = 0;
+      Float searchLat = (Float)requestLocation[3], searchLong = (Float)requestLocation[4];
+      
+      System.out.println("Given location lat long: " + searchLat + " " + searchLong);
+   
+      ArrayList<Object[]> possibleLocations = new ArrayList<Object[]>();
+      ArrayList<Object[]> topLocations = new ArrayList<Object[]>();
+      String locationSql = "SELECT DISTINCT L.FulfillerId, L.ExternalFulfillerLocationId, L.Latitude, L.Longitude " +
+         "FROM Location L, CatalogServedByLocation CL " +
+         "WHERE L.InternalFulfillerLocationId = CL.InternalFulfillerLocationId " +
+            "AND L.FulfillerId = ? AND CL.CatalogId = ? AND CL.ManufacturerId = ? ";
+      
+      try {
+         PreparedStatement ps = conn.prepareStatement(locationSql);
+         System.out.println("fulfillerId: " + fulfillerId);
+         ps.setInt(1, fulfillerId);
+         System.out.println("catalogId: " + (Integer)manufacturerCatalog[0]);
+         ps.setInt(2, (Integer)manufacturerCatalog[0]);
+         System.out.println("manufacturerId: " + (Integer)manufacturerCatalog[1]);
+         ps.setInt(3, (Integer)manufacturerCatalog[1]);
+         
+         System.out.println("Query Statement: " + ps.toString());
+         ResultSet results = ps.executeQuery();
+         
+         while(results.next())
+         {
+            locationLat = results.getFloat(3);
+            locationLong = results.getFloat(4);
+            
+            distance = getDistance((String)requestLocation[0], locationLat, locationLong, searchLat, searchLong);
+            
+            if(distance <= radius)
+            {
+               System.out.println("Found location: " + results.getInt(1)
+                + ", " + results.getInt(2) + " at " + results.getFloat(3)
+                + ", " + results.getFloat(4) + " (dist: " + distance + ")");
+
+               possibleLocations.add(new Object[] {results.getInt(1), 
+                  Integer.parseInt(results.getString(2)), distance});
+            }
+         }
+      }
+      catch(Exception e) {
+         System.out.println("Exception occured in getFulfillmentLoacations(): " + e);
+         return null;
+      }
+      
+      if(possibleLocations.size() == 0) {
+         System.out.println("No possible locations found");
+         return null;
+      }
+
+      int index = -1;
+      boolean notSet = true;
+      Object[] tempLocation = new Object[3];
+      tempLocation[0] = new Integer(-1);
+      tempLocation[1] = new Integer(-1);
+      tempLocation[2] = new Integer(-1);
+      
+      for(int i = 0; i < maxLocations && i < possibleLocations.size(); i++)
+      {
+         index = -1;
+         notSet = true;
+         tempLocation[0] = new Integer(-1);
+         tempLocation[1] = new Integer(-1);
+         tempLocation[2] = new Double(-1);
+
+         for(int j = 0; j < possibleLocations.size(); j++)
+         {
+            /*if((Integer)tempLocation[0] == -1
+               && (Integer)tempLocation[1] == -1
+               && (Double)tempLocation[2] == -1)*/
+            if(notSet)
+            {
+               System.out.println("base case");
+               index = j;
+               notSet = false;
+               tempLocation[0] = (possibleLocations.get(j))[0];
+               tempLocation[1] = (possibleLocations.get(j))[1];
+               tempLocation[2] = (possibleLocations.get(j))[2];
+            }
+            
+            else if((Double)(possibleLocations.get(j))[2] < (Double)tempLocation[2])
+            {
+               System.out.println("Non-base case");
+               index = j;
+               tempLocation[0] = (possibleLocations.get(j))[0];
+               tempLocation[1] = (possibleLocations.get(j))[1];
+               tempLocation[2] = (possibleLocations.get(j))[2];
+            }
+         }
+         
+         if(index != -1)
+         {
+            topLocations.add(new Object[] {tempLocation[0], tempLocation[1], tempLocation[2]});
+            possibleLocations.remove(index);
+         }
+      }
+      
+      
+      return topLocations;
+   }
+
     public double getDistance(String unit, double lat1, double lon1, double lat2, double lon2) {
         int kmRadius = 6371; // Radius of the earth in km
         int miRadius = 3959; // Radius of the earth in mi
