@@ -197,8 +197,8 @@ type OrderRequest struct {
 }
 
 type GetFulfillerLocationsResponse struct {
-	XMLName xml.Name                   `xml:"getFulfillmentLocationsResponse"`
-	Return  FulfillmentLocationsReturn `xml:"getFulfillmentLocationsReturn"`
+	XMLName xml.Name                     `xml:"getFulfillmentLocationsResponse"`
+	Return  []FulfillmentLocationsReturn `xml:"getFulfillmentLocationsReturn"`
 }
 
 type FulfillmentLocationsReturn struct {
