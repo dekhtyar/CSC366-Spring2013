@@ -68,3 +68,7 @@ class getFulfillerStatus(object):
 class getBinTypes(object):
    def __init__(self, element):
       pass
+
+class getBinStatuses(object):
+   def __init__(self, element):
+      pass

@@ -25,3 +25,6 @@ class getBinTypesResponse(object):
    def __init__(self, types):
       self.types = types
     
+class getBinStatusesResponse(object):
+   def __init__(self, statuses):
+      self.statuses = statuses

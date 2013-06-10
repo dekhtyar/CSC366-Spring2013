@@ -190,3 +190,15 @@ def getBinTypes(request):
    for result in cur:
       types.append(result[0])
    return datatypes.getBinTypesResponse(types)
+
+@soap_op
+def getBinStatuses(request):
+   conn = sql.getConnection()
+   cur = conn.cursor()
+   
+   cur.execute(sql.GET_BIN_STATUSES)
+
+   statuses = []
+   for result in cur:
+      statuses.append(result[0])
+   return datatypes.getBinStatusesResponse(statuses)

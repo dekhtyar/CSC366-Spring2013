@@ -55,6 +55,11 @@ GET_BIN_TYPES = '''
    FROM Bin
 '''
 
+GET_BIN_STATUSES = '''
+   SELECT DISTINCT status
+   FROM Bin
+'''
+
 CREATE_FULFILLER = '''
    INSERT INTO Fulfiller(id) VALUES (%s)
 '''
