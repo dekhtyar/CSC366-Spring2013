@@ -84,7 +84,7 @@ public class api {
     public void updateInventory(String check, String checkLocation, String update, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         
         int charCount = 0;
-        int locationNdx = 4;
+        int locationNdx = 5;
 
         if(setUpConnection() == false) {
             return;
@@ -99,6 +99,7 @@ public class api {
         for(int ndx = 0; ndx < items.length; ndx++) {
             try {
                 String sku = items[ndx][0].toString();
+                String upc = items[ndx][1].toString();
                 Integer quantity = (Integer)items[ndx][2];     
 
                 PreparedStatement ps;
@@ -111,13 +112,14 @@ public class api {
                 }
 
                 ps.setInt(1, fulfillerId);
-                ps.setString(2, sku);
-                ps.setInt(3, quantity);
+                ps.setString(2, upc);
+                ps.setString(3, sku);
+                ps.setInt(4, quantity);
 
                 if(fulfillerLocationCatalog != null && fulfillerLocationCatalog.length > 0 && fulfillerLocationCatalog[0] != null && fulfillerLocationCatalog[0].length >= 2) {
-                   ps.setInt(4, (Integer)fulfillerLocationCatalog[0][0]);
-                   ps.setInt(5, (Integer)fulfillerLocationCatalog[0][1]);
-                   locationNdx = 6;
+                   ps.setInt(5, (Integer)fulfillerLocationCatalog[0][0]);
+                   ps.setInt(6, (Integer)fulfillerLocationCatalog[0][1]);
+                   locationNdx = 7;
                 }
 
                 if(items[ndx][3] != null) {
@@ -139,14 +141,14 @@ public class api {
                 PreparedStatement ps2 = conn.prepareStatement(update);
                 ps2.setInt(1, quantity);
                 
-                if(charCount > 4) {
+                if(charCount == 4) {
                     ps2.setInt(2, quantity);
                 }
                
                 ps2.setInt(charCount-1, binId);
                 ps2.setString(charCount, locationId);
 
-                int rows = ps.executeUpdate();
+                int rows = ps2.executeUpdate();
                 
                 System.out.println(rows + " updated");
             }
@@ -165,7 +167,7 @@ public class api {
         "SELECT b.Id, lp.Id " +
         "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
         "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
-         "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
+         "AND lp.RetailerProductId = rp.Id AND rp.UPC = ? AND rp.SKU = ? AND rp.UPC = p.UPC " +
          "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? " +
          ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
          "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
@@ -187,7 +189,7 @@ public class api {
         "SELECT b.Id, lp.Id " +
         "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
         "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
-         "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
+         "AND lp.RetailerProductId = rp.Id AND rp.UPC = ? AND rp.SKU = ? AND rp.UPC = p.UPC " +
          "AND cb.Allocated >= ? " +
          ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
          "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
@@ -207,9 +209,9 @@ public class api {
     public void fulfillInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         String check =
         "SELECT b.Id, lp.Id " +
-        "FROM StoreBin b, ContainedInBin cb, LocationProduct lp, RetailerProduct rp " +
-        "WHERE b.FulfillerId AND b.Id = c.BinId AND c.LocationProductId = lp.Id " +
-         "AND lp.RetailerProductId = rp.Id AND rp.SKU = ? AND rp.UPC = p.UPC " +
+        "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
+        "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
+         "AND lp.RetailerProductId = rp.Id AND rp.UPC = ? AND rp.SKU = ? AND rp.UPC = p.UPC " +
          "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? " +
          ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
          "AND p.ManufacturerId = ? AND p.CatalogId = ? ");

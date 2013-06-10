@@ -28,14 +28,14 @@ public static void main(String[] args) {
       }
 
       if(test) {
-         Object[][] fulfillerLocationCatalog = {{}};
-         Object[][] items = {{"SKU", "UPC", new Integer(1), new Integer(0)}};
-         testAllocateInventory(0, fulfillerLocationCatalog, items);
+         Object[][] fulfillerLocationCatalog = {{new Integer(10636), new Integer(0)}, {new Integer(600)}};
+         Object[][] items = {{"200033103", "200033103", new Integer(1), new Integer(600)}, {"201279746", "201279746", new Integer(1), new Integer(600)}};
+         testModifyInventory(48590, fulfillerLocationCatalog, items);
          testGetBins(48590, "600", "", 100000, 0);
          testGetBinTypes(48590);
          testGetBinStatuses(48590);
 
-         int fulfillerId = 48590;
+         /*int fulfillerId = 48590;
          int[] manCatalog = {11416, 0};
          Object[][] quantities = {{"200235977", "200235977", 1},
                                   {"200235976", "200235976", 1}};
@@ -45,17 +45,18 @@ public static void main(String[] args) {
          int limit = 1000;
          Boolean ignoreSafetyStock = true;
          Boolean includeNegativeInventory = true;
-         boolean orderByLtd = true;
-         /*int fulfillerId = 69170;
-         int[] manCatalog = {11416, 0};
-         Object[][] quantities = {{"8888076828", "8888076828", 1}};
+         boolean orderByLtd = true;*/
+         int fulfillerId = 76061;
+         int[] manCatalog = {10636, 1};
+         Object[][] quantities = {{"22-14582-001", "22-14582-001", 1},
+                                  {"22-14582-002", "22-14582-002", 1}};
          String[] locationIds = {};
          Object[] location = null;
          String type = "ANY";
          int limit = 1000;
          Boolean ignoreSafetyStock = null;
          Boolean includeNegativeInventory = null;
-         boolean orderByLtd = false;*/
+         boolean orderByLtd = false;
       
          System.out.println("Testing getInventory");
          ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
@@ -447,11 +448,13 @@ System.out.println(binTypes.get(ndx)[0] + " " + description);
       System.out.println(binTypes.size() + " rows selected");
    }
  
-   public static void testAllocateInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
+   public static void testModifyInventory(int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
 
-      System.out.println("Testing allocateInventory");
+      System.out.println("Testing modification of Inventory");
 
       apiCall.allocateInventory(fulfillerId, fulfillerLocationCatalog, items);
+      //apiCall.deallocateInventory(fulfillerId, fulfillerLocationCatalog, items);
+      //apiCall.fulfillInventory(fulfillerId, fulfillerLocationCatalog, items);
    } 
 
    public static boolean setupConnection() {
