@@ -60,3 +60,32 @@ class RefreshRequest(object):
       self.Items = []
       for item in getElement(element, "v4:Items"):
          self.Items.append(RefreshRequestItem(item))
+
+class GetInventoryItem(object):
+   def __init__(self, element):
+      items = getElement(element, "v4:items")
+      self.PartNumber = getElement(items, "v4:PartNumber").text
+      self.UPC = getElement(items, "v4:UPC").text
+      self.Quantity = getElement(items, "v4:Quantity").text
+
+class getInventory(object):
+   def __init__(self, element):
+      request = getElement(element, "v4:request")
+
+      self.FulfillerID = getElement(request, "v4:FulfillerID").text
+      catalog = getElement(request, "v4:Catalog")
+      self.ManufacturerID = getElement(catalog, "v4:ManufacturerID").text
+      self.CatalogID = getElement(catalog, "v4:CatalogID").text
+      
+      self.LocationIDs = []
+      for item in getElement(request, "v4:LocationIDs"):
+         self.LocationIDs.append(getElement(item, "v4:ExternalLocationID").text)
+
+      self.Items = []
+      for item in getElement(request, "v4:Quantities"):
+         self.Items.append(GetInventoryItem(item))
+
+      self.Type = getElement(request, "v4:Type").text
+      self.Limit = getElement(request, "v4:Limit").text
+      self.IgnoreSafetyStock = getElement(request, "v4:IgnoreSafetyStock").text
+      self.OrderByLTD = getElement(request, "v4:OrderByLTD").text

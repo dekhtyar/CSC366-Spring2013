@@ -1,0 +1,21 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:getInventoryResponse>
+         {% for location in response.locations %}
+         <v4:getInventoryReturn>
+            <v4:LocationName>{{ location.LocationName }}</v4:LocationName>
+            <v4:CatalogID>{{ location.CatalogID }}</v4:CatalogID>
+            <v4:ManufacturerID>{{ location.ManufacturerID }}</v4:ManufacturerID>
+            <v4:OnHand>{{ location.OnHand }}</v4:OnHand>
+            <v4:Available>{{ location.Available }}</v4:Available>
+            <v4:PartNumber>{{ location.PartNumber }}</v4:PartNumber>
+            <v4:UPC>{{ location.UPC }}</v4:UPC>
+            <v4:LTD>{{ location.LTD }}</v4:LTD>
+            <v4:SafetyStock>{{ location.SafetyStock }}</v4:SafetyStock>
+            <v4:CountryCode>{{ location.CountryCode }}</v4:CountryCode>
+         </v4:getInventoryReturn>
+         {% endfor %}
+      </v4:getInventoryResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
