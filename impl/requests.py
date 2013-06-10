@@ -60,3 +60,7 @@ class RefreshRequest(object):
       self.Items = []
       for item in getElement(element, "v4:Items"):
          self.Items.append(RefreshRequestItem(item))
+
+class getFulfillerStatus(object):
+   def __init__(self, element):
+      self.FulfillerID = getElement(element, "v4:fulfillerID").text

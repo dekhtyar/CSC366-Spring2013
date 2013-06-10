@@ -163,3 +163,20 @@ def AdjustRequest(request):
 @soap_op
 def RefreshRequest(request):
    return datatypes.RefreshResponse(1)
+
+@soap_op
+def getFulfillerStatus(request):
+   conn = sql.getConnection()
+   cur = conn.cursor()
+   
+   cur.execute(
+      sql.GET_STATUSES.format(
+      fulfiller_id   = request.FulfillerID
+   ))
+   #statuses = cur.execute(sql.GET_STATUSES, (request.FulfillerID,))
+
+   for result in cur:
+      if result == ('active',):
+         return datatypes.getFulfillerStatusResponse(1)
+   return datatypes.getFulfillerStatusResponse(2)
+   

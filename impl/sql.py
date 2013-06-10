@@ -44,6 +44,12 @@ GET_NUM_ALLOCATED = '''
          ext_ful_loc_id = {ext_ful_loc_id}
 '''
 
+GET_STATUSES = '''
+   SELECT status
+   FROM Location
+   WHERE fulfiller_id   = {fulfiller_id}
+'''
+
 CREATE_FULFILLER = '''
    INSERT INTO Fulfiller(id) VALUES (%s)
 '''
@@ -88,3 +94,4 @@ CREATE_STORED_AT = '''
    REPLACE StoredIn(sku, fulfiller_id, bin_name, ext_ful_loc_id, on_hand)
    VALUES(%s, %s, %s, %s, %s)
 '''
+

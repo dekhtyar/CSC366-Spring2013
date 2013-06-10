@@ -16,3 +16,7 @@ class createBinResponse(object):
 class RefreshResponse(object):
    def __init__(self, response_str):
       self.RefreshResponse = response_str
+
+class getFulfillerStatusResponse(object):
+   def __init__(self, getFulfillerStatusReturn):
+      self.getFulfillerStatusReturn = getFulfillerStatusReturn
