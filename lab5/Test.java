@@ -30,10 +30,10 @@ public static void main(String[] args) {
       if(test) {
          Object[][] fulfillerLocationCatalog = {{new Integer(10636), new Integer(0)}, {new Integer(600)}};
          Object[][] items = {{"200033103", "200033103", new Integer(1), new Integer(600)}, {"201279746", "201279746", new Integer(1), new Integer(600)}};
-         testModifyInventory(48590, fulfillerLocationCatalog, items);
+         //testModifyInventory(48590, fulfillerLocationCatalog, items);
          testGetBins(48590, "600", "", 100000, 0);
-         testGetBinTypes(48590);
-         testGetBinStatuses(48590);
+         testGetBinTypes();
+         testGetBinStatuses();
 
          /*int fulfillerId = 48590;
          int[] manCatalog = {11416, 0};
@@ -242,10 +242,8 @@ try {
                ", " + status + ", " + safetyStockLimit + ", " + manufacturerId +
                ", " + catalogId);
          }
-     
-apiCall.createFulfillmentLocation(locationName, fulfillerId, externalLocationId,
-            internalFulfillerLocationId, description, latitude, longitude,
-            status, safetyStockLimit, manufacturerId, catalogId);
+
+         apiCall.createFulfillmentLocation(fulfillerId, internalFulfillerLocationId, externalLocationId, locationName, null, latitude, longitude, status, null);
       }
 
 }
@@ -406,15 +404,15 @@ try {
       System.out.println(bins.size() + " rows selected");
    }
 
-   public static void testGetBinTypes(int fulfillerId) {
-      ArrayList<String> binTypes = apiCall.getBinTypes(fulfillerId);
+   public static void testGetBinTypes() {
+      ArrayList<String> binTypes = apiCall.getBinTypes();
 
       if(binTypes == null) {
          System.out.println("getBinTypes: Query failed");
          return;
       }
 
-      System.out.println("\nTesting api call: getBinTypes("+fulfillerId+")");
+      System.out.println("\nTesting api call: getBinTypes()");
 
       /*for(int ndx = 0; ndx < binTypes.size(); ndx++) {
 String description = binTypes.get(ndx)[1].toString();
@@ -427,15 +425,15 @@ System.out.println(binTypes.get(ndx)[0] + " " + description);
       System.out.println(binTypes.size() + " rows selected");
    }
 
-   public static void testGetBinStatuses(int fulfillerId) {
-      ArrayList<String> binTypes = apiCall.getBinStatuses(fulfillerId);
+   public static void testGetBinStatuses() {
+      ArrayList<String> binTypes = apiCall.getBinStatuses();
 
       if(binTypes == null) {
          System.out.println("getBinStatuses: Query failed");
          return;
       }
 
-      System.out.println("\nTesting api call: getBinStatuses("+fulfillerId+")");
+      System.out.println("\nTesting api call: getBinStatuses()");
 
       /*for(int ndx = 0; ndx < binTypes.size(); ndx++) {
 String description = binTypes.get(ndx)[1].toString();

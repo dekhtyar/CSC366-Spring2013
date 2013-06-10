@@ -232,10 +232,10 @@ public class api {
         createNewRetailer(fulfillerId, locationName);
     }
     
-    public void createFulfillmentLocation (String locationName, int fulfillerId,
-                                           String externalLocationId, int internalFulfillerLocationId,
-                                           String description, double latitude, double longitude, String status,
-                                           int safetyStockLimit, int manufacturerId, int catalogId)
+    public void createFulfillmentLocation (int fulfillerId,
+     int internalFulfillerLocationId, String externalLocationId,
+     String locationName, String type, double latitude, double longitude,
+     String status, String countryCode)
     {
         if(setUpConnection() == false)
             return;
@@ -244,23 +244,14 @@ public class api {
         //return;
         
         if(!ids.contains(new Integer(fulfillerId))) {
-            createNewRetailer(fulfillerId, locationName);
+            createNewRetailer(fulfillerId, null);
             ids.add(new Integer(fulfillerId));
         }
-        
-        if(!mIds.contains(new Integer(manufacturerId))) {
-            createNewManufacturer(manufacturerId);
-            mIds.add(new Integer(manufacturerId));
-        }
-        
-        if(!cIds.contains(new Integer(catalogId))) {
-            createNewCatalog(manufacturerId, catalogId);
-            cIds.add(new Integer(catalogId));
-        }
-        
+
         if(!intFulLocIds.contains(new Integer(internalFulfillerLocationId))) {
-            createNewLocation(fulfillerId, internalFulfillerLocationId, externalLocationId,
-                              "", "", latitude, longitude, status, "");
+            createNewLocation(fulfillerId, internalFulfillerLocationId,
+             externalLocationId, locationName, type, latitude, longitude,
+             status, countryCode);
             intFulLocIds.add(new Integer(internalFulfillerLocationId));
         }
         
@@ -270,9 +261,7 @@ public class api {
         //createNewManufacturer(manufacturerId);
         //createNewCatalog(manufacturerId, catalogId);
         
-        createNewCatalogServedByLocation(internalFulfillerLocationId, manufacturerId,
-                                         catalogId);
-        createBin (fulfillerId, null, externalLocationId, "General",
+        createBin(fulfillerId, null, externalLocationId, "General",
                    "Pickable", "Default");
         
         if(closeConnection() == false)
@@ -926,7 +915,7 @@ public class api {
         "SET CB.OnHand = " + onHand + " AND CB.Allocated = 0 " +
         "WHERE CB.BinId = ?"; 
 
-       String sql2 = "INSERT INTO ContainedInBin CB (BinId, LocationProductId, OnHand, Allocated) VALUES(?, ?, ?, ?)";
+       String sql2 = "INSERT INTO ContainedInBin (BinId, LocationProductId, OnHand, Allocated) VALUES(?, ?, ?, ?)";
 
        try {
           s0 = conn.prepareStatement(find);
