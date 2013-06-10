@@ -259,8 +259,8 @@ public class api {
         }
         
         if(!intFulLocIds.contains(new Integer(internalFulfillerLocationId))) {
-            createNewLocation(fulfillerId, externalLocationId, internalFulfillerLocationId,
-                              "", description, latitude, longitude, status, safetyStockLimit);
+            createNewLocation(fulfillerId, internalFulfillerLocationId, externalLocationId,
+                              "", "", latitude, longitude, status, "");
             intFulLocIds.add(new Integer(internalFulfillerLocationId));
         }
         
@@ -298,34 +298,38 @@ public class api {
         }
     }
     
-    public void createNewLocation(int fulfillerId, String externalLocationId,
-                                  int internalFulfillerLocationId, String type, String description,
-                                  double latitude, double longitude, String status, int safetyStockLimit)
-    {
-        String sql = "INSERT INTO Location VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try
-        {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            
-            ps.setInt(1, fulfillerId);
-            ps.setString(2, externalLocationId);
-            ps.setInt(3, internalFulfillerLocationId);
-            ps.setString(4, type);
-            ps.setString(5, description);
-            ps.setDouble(6, latitude);
-            ps.setDouble(7, longitude);
-            ps.setString(8, status);
-            ps.setInt(9, safetyStockLimit);
-            
-            ps.executeUpdate();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Error occured while creating a new Location tuple: " + e);
-        }
-    }
-    
+   public int createNewLocation(int fulfillerId,
+      int internalFulfillerLocationId, String externalLocationId,
+      String locationName, String type, double latitude, double longitude,
+      String status, String countryCode)
+   {
+       String sql = "INSERT INTO Location VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+      try
+      {
+         PreparedStatement ps = conn.prepareStatement(sql);
+
+         ps.setInt(1, fulfillerId);
+         ps.setInt(2, internalFulfillerLocationId);
+         ps.setString(3, externalLocationId);
+         ps.setString(4, locationName);
+         ps.setString(5, type);
+         ps.setDouble(6, latitude);
+         ps.setDouble(7, longitude);
+         ps.setString(8, status);
+         ps.setString(9, countryCode);
+
+         ps.executeUpdate();
+      }
+      catch(Exception e)
+      {
+         System.out.println("Error occured while creating a new Location tuple: " + e);
+         return -1;
+      }
+
+      return internalFulfillerLocationId;
+   }
+ 
     public void createNewCatalogServedByLocation(int internalFulfillerLocationId,
                                                  int manufacturerId, int catalogId)
     {
@@ -479,7 +483,7 @@ public class api {
         return bins;
     }
     
-    public ArrayList<String> getBinAttributes(String query, int fulfillerId)
+    public ArrayList<String> getBinAttributes(String query)
     {
         ArrayList<String> binTypes = new ArrayList<String>();
         
@@ -489,9 +493,8 @@ public class api {
         }
         
         try {
-            PreparedStatement ps = conn.prepareStatement(query);
-            ps.setInt(1, fulfillerId);
-            ResultSet r = ps.executeQuery();
+            Statement s = conn.createStatement();
+            ResultSet r = s.executeQuery(query);
             boolean hasNext = r.next();
             
             while(hasNext) {
@@ -509,24 +512,24 @@ public class api {
         return binTypes;
     }
     
-    public ArrayList<String> getBinTypes(int fulfillerId)
+    public ArrayList<String> getBinTypes()
     {
         String query = "SELECT b.Type " +
         "FROM StoreBin b, Location l " +
-        "WHERE l.FulfillerId = ? AND " +
-        "b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
+        "WHERE b.FulfillerId = l.FulfillerId " +
+         "AND b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
         
-        return getBinAttributes(query, fulfillerId);
+        return getBinAttributes(query);
     }
     
-    public ArrayList<String> getBinStatuses(int fulfillerId)
+    public ArrayList<String> getBinStatuses()
     {
         String query = "SELECT b.Status " +
         "FROM StoreBin b, Location l " +
-        "WHERE l.FulfillerId = ? AND " +
-        "b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
+        "WHERE b.FulfillerId = l.FulfillerId " +
+        "AND b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
         
-        return getBinAttributes(query, fulfillerId);
+        return getBinAttributes(query);
     }
    
    public int getRPId(int FulfillerId, String UPC, String SKU)
@@ -1033,16 +1036,12 @@ public class api {
       String checkAvailable = " AND cb.OnHand - cb.Allocated" +
       ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - lp.SafeStockLimit" : "") + " >= ? ";
       String sql =
-       "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
-        "ContainedInBin cb, LocationProduct lp, " +
+       "FROM Location l, ContainedInBin cb, LocationProduct lp, " +
         "RetailerProduct rp, Product p " +
-       "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
-        "AND cl.CatalogId = c.CatalogId AND p.UPC = rp.UPC " +
+       "WHERE p.UPC = rp.UPC " +
         "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
         "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
-        "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
-        "AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
-        "AND rp.SKU = ? AND rp.UPC = ?" +
+        "AND l.FulfillerId = ? AND rp.SKU = ? AND rp.UPC = ?" +
         ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
       String sql1;
@@ -1076,15 +1075,13 @@ public class api {
       sql1 = "SELECT l.ExternalFulfillerLocationId " + sql;
         
       for(int ndx = 0; ndx < quantities.length; ndx++) {
-         num = 6;
+         num = 4;
          try {
             PreparedStatement ps = conn.prepareStatement(sql1);
                 
             ps.setInt(1, fulfillerId);
-            ps.setInt(2, manCatalog[0]);
-            ps.setInt(3, manCatalog[1]);
-            ps.setString(4, quantities[ndx][0].toString());
-            ps.setString(5, quantities[ndx][1].toString());
+            ps.setString(2, quantities[ndx][0].toString());
+            ps.setString(3, quantities[ndx][1].toString());
             
             if(!(includeNegativeInventory != null && includeNegativeInventory)) {
                ps.setInt(num++, (new Integer(quantities[ndx][2].toString())).intValue());
@@ -1160,9 +1157,9 @@ public class api {
          }
       }
         
-      sql2 = "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
-              "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
-              "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " + sql;
+      sql2 = "SELECT l.ExternalFulfillerLocationId, " +
+              "l.Name, cb.OnHand, cb.OnHand - cb.Allocated, " +
+              "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit, l.CountryCode " + sql;
         
       if(locations.size() > 0) {
          sql2 += loc + ")";
@@ -1173,15 +1170,13 @@ public class api {
       }
       
       for(int ndx = 0; ndx < quantities.length; ndx++) {
-         num = 6; 
+         num = 4; 
          try {
             PreparedStatement ps = conn.prepareStatement(sql2);
                 
             ps.setInt(1, fulfillerId);
-            ps.setInt(2, manCatalog[0]);
-            ps.setInt(3, manCatalog[1]);
-            ps.setString(4, quantities[ndx][0].toString());
-            ps.setString(5, quantities[ndx][1].toString());
+            ps.setString(2, quantities[ndx][0].toString());
+            ps.setString(3, quantities[ndx][1].toString());
             
             if(!(includeNegativeInventory != null && includeNegativeInventory)) {
                ps.setInt(num++, (new Integer(quantities[ndx][2].toString())).intValue());
@@ -1199,10 +1194,10 @@ public class api {
                String locationId = r.getString(1);               
 
                if(distances == null || distances.size() == 0) {
-                  Object[] returnObj ={locationId, r.getInt(2), r.getInt(3),
-                                     r.getInt(4), r.getInt(5), r.getString(6),
-                                     r.getString(7), r.getDouble(8),
-                                     r.getInt(9), 0, 0};
+                  Object[] returnObj = { r.getString(2), 0, 0, r.getInt(3),
+                                         r.getInt(4), r.getString(5),
+                                         r.getString(6), r.getDouble(7),
+                                         r.getInt(8), r.getString(9), 0};
 
                   inventory.add(returnObj);
                }
@@ -1210,10 +1205,11 @@ public class api {
                   for(int i = 0; i < distances.size(); i++) {
                      if(locationId.equals(distances.get(i)[1])) {
                         Object[] returnObj =
-                                     { locationId, r.getInt(2), r.getInt(3),
-                                       r.getInt(4), r.getInt(5), r.getString(6),
-                                       r.getString(7), r.getDouble(8),
-                                       r.getInt(9), 0, distances.get(i)[2]};
+                                     { r.getString(2), 0, 0, r.getInt(3),
+                                       r.getInt(4), r.getString(5),
+                                       r.getString(6), r.getDouble(7),
+                                       r.getInt(8), r.getString(9),
+                                       distances.get(i)[2]};
 
                         inventory.add(returnObj);
                         break;
@@ -1245,19 +1241,15 @@ public class api {
       String checkAvailable = " AND cb.OnHand - cb.Allocated" +
                               ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - lp.SafeStockLimit" : "") + " >= ? ";
       String sql =
-       "SELECT l.ExternalFulfillerLocationId, c.CatalogId, " +
-        "c.ManufacturerId, cb.OnHand, cb.OnHand - cb.Allocated, " +
-        "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit " +
-        "FROM Location l, Catalog c, CatalogServedByLocation cl, " +
-        "ContainedInBin cb, LocationProduct lp, " +
+       "SELECT l.ExternalFulfillerLocationId, l.Name " +
+        "cb.OnHand, cb.OnHand - cb.Allocated, " +
+        "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit, l.CountryCode " +
+        "FROM Location l, ContainedInBin cb, LocationProduct lp, " +
         "RetailerProduct rp, Product p " +
-       "WHERE l.InternalFulfillerLocationId = cl.InternalFulfillerLocationId " +
-        "AND cl.CatalogId = c.CatalogId AND p.UPC = rp.UPC " +
+       "WHERE p.UPC = rp.UPC " +
         "AND l.InternalFulfillerLocationId = lp.InternalFulfillerLocationId " +
         "AND rp.Id = lp.RetailerProductId AND lp.Id = cb.LocationProductId " +
-        "AND l.FulfillerId = ? AND c.ManufacturerId = ? AND c.CatalogId = ? " +
-        "AND p.ManufacturerId = c.ManufacturerId AND p.CatalogId = c.CatalogId " +
-        "AND rp.SKU = ? AND rp.UPC = ?" +
+        "AND l.FulfillerId = ? AND rp.SKU = ? AND rp.UPC = ?" +
         ((includeNegativeInventory != null && includeNegativeInventory)? "" : checkAvailable);
       String loc = " AND (";
           
@@ -1273,7 +1265,7 @@ public class api {
          sql += loc + ")";
       }
       else if(location != null && location.length >= 6 && location[3] != null && location[4] != null) {
-         Object[] mCatalog = {new Integer(manCatalog[0]), new Integer(manCatalog[1])};
+         Object[] mCatalog = {null, null};
 
          distances = getFulfillmentLocations(fulfillerId, mCatalog, location, 100000);
       }
@@ -1288,24 +1280,22 @@ public class api {
             PreparedStatement ps = conn.prepareStatement(sql);
                 
             ps.setInt(1, fulfillerId);
-            ps.setInt(2, manCatalog[0]);
-            ps.setInt(3, manCatalog[1]);
-            ps.setString(4, quantities[ndx][0].toString());
-            ps.setString(5, quantities[ndx][1].toString());
+            ps.setString(2, quantities[ndx][0].toString());
+            ps.setString(3, quantities[ndx][1].toString());
             
 
             if(includeNegativeInventory != null && includeNegativeInventory) {
                ;
             }    
             else if(type.equals("ANY")) {
-               ps.setInt(6, 1);
+               ps.setInt(4, 1);
             }
             else {
-               ps.setInt(6, (new Integer(quantities[ndx][2].toString())).intValue());
+               ps.setInt(4, (new Integer(quantities[ndx][2].toString())).intValue());
             }
                 
             for(int i = 0; locationIds != null && i < locationIds.length; i++) {
-                ps.setString(7 + i, locationIds[i]);
+                ps.setString(5 + i, locationIds[i]);
             }
                 
             System.out.println(ps.toString());
@@ -1317,10 +1307,10 @@ public class api {
                String locationId = r.getString(1);               
 
                if(distances == null || distances.size() == 0) {
-                  Object[] returnObj ={locationId, r.getInt(2), r.getInt(3),
-                                     r.getInt(4), r.getInt(5), r.getString(6),
-                                     r.getString(7), r.getDouble(8),
-                                     r.getInt(9), 0, 0};
+                  Object[] returnObj = {r.getString(2), 0, 0, r.getInt(3),
+                                       r.getInt(4), r.getString(5),
+                                       r.getString(6), r.getDouble(7),
+                                       r.getInt(8), r.getString(9), 0};
 
                   inventory.add(returnObj);
                }
@@ -1328,10 +1318,11 @@ public class api {
                   for(int i = 0; i < distances.size(); i++) {
                      if(locationId.equals(distances.get(i)[1])) {
                         Object[] returnObj =
-                                     { locationId, r.getInt(2), r.getInt(3),
-                                       r.getInt(4), r.getInt(5), r.getString(6),
-                                       r.getString(7), r.getDouble(8),
-                                       r.getInt(9), 0, distances.get(i)[2]};
+                                     { r.getString(2), 0, 0, r.getInt(3),
+                                       r.getInt(4), r.getString(5),
+                                       r.getString(6), r.getDouble(7),
+                                       r.getInt(8), r.getString(9),
+                                       distances.get(i)[2]};
 
                         inventory.add(returnObj);
                         break;
@@ -1381,37 +1372,37 @@ public class api {
    public ArrayList<Object[]> getFulfillmentLocations(int fulfillerId,
       Object[] manufacturerCatalog, Object[] requestLocation, int maxLocations)
    {
-      //Adin, when you are done with this api call you can replace this with your newest code
-      return temporaryFunction(fulfillerId, manufacturerCatalog, requestLocation, maxLocations);
-   }
-
-   public ArrayList<Object[]> temporaryFunction(int fulfillerId,
-      Object[] manufacturerCatalog, Object[] requestLocation, int maxLocations)
-   {
+      boolean debug = false;
       Integer radius = (Integer)requestLocation[1];
       Float locationLat = new Float(0.0), locationLong = new Float(0.0);
       double distance = 0;
       Float searchLat = (Float)requestLocation[3], searchLong = (Float)requestLocation[4];
       
-      System.out.println("Given location lat long: " + searchLat + " " + searchLong);
+      if(debug)
+         System.out.println("Given location lat long: " + searchLat + " " + searchLong);
    
       ArrayList<Object[]> possibleLocations = new ArrayList<Object[]>();
       ArrayList<Object[]> topLocations = new ArrayList<Object[]>();
-      String locationSql = "SELECT DISTINCT L.FulfillerId, L.ExternalFulfillerLocationId, L.Latitude, L.Longitude " +
+      /*String locationSql = "SELECT DISTINCT L.FulfillerId, L.ExternalFulfillerLocationId, L.Latitude, L.Longitude " +
          "FROM Location L, CatalogServedByLocation CL " +
          "WHERE L.InternalFulfillerLocationId = CL.InternalFulfillerLocationId " +
-            "AND L.FulfillerId = ? AND CL.CatalogId = ? AND CL.ManufacturerId = ? ";
+            "AND L.FulfillerId = ? AND CL.CatalogId = ? AND CL.ManufacturerId = ? ";*/
+      String locationSql = "SELECT DISTINCT L.FulfillerId, L.ExternalFulfillerLocationId, L.Latitude, L.Longitude " +
+         "FROM Location L, CatalogServedByLocation CL " +
+         "WHERE L.FulfillerId = ? ";
       
       try {
          PreparedStatement ps = conn.prepareStatement(locationSql);
-         System.out.println("fulfillerId: " + fulfillerId);
+         if(debug)
+            System.out.println("fulfillerId: " + fulfillerId);
          ps.setInt(1, fulfillerId);
-         System.out.println("catalogId: " + (Integer)manufacturerCatalog[0]);
-         ps.setInt(2, (Integer)manufacturerCatalog[0]);
+         /*System.out.println("catalogId: " + (Integer)manufacturerCatalog[0]);
+         ps.setInt(2, (Integer)manufacturerCatalog[1]);
          System.out.println("manufacturerId: " + (Integer)manufacturerCatalog[1]);
-         ps.setInt(3, (Integer)manufacturerCatalog[1]);
+         ps.setInt(3, (Integer)manufacturerCatalog[0]);*/
          
-         System.out.println("Query Statement: " + ps.toString());
+         if(debug)
+            System.out.println("Query Statement: " + ps.toString());
          ResultSet results = ps.executeQuery();
          
          while(results.next())
@@ -1421,14 +1412,17 @@ public class api {
             
             distance = getDistance((String)requestLocation[0], locationLat, locationLong, searchLat, searchLong);
             
+            if(debug)
+               System.out.println("Distance (" + distance + ") vs. Radius (" + radius + ")");
             if(distance <= radius)
             {
-               System.out.println("Found location: " + results.getInt(1)
-                + ", " + results.getInt(2) + " at " + results.getFloat(3)
-                + ", " + results.getFloat(4) + " (dist: " + distance + ")");
+               if(debug)
+                  System.out.println("Found location: " + results.getInt(1)
+                     + ", " + results.getInt(2) + " at " + results.getFloat(3)
+                     + ", " + results.getFloat(4) + " (dist: " + distance + ")");
 
                possibleLocations.add(new Object[] {results.getInt(1), 
-                  Integer.parseInt(results.getString(2)), distance});
+                  results.getString(2), distance});
             }
          }
       }
@@ -1438,18 +1432,20 @@ public class api {
       }
       
       if(possibleLocations.size() == 0) {
-         System.out.println("No possible locations found");
+         if(debug)
+            System.out.println("No possible locations found");
          return null;
       }
 
       int index = -1;
+      int startingSize = possibleLocations.size();
       boolean notSet = true;
       Object[] tempLocation = new Object[3];
       tempLocation[0] = new Integer(-1);
       tempLocation[1] = new Integer(-1);
       tempLocation[2] = new Integer(-1);
       
-      for(int i = 0; i < maxLocations && i < possibleLocations.size(); i++)
+      for(int i = 0; i < maxLocations && i < startingSize; i++)
       {
          index = -1;
          notSet = true;
@@ -1464,7 +1460,8 @@ public class api {
                && (Double)tempLocation[2] == -1)*/
             if(notSet)
             {
-               System.out.println("base case");
+               if(debug)
+                  System.out.println("base case");
                index = j;
                notSet = false;
                tempLocation[0] = (possibleLocations.get(j))[0];
@@ -1474,7 +1471,8 @@ public class api {
             
             else if((Double)(possibleLocations.get(j))[2] < (Double)tempLocation[2])
             {
-               System.out.println("Non-base case");
+               if(debug)
+                  System.out.println("Non-base case");
                index = j;
                tempLocation[0] = (possibleLocations.get(j))[0];
                tempLocation[1] = (possibleLocations.get(j))[1];
@@ -1484,6 +1482,10 @@ public class api {
          
          if(index != -1)
          {
+            if(debug)
+               System.out.println("Location added: " + tempLocation[0]
+                   + ", " + tempLocation[1] + " (dist: " + tempLocation[2] + ")");
+
             topLocations.add(new Object[] {tempLocation[0], tempLocation[1], tempLocation[2]});
             possibleLocations.remove(index);
          }
