@@ -22,27 +22,29 @@ func getFulfillmentLocations(w http.ResponseWriter, r *http.Request) (err error)
 		return
 	}
 	defer conn.Close()
+	/*
+		rows, err := conn.Query(`SELECT ST_Distance(
+								 ST_GeogFromText('POINT(-73 40)'),
+								 coordinates
+								)
+								FROM Locations WHERE fulfillerId = $1 AND status = 'active'`)
 
-	/*rows, err := conn.Query("SELECT ST_Distance(coordinates, Geography(ST_MakePoint($1, $2))) FROM Locations WHERE fulfillerId = $3 AND status = 'active'",
-		req.Location.Longitude, req.Location.Latitude, req.FulfillerID)
+		var count float64
 
-	var count float64
-
-	if rows.Next() {
-		err = rows.Scan(&count)
-		if err != nil {
-			return err
+		if rows.Next() {
+			err = rows.Scan(&count)
+			if err != nil {
+				return err
+			}
+			rows.Close()
+		} else {
+			return errors.New("Distance bad ugh")
 		}
-		rows.Close()
-	} else {
-		return errors.New("Distance bad ugh")
-	}
 
-	fmt.Println(count)
-	*/
-	rows, err := conn.Query(`SELECT fulfillerId, coordinates FROM Locations
+		fmt.Println(count)*/
+	rows, err := conn.Query(`SELECT fulfillerId, externalFulfillerId FROM Locations
 							 WHERE fulfillerId = $1 AND status = 'active'
-							 AND ST_DWithin(coordinates, Geography(ST_MakePoint($2, $3)), $4)`,
+							 AND ST_DWithin(coordinates, ST_GeogFromText('POINT(' || $2 ||' ' || $3 || ')'), $4)`,
 		req.FulfillerID, req.Location.Longitude, req.Location.Latitude, req.Location.Radius*mile_meter_conversion)
 
 	fmt.Println(req.Location.Radius * mile_meter_conversion)
@@ -58,7 +60,6 @@ func getFulfillmentLocations(w http.ResponseWriter, r *http.Request) (err error)
 		if err != nil {
 			return
 		}
-		fmt.Println("here")
 
 		resp.Return = append(resp.Return, location)
 	}
