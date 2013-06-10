@@ -70,6 +70,7 @@ def getBins(FulfillerID, FulfillerLocationID, searchTerm, NumResults, ResultsSta
    except Exception, e:
       print e
 
+
 #@param: no input 
 #return: array of BinStatuses
 #Distinct?
@@ -95,16 +96,17 @@ def getBinTypes(db):
    cursor = db.cursor()
 
    try:
-         sqlCommand = """SELECT DINSTINCT b.BinType
-              FROM Bins b""" 
+      sqlCommand = """SELECT DISTINCT BinType FROM Bins""" 
 
-         cursor.execute(sqlCommand)
-         results = cursor.fetchall()
+      cursor.execute(sqlCommand)
+      results = cursor.fetchall()
+      
+      return results
 
    except Exception, e:
       print e
+      return []
 
-   return results
 
 def createFulfillmentLocation(row, db):
    query = """\
@@ -265,18 +267,28 @@ def getFulfillerStatus(fID, fLID, db):
       print e
  
 def getFulfillmentLocations(fID, CID, MID, maxLocation, db):
- 
    cursor = db.cursor()
    
    try:
-      cursor.execute('SELECT FulfillerId, FulfillerLocationId FROM SubscribeTo WHERE FulfillerId = %s and ManufacturerId = %s and CatalogueId = %s ' , fID, MID, CID)
- 
+      #cursor.execute("""SELECT FulfillerId, FulfillerLocationId
+      #                  FROM SubscribeTo
+      #                  WHERE FulfillerId = %s
+      #                    AND ManufacturerId = %s
+      #                    AND CatalogueId = %s""", (fID, MID, CID))
+
+      # WORKAROUND: Ignoring CatalogId because underflow constraint, positiveInteger,
+      # won't allow us to use 0, which is a necessary CatalogID to test this function
+      cursor.execute("""SELECT FulfillerId, FulfillerLocationId
+                        FROM SubscribeTo
+                        WHERE FulfillerId = %s
+                          AND ManufacturerId = %s""", (fID, MID))
  
       listIDs = cursor.fetchall()
-   except:
-      pass
+      return listIDs[:maxLocation]
+   except Exception, e:
+      print e
+      return []
  
-   return  listIDs[:maxLocation]
  
 def getFulfillmentLocationTypes(fID, fLID, db):
    cursor = db.cursor()

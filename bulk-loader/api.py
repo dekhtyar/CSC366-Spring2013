@@ -116,20 +116,22 @@ def createFulfillmentLocation(row, db):
                  row['name'], row['description'], row['latitude'], row['longitude'],
                  1 if row['status'] == 'active' else 2, row['safety_stock'])
 
-   # This doesn't work because request doesn't contain the manufacturer or catalogue information
-   #SubscribeTo_query = """\
-   #    INSERT INTO SubscribeTo (FulfillerId, FulfillerLocationId,
-   #                             ManufacturerId, CatalogueId) 
-   #    VALUES (%s, %s, %s, %s)"""
-   #SubscribeTo_parameters = (row['fulfiller_id'], row['external_fulfiller_location_id'],
-   #                          row['mfg_id'], row['catalog_id'])
+   # This doesn't work with SOAP because the request doesn't contain the manufacturer or catalogue information
+   # but we need to do it any way because we have no other way to get this information
+   # after losing createManufacturerCatalog
+   SubscribeTo_query = """\
+       INSERT INTO SubscribeTo (FulfillerId, FulfillerLocationId,
+                                ManufacturerId, CatalogueId) 
+       VALUES (%s, %s, %s, %s)"""
+   SubscribeTo_parameters = (row['fulfiller_id'], row['external_fulfiller_location_id'],
+                             row['mfg_id'], row['catalog_id'])
 
    try:
        with db as cursor:
            cursor.execute(query, parameters)
            print 'createFulfillmentLocation: Locations: inserted', parameters 
-           #cursor.execute(SubscribeTo_query, SubscribeTo_parameters)
-           #print 'createFulfillmentLocation: SubscribeTo: inserted', SubscribeTo_parameters 
+           cursor.execute(SubscribeTo_query, SubscribeTo_parameters)
+           print 'createFulfillmentLocation: SubscribeTo: inserted', SubscribeTo_parameters 
        createBin({'fulfiller_id': row['fulfiller_id'],
                   'external_fulfiller_location_id': row['external_fulfiller_location_id'],
                   'bin_name': 'Default', 'bin_type': 'General', 'bin_status': 'Pickable'}, db)

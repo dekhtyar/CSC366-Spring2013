@@ -22,18 +22,16 @@ class Service(CoreServiceService):
         Name = r.get_element_Name()
         print "soap_createFulfiller:", FulfillerID, Name
 
-        # Call API function with arguments above
         response = api.createFulfiller({'fulfiller_id': FulfillerID,
                                         'name': Name}, db)
 
-        # Set these values with results from calliing API function
         createFulfillerReturn = response
 
         res.set_element_createFulfillerReturn(createFulfillerReturn)
         
         return res
 
-    # STATUS: Waiting for getFulfillerStatus to be rewritten without needing location id
+    # STATUS: Working with latest wsdl. 
     def soap_getFulfillerStatus(self, ps):
         res = CoreServiceService.soap_getFulfillerStatus(self, ps)
         req = self.request
@@ -46,7 +44,7 @@ class Service(CoreServiceService):
         res.set_element_getFulfillerStatusReturn(getFulfillerStatusReturn)
         return res
 
-    # STATUS: Ensure this still works with wsdl update
+    # STATUS: Working with latest wsdl. 
     def soap_createFulfillmentLocation(self, ps):
         res = CoreServiceService.soap_createFulfillmentLocation(self, ps)
         req = self.request
@@ -97,14 +95,16 @@ class Service(CoreServiceService):
 
         print "soap_getFulfillmentLocations:", CatalogID, ManufacturerID, CountryCode, Latitude, Longitude, PostalCode, Radius, Unit, FulfillerID, MaxLocations
 
-        # Call API function with arguments above
+        fulfillmentLocations = api.getFulfillmentLocations(FulfillerID, CatalogID, ManufacturerID, MaxLocations, db)
 
-        # Set these values with results from calliing API function
-        getFulfillmentLocationsReturn = res.new_getFulfillmentLocationsReturn()
-        getFulfillmentLocationsReturn.set_element_FulfillerID(1)
-        getFulfillmentLocationsReturn.set_element_FulfillerLocationID(2)
+        fulfillmentLocationsReturn = []
+        for fulfillmentLocation in fulfillmentLocations:
+            getFulfillmentLocationsReturn = res.new_getFulfillmentLocationsReturn()
+            getFulfillmentLocationsReturn.set_element_FulfillerID(int(fulfillmentLocation[0]))
+            getFulfillmentLocationsReturn.set_element_ExternalLocationID(fulfillmentLocation[1])
+            fulfillmentLocationsReturn.append(getFulfillmentLocationsReturn)
 
-        res.set_element_getFulfillmentLocationsReturn([getFulfillmentLocationsReturn])
+        res.set_element_getFulfillmentLocationsReturn(fulfillmentLocationsReturn)
 
         return res
 
@@ -219,7 +219,7 @@ class Service(CoreServiceService):
 
         return res
  
-    # STATUS: Ensure this still works with wsdl update
+    # STATUS: Working with latest wsdl. 
     def soap_createBin(self, ps):
         res = CoreServiceService.soap_createBin(self, ps)
         req = self.request
@@ -301,10 +301,16 @@ class Service(CoreServiceService):
         res = CoreServiceService.soap_getBinTypes(self, ps)
         req = self.request
 
-        getBinTypesReturn = res.new_getBinTypesReturn()
-        getBinTypesReturn.set_element_BinType('BinType')
-        res.set_element_getBinTypesReturn([getBinTypesReturn])
-        print "soap_getBinTypes:"
+        binTypes = api.getBinTypes(db)
+
+        binTypesReturn = []
+        for binType in binTypes:
+            getBinTypesReturn = res.new_getBinTypesReturn()
+            getBinTypesReturn.set_element_BinType(binType[0])
+            binTypesReturn.append(getBinTypesReturn)
+
+        res.set_element_getBinTypesReturn(binTypesReturn)
+        print "soap_getBinTypes" 
 
         return res
 
