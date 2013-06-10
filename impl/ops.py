@@ -178,4 +178,15 @@ def getFulfillerStatus(request):
       if result == ('active',):
          return datatypes.getFulfillerStatusResponse(1)
    return datatypes.getFulfillerStatusResponse(2)
+  
+@soap_op
+def getBinTypes(request):
+   conn = sql.getConnection()
+   cur = conn.cursor()
    
+   cur.execute(sql.GET_BIN_TYPES)
+
+   types = []
+   for result in cur:
+      types.append(result[0])
+   return datatypes.getBinTypesResponse(types)

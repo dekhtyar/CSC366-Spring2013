@@ -50,6 +50,11 @@ GET_STATUSES = '''
    WHERE fulfiller_id   = {fulfiller_id}
 '''
 
+GET_BIN_TYPES = '''
+   SELECT DISTINCT type
+   FROM Bin
+'''
+
 CREATE_FULFILLER = '''
    INSERT INTO Fulfiller(id) VALUES (%s)
 '''

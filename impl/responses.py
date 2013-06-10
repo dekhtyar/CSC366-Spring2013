@@ -20,3 +20,8 @@ class RefreshResponse(object):
 class getFulfillerStatusResponse(object):
    def __init__(self, getFulfillerStatusReturn):
       self.getFulfillerStatusReturn = getFulfillerStatusReturn
+
+class getBinTypesResponse(object):
+   def __init__(self, types):
+      self.types = types
+    

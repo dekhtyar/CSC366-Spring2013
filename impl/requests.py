@@ -64,3 +64,7 @@ class RefreshRequest(object):
 class getFulfillerStatus(object):
    def __init__(self, element):
       self.FulfillerID = getElement(element, "v4:fulfillerID").text
+
+class getBinTypes(object):
+   def __init__(self, element):
+      pass
