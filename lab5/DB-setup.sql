@@ -9,6 +9,7 @@ CREATE TABLE Location (
     FulfillerId INT REFERENCES Retailer(FulfillerId),
     ExternalFulfillerLocationId VARCHAR(25),
     InternalFulfillerLocationId INT PRIMARY KEY,
+    Name VARCHAR(50),
     Type VARCHAR(25), 
     Description VARCHAR(50),
     Latitude FLOAT,
