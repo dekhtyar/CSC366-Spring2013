@@ -363,6 +363,8 @@ public class api {
     
     public int createBin (int fulfillerId, Integer binId, String externalLocationId, String binType, String binStatus, String binName)
     {
+        int rows = 0;
+
         if(fulfillerId < 0 || (binId != null && binId < 0)) {
             return -1;
         }
@@ -388,8 +390,10 @@ public class api {
             ps.setString(5, binType);
             ps.setString(6, binName);
             
-            ps.executeUpdate();
-            
+            if(ps.executeUpdate() < 1) {
+               return -1;
+            }
+
             if(binId == null) {
                 ResultSet r = ps.getGeneratedKeys();
                 
@@ -404,7 +408,7 @@ public class api {
         }
         
         closeConnection();
-        
+
         return binId;
     }
    
@@ -489,12 +493,17 @@ public class api {
       return types;
    }
 
-    public ArrayList<Object[]> getBins (int fulfillerId, String externalLocationId, String searchTerm, int numResults, int resultsStart)
+    public ArrayList<Object[]> getBins (int fulfillerId, String externalLocationId, String searchTerm, Integer numResults, Integer resultsStart)
     {
         ArrayList<Object[]> bins = new ArrayList<Object[]>();
         
-        if(numResults < 0 || resultsStart < 0) {
+        if((numResults != null && numResults < 0)
+            || (resultsStart != null && resultsStart < 0)) {
             return bins;
+        }
+
+        if(resultsStart == null) {
+           resultsStart = 0;
         }
         
         if(setUpConnection() == false)
@@ -517,7 +526,8 @@ public class api {
             boolean hasNext = r.next();
             int ndx = 0;
             
-            while(hasNext && ndx < resultsStart + numResults) {
+            while(hasNext && 
+            (numResults == null? true : (ndx < resultsStart + numResults)) ) {
                 Object[] returnObj = {fulfillerId, r.getInt(1), r.getString(2), r.getString(3), r.getString(4), r.getString(5)};
                 
                 if(ndx >= resultsStart) {
