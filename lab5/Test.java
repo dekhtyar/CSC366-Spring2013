@@ -77,6 +77,12 @@ public static void main(String[] args) {
           manCatalog, quantities, locationIds, location, type, limit,
           ignoreSafetyStock, includeNegativeInventory, orderByLtd);
          System.out.println(inventory.size() + " results");
+
+			/*
+				TESTS HERE
+				if (testCreateFulfiller())
+					System.out.println("createFulfiller failed");
+			*/
       }
 
       if(cleanup)
@@ -469,6 +475,82 @@ System.out.println(binTypes.get(ndx)[0] + " " + description);
       apiCall.fulfillInventory(fulfillerId, fulfillerLocationCatalog, items);
    } 
 
+/*	public static int testCreateFulfiller() {
+		
+		//Test if exists
+
+		//Test if has all right values
+
+		//Test if created and returns correct value
+
+		return 0;
+	}
+	
+	public static int testGetFulfillerStatus() {
+		
+		return 0;
+	}
+	
+	public static int testCreateFulfilmentLocation() {
+		
+		return 0;
+	}
+	
+	public static int testGetFulfilmentLocations() {
+		
+		return 0;
+	}
+	
+	public static int testGetFulfillmentLocationTypes() {
+		
+		return 0;
+	}
+	
+	public static int testAllocateInventory() {
+		
+		return 0;
+	}
+	
+	public static int testDeallocateInventory() {
+		
+		return 0;
+	}
+
+	public static int testFulfillInventory() {
+		
+		return 0;
+	}
+	
+	public static int testCreateBin() {
+		
+		return 0;
+	}
+
+	public static int testGetBins() {
+		
+		return 0;
+	}		
+	
+	public static int testGetBinTypes() {
+		
+		return 0;
+	}
+
+	public static int testGetBinStatuses() {
+		
+		return 0;
+	}		
+
+	public static int testAdjustInventory() {
+		
+		return 0;
+	}
+
+	public static int testRefreshInventory() {
+		
+		return 0;
+	}
+*/
    public static boolean setupConnection() {
       try
       {
