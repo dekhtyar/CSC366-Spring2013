@@ -39,7 +39,7 @@ class Service(CoreServiceService):
         fulfillerID = req.get_element_fulfillerID()
         print "soap_getFulfillerStatus:", fulfillerID
 
-        getFulfillerStatusReturn = getFulfillerStatus(fulfillerID, fLID, db)
+        getFulfillerStatusReturn = api.getFulfillerStatus(fulfillerID, db)
 
         res.set_element_getFulfillerStatusReturn(getFulfillerStatusReturn)
         return res

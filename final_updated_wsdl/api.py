@@ -251,20 +251,19 @@ def refreshInventory(request, db):
                               'catalog_id': '1',
                               'product_name': ''}, db)
 
-def getFulfillerStatus(fID, fLID, db):
+# This corresponds to external fulfiller ids
+def getFulfillerStatus(fLID, db):
    cursor = db.cursor()
    
    try: 
-      cursor.execute('SELECT Status FROM Locations WHERE FulfillerId = %s AND ExternalLocationId = %s',fID,fLID)
+      cursor.execute('SELECT Status FROM Locations WHERE FulfillerLocationId = %s', fLID)
    
-      status = cursor.fetchone()
-      if status == 'active': 
-         return 1
-      else: 
-         return 2  
+      status = cursor.fetchone()[0]
+      return status
       
    except Exception, e:
       print e
+      return 3  
  
 def getFulfillmentLocations(fID, CID, MID, maxLocation, db):
    cursor = db.cursor()

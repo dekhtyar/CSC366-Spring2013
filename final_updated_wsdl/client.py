@@ -168,90 +168,90 @@ port = loc.getCoreService()
 #refreshInventoryWithFile("../data/fulfiller inventory not available.csv")
 
 
-## getBins
-## STATUS: Working with updated wsdl.
-req = getBinsRequest()
-request = req.new_request()
-request.set_element_FulfillerID(48590)
-request.set_element_ExternalLocationID(600)
-request.set_element_NumResults(30)
-request.set_element_ResultsStart(1)
-request.set_element_SearchTerm('5305')
-req.set_element_request(request)
-print '\ngetBinsRequest'
-res = port.getBins(req)
-getBinsReturn = res.get_element_getBinsReturn()
-ResultCount = getBinsReturn.get_element_ResultCount()
-Bins = getBinsReturn.get_element_Bins()
-items = Bins.get_element_items()
-if items:
-    print 'getBins: Bin: FulfillerID, ExternalLocationID, BinStatus, BinType, Name'
-for item in items:
-    FulfillerID = item.get_element_FulfillerID()
-    ExternalLocationID = item.get_element_ExternalLocationID()
-    BinStatus = item.get_element_BinStatus()
-    BinType = item.get_element_BinType()
-    Name = item.get_element_Name()
-    print 'getBins: Bin:', FulfillerID, ExternalLocationID, BinStatus, BinType, Name
-print 'getBins: ResultCount:', ResultCount
+### getBins
+### STATUS: Working with updated wsdl.
+#req = getBinsRequest()
+#request = req.new_request()
+#request.set_element_FulfillerID(48590)
+#request.set_element_ExternalLocationID(600)
+#request.set_element_NumResults(30)
+#request.set_element_ResultsStart(1)
+#request.set_element_SearchTerm('5305')
+#req.set_element_request(request)
+#print '\ngetBinsRequest'
+#res = port.getBins(req)
+#getBinsReturn = res.get_element_getBinsReturn()
+#ResultCount = getBinsReturn.get_element_ResultCount()
+#Bins = getBinsReturn.get_element_Bins()
+#items = Bins.get_element_items()
+#if items:
+#    print 'getBins: Bin: FulfillerID, ExternalLocationID, BinStatus, BinType, Name'
+#for item in items:
+#    FulfillerID = item.get_element_FulfillerID()
+#    ExternalLocationID = item.get_element_ExternalLocationID()
+#    BinStatus = item.get_element_BinStatus()
+#    BinType = item.get_element_BinType()
+#    Name = item.get_element_Name()
+#    print 'getBins: Bin:', FulfillerID, ExternalLocationID, BinStatus, BinType, Name
+#print 'getBins: ResultCount:', ResultCount
 
-
-## TODO: Need to rewrite getFulfillerStatus to only take a fulfiller id
-## STATUS: untested
+## getFulfillerStatus
+## STATUS: Working with updated wsdl, realized that this took external location id.
 #req = getFulfillerStatusRequest()
-#req.set_element_fulfillerID(48590)
+#req.set_element_fulfillerID(112) # Alternate test: 600. Integer, external location id
+#print '\ngetFulfillerStatusRequest:', req.get_element_fulfillerID()
 #res = port.getFulfillerStatus(req)
-#print 'getFulfillerStatus', res.get_element_getFulfillerStatusReturn()
+#print 'getFulfillerStatusResponse:', res.get_element_getFulfillerStatusReturn()
 
 
-# getBinTypes
-# STATUS: Working with updated wsdl.
-req = getBinTypesRequest()
-res = port.getBinTypes(req)
-print '\ngetBinTypesRequest'
-getBinTypesReturn = res.get_element_getBinTypesReturn()
-if not getBinTypesReturn:
-    print 'No results'
-else:
-    for binType in getBinTypesReturn:
-        print 'getBinTypes: BinType:', binType.get_element_BinType()
+## getBinTypes
+## STATUS: Working with updated wsdl.
+#req = getBinTypesRequest()
+#res = port.getBinTypes(req)
+#print '\ngetBinTypesRequest'
+#getBinTypesReturn = res.get_element_getBinTypesReturn()
+#if not getBinTypesReturn:
+#    print 'No results'
+#else:
+#    for binType in getBinTypesReturn:
+#        print 'getBinTypes: BinType:', binType.get_element_BinType()
+#
+#
+## getFulfillmentLocationsRequest
+## STATUS: Working with updated wsdl, with workaround
+#req = getFulfillmentLocationsRequest()
+#request = req.new_request()
+#Catalog = request.new_Catalog()
+#Catalog.set_element_CatalogID(1) # Required, underflow error, cannot be 0 according to wsdl, positiveInteger, ignoring CatalogID as workaround
+#Catalog.set_element_ManufacturerID(10636) # Required
+#request.set_element_Catalog(Catalog) 
+#Location = request.new_Location()
+#Location.set_element_CountryCode('CountryCode')
+#Location.set_element_Latitude(1.0)
+#Location.set_element_Longitude(2.0)
+#Location.set_element_PostalCode('PostalCode')
+#Location.set_element_Radius(32)
+#Location.set_element_Unit('MILES')
+#request.set_element_Location(Location)
+#request.set_element_FulfillerID(48590) # Required
+#request.set_element_MaxLocations(30) # Required
+#req.set_element_request(request)
+#print '\ngetFulfillmentLocationsRequest'
+#res = port.getFulfillmentLocations(req)
+#fulfillmentLocationsReturn = res.get_element_getFulfillmentLocationsReturn()
+#if fulfillmentLocationsReturn:
+#    print 'getFulfillmentLocations: FulfillerID, ExternalLocationID'
+#    for fulfillmentLocation in fulfillmentLocationsReturn:
+#        FulfillerID = fulfillmentLocation.get_element_FulfillerID()
+#        ExternalLocationID = fulfillmentLocation.get_element_ExternalLocationID()
+#        print 'getFulfillmentLocations:', FulfillerID, ExternalLocationID
+#else:
+#    print 'getFulfillmentLocations: No results'
 
 
-# getFulfillmentLocationsRequest
-# STATUS: Working with updated wsdl, with workaround
-req = getFulfillmentLocationsRequest()
-request = req.new_request()
-Catalog = request.new_Catalog()
-Catalog.set_element_CatalogID(1) # Required, underflow error, cannot be 0 according to wsdl, positiveInteger, ignoring CatalogID as workaround
-Catalog.set_element_ManufacturerID(10636) # Required
-request.set_element_Catalog(Catalog) 
-Location = request.new_Location()
-Location.set_element_CountryCode('CountryCode')
-Location.set_element_Latitude(1.0)
-Location.set_element_Longitude(2.0)
-Location.set_element_PostalCode('PostalCode')
-Location.set_element_Radius(32)
-Location.set_element_Unit('MILES')
-request.set_element_Location(Location)
-request.set_element_FulfillerID(48590) # Required
-request.set_element_MaxLocations(30) # Required
-req.set_element_request(request)
-print '\ngetFulfillmentLocationsRequest'
-res = port.getFulfillmentLocations(req)
-fulfillmentLocationsReturn = res.get_element_getFulfillmentLocationsReturn()
-if fulfillmentLocationsReturn:
-    print 'getFulfillmentLocations: FulfillerID, ExternalLocationID'
-    for fulfillmentLocation in fulfillmentLocationsReturn:
-        FulfillerID = fulfillmentLocation.get_element_FulfillerID()
-        ExternalLocationID = fulfillmentLocation.get_element_ExternalLocationID()
-        print 'getFulfillmentLocations:', FulfillerID, ExternalLocationID
-else:
-    print 'getFulfillmentLocations: No results'
-
-
-#req = getBinStatusesRequest()
-#res = port.getBinStatuses(req)
-#print 'getBinStatuses'
+req = getBinStatusesRequest()
+res = port.getBinStatuses(req)
+print 'getBinStatuses'
 
 
 #req = getFulfillmentLocationTypesRequest()
