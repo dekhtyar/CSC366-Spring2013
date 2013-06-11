@@ -1,3 +1,7 @@
+class allocateInventoryResponse(object):
+   def __init__(self):
+      pass
+
 class getFulfillmentLocationTypesResponse(object):
    types = ["RETAILER", "FULFILLER", "MANUFACTURER"]
 

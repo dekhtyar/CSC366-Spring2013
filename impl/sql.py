@@ -11,43 +11,43 @@ def commitAndClose(conn):
 
 INCREASE_NUM_ALLOCATED_AND_ON_HAND = '''
    UPDATE StoredIn(sku, fulfiller_id, bin_name, ext_ful_loc_id, num_allocated)
-   SET num_allocated = num_allocated + {d_num_allocated} AND
-       on_hand       = on_hand + {d_on_hand}
-   WHERE sku            = {part_number}    AND
-         fuller_id      = {fulfiller_id}   AND
-         bin_name       = {bin_name}       AND
-         ext_ful_loc_id = {ext_ful_loc_id}
+   SET num_allocated = num_allocated + %(d_num_allocated)s AND
+       on_hand       = on_hand + %(d_on_hand)s
+   WHERE sku            = %(part_number)s    AND
+         fuller_id      = %(fulfiller_id)s   AND
+         bin_name       = %(bin_name)s       AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
 '''
 
 GET_BIN_NAMES = '''
    SELECT name
    FROM Bin
-   WHERE fulfiller_id   = {fulfiller_id} AND
-         ext_ful_loc_id = {ext_ful_loc_id} 
+   WHERE fulfiller_id   = %(fulfiller_id)s AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
 '''
 
 GET_ON_HAND_AND_NUM_ALLOCATED = '''
    SELECT on_hand, num_allocated
    FROM StoredIn
-   WHERE sku            = {sku}            AND
-         fulfiller_id   = {fulfiller_id}   AND
-         bin_name       = {bin_name}       AND
-         ext_ful_loc_id = {ext_ful_loc_id}
+   WHERE sku            = %(sku)s            AND
+         fulfiller_id   = %(fulfiller_id)s   AND
+         bin_name       = %(bin_name)s       AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
 '''
 
 GET_NUM_ALLOCATED = '''
    SELECT num_allocated
    FROM StoredIn
-   WHERE sku            = {sku}            AND
-         fulfiller_id   = {fulfiller_id}   AND
-         bin_name       = {bin_name}       AND
-         ext_ful_loc_id = {ext_ful_loc_id}
+   WHERE sku            = %(sku)s            AND
+         fulfiller_id   = %(fulfiller_id)s   AND
+         bin_name       = %(bin_name)s       AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
 '''
 
 GET_STATUSES = '''
    SELECT status
    FROM Location
-   WHERE fulfiller_id   = {fulfiller_id}
+   WHERE fulfiller_id = %(fulfiller_id)s
 '''
 
 GET_BIN_TYPES = '''
