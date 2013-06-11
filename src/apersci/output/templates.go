@@ -38,7 +38,7 @@ var templateNames = [...]string{
 }
 
 func init() {
-	templateDir := "src/apersci/output/templates/" // TODO configurable
+	templateDir := "/home/jcosio/Documents/cpe366/CSC366-Spring2013/src/apersci/output/templates/" // TODO configurable
 	templatePaths := make([]string, len(templateNames))
 	for i, name := range templateNames {
 		templatePaths[i] = templateDir + name
