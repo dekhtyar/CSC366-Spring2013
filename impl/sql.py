@@ -69,6 +69,21 @@ GET_BINS = '''
    LIMIT {results_start}, {num_results}
 '''
 
+GET_FULFILLMENT_LOCATIONS = '''
+   SELECT DISTINCT h.fulfiller_id, h.ext_ful_loc_id
+   FROM Product p
+        INNER JOIN FulfillerSpecificProduct fsp ON( 
+           fsp.upc = p.upc
+        )
+        INNER JOIN HeldAt h ON(
+           fsp.fulfiller_id = h.fulfiller_id
+        )
+   WHERE
+        fsp.fulfiller_id = {fulfiller_id} AND
+        p.manufacturer_id = {manufacturer_id} AND
+        p.catalog_id = {catalog_id}
+'''
+
 CREATE_FULFILLER = '''
    INSERT INTO Fulfiller(id) VALUES (%s)
 '''

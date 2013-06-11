@@ -42,6 +42,10 @@ class BinInfo:
    bin_status     = 4
    bin_id         = 5
 
+class LocationInfo:
+   fulfiller_id   = 0
+   ext_ful_loc_id = 1
+
 # Handles allocateInventory, deallocateInventory, or fulfillInventory requests, per |allocate|.
 def _modifyInventory(request, modification):
    conn = sql.getConnection()
@@ -232,3 +236,20 @@ def getBins(request):
               result[BinInfo.bin_type], result[BinInfo.bin_status], result[BinInfo.name]))
       count = count + 1
    return datatypes.getBinsResponse(count, items)
+
+@soap_op
+def getFulfillmentLocations(request):
+   conn = sql.getConnection()
+   cur = conn.cursor()
+   
+   cur.execute(
+      sql.GET_FULFILLMENT_LOCATIONS.format(
+      fulfiller_id   = request.FulfillerID,
+      manufacturer_id   = request.ManufacturerID,
+      catalog_id   = request.CatalogID,
+   ))
+
+   locations = []
+   for result in cur:
+      locations.append(datatypes.location(result[LocationInfo.fulfiller_id], result[LocationInfo.ext_ful_loc_id]))
+   return datatypes.getFulfillmentLocationsResponse(locations)

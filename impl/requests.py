@@ -75,10 +75,19 @@ class getBinStatuses(object):
 
 class getBins(object):
    def __init__(self, element):
-      request = getElement(element, 'v4:request')
+      request = getElement(element, "v4:request")
       
       self.FulfillerID = getElement(request, "v4:FulfillerID").text
       self.ExternalLocationID = getElement(request, "v4:ExternalLocationID").text
       self.SearchTerm = getElement(request, "v4:SearchTerm").text
       self.NumResults = getElement(request, "v4:NumResults").text
       self.ResultsStart = getElement(request, "v4:ResultsStart").text
+
+class getFulfillmentLocations(object):
+   def __init__(self, element):
+      request = getElement(element, "v4:request")
+      
+      self.FulfillerID = getElement(request, "v4:FulfillerID").text
+      catalog = getElement(request, "v4:Catalog")
+      self.ManufacturerID = getElement(catalog, "v4:ManufacturerID").text
+      self.CatalogID = getElement(catalog, "v4:CatalogID").text
