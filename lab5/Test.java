@@ -46,18 +46,32 @@ public static void main(String[] args) {
          Boolean ignoreSafetyStock = true;
          Boolean includeNegativeInventory = true;
          boolean orderByLtd = true;*/
-         int fulfillerId = 76061;
+         /*int fulfillerId = 76061;
          int[] manCatalog = {10636, 1};
          Object[][] quantities = {{"22-14582-001", "22-14582-001", 1},
                                   {"22-14582-002", "22-14582-002", 1}};
          String[] locationIds = {};
-         Object[] location = null;
+         Object[] location = {}
          String type = "ANY";
          int limit = 1000;
          Boolean ignoreSafetyStock = null;
          Boolean includeNegativeInventory = null;
-         boolean orderByLtd = false;
+         boolean orderByLtd = false;*/
       
+         int fulfillerId = 69170;
+         int[] manCatalog = null;
+         Object[][] quantities = {{"8888069843", "8888069843", 1},
+                                  {"8888074813", "8888074813", 1},
+                                   {"8888052689", "8888052689", 1}};
+         String[] locationIds = {};
+         Object[] location = {"MILES", 100, 0, new Float(40.742300),
+         new Float(-73.987900), "USA"};
+         String type = "ALL";
+         int limit = 1000;
+         Boolean ignoreSafetyStock = null;
+         Boolean includeNegativeInventory = null;
+         boolean orderByLtd = false;
+
          System.out.println("Testing getInventory");
          ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
           manCatalog, quantities, locationIds, location, type, limit,
@@ -450,9 +464,9 @@ System.out.println(binTypes.get(ndx)[0] + " " + description);
 
       System.out.println("Testing modification of Inventory");
 
-      apiCall.allocateInventory(fulfillerId, fulfillerLocationCatalog, items);
+      //apiCall.allocateInventory(fulfillerId, fulfillerLocationCatalog, items);
       //apiCall.deallocateInventory(fulfillerId, fulfillerLocationCatalog, items);
-      //apiCall.fulfillInventory(fulfillerId, fulfillerLocationCatalog, items);
+      apiCall.fulfillInventory(fulfillerId, fulfillerLocationCatalog, items);
    } 
 
    public static boolean setupConnection() {
