@@ -1,0 +1,51 @@
+test ALL:
+   should return nothing: no sku/upc exists
+   catalog = {"catalogID":0, "manufacturerID" : 10636}
+   locs = [600, 103]
+   order = [{"partnumber": "201052399", "UPC": "201052399", "Quantity": 1}, {"partnumber": "12341234", "UPC": "41235123", "Quantity": 1}]
+   getInventory(cat, '48590', 0, 0, 10000, cat, locs, 0, order, "ALL", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
+
+   should return list of 2: both exist
+   cat = {"CatalogID": 0, "ManufacturerID" : 10636}
+   locs = [600, 103]
+   order = [{"partnumber": "201052399", "UPC": "201052399", "Quantity": 1}, {"partnumber": "200230544", "UPC": "200230544", "Quantity": 1}]
+   getInventory(cat, '48590', 0, 0, 10000, cat, locs, 0, order, "ALL", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
+   
+   should return nothing: can't fulfill entire quantity
+   cat = {"CatalogID": 0, "ManufacturerID" : 10636}
+   locs = [103, 600]
+   order = [{"partnumber": "201391931", "UPC": "201391931", "Quantity": 1}, {"partnumber": "201391948", "UPC": "201391948", "Quantity": 9}]
+   getInventory(cat, '48590', 0, 0, 10000, cat, locs, 0, order, "ALL", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
+
+
+test ANY:
+   should return list of 2
+   catalog = {"catalogID":0, "manufacturerID" : 10636}
+   locs = [600, 103]
+   order = [{"partnumber": "201052399", "UPC": "201052399", "Quantity": 1}, {"partnumber": "12341234", "UPC": "41235123", "Quantity": 1}]
+   getInventory(cat, '48590', 0, 0, 10000, cat, locs, 0, order, "ANY", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
+   
+   should return list of 1
+   cat = {"CatalogID": 0, "ManufacturerID" : 10636}
+   locs = [600, 103]
+   order = [{"partnumber": "201052399", "UPC": "201052399", "Quantity": 1}, {"partnumber": "12351234", "UPC": "123411", "Quantity": 1}]
+   getInventory(cat, '48590', 0, 0, 10000, cat, locs, 0, order, "ANY", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
+
+   should return 1: can fulfill first part, but not second   
+   cat = {"CatalogID": 0, "ManufacturerID" : 10636}
+   locs = [103, 600]
+   order = [{"partnumber": "201391931", "UPC": "201391931", "Quantity": 1}, {"partnumber": "201391948", "UPC": "201391948", "Quantity": 9}]
+   getInventory(cat, '48590', 0, 0, 10000, cat, locs, 0, order, "ANY", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
+
+test PARTIAL:
+   should return nothing: full order cannot be made
+   cat = {"CatalogID": 0, "ManufacturerID" : 10636}
+   locs = [103, 600]
+   order = [{"partnumber": "201391931", "UPC": "201391931", "Quantity": 1}, {"partnumber": "201391948", "UPC": "201391948", "Quantity": 9}]
+   getInventory(cat, '48590', 0, 0, 10000, cat, locs, 0, order, "ANY", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
+
+   should return 2: 2 diff FulfillerLocationIds can make up the order   
+   cat = {"CatalogID": 0, "ManufacturerID" : 11416}
+   locs = [44077, 440001, 440029]
+   order = [{"partnumber": "8888076942", "UPC": "8888076942", "Quantity": 1}, {"partnumber": "8888076757", "UPC": "8888076757", "Quantity": 1}]
+   getInventory(cat, '69170', 0, 0, 10000, cat, locs, 0, order, "PARTIAL", MySQLdb.connect("localhost", "root", "busmajorz", "inventory"))
