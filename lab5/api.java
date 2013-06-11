@@ -84,7 +84,6 @@ public class api {
     public void updateInventory(String check, String checkLocation, String update, int fulfillerId, Object[][] fulfillerLocationCatalog, Object[][] items) {
         
         int charCount = 0;
-        int locationNdx = 5;
 
         if(setUpConnection() == false) {
             return;
@@ -116,14 +115,8 @@ public class api {
                 ps.setString(3, sku);
                 ps.setInt(4, quantity);
 
-                if(fulfillerLocationCatalog != null && fulfillerLocationCatalog.length > 0 && fulfillerLocationCatalog[0] != null && fulfillerLocationCatalog[0].length >= 2) {
-                   ps.setInt(5, (Integer)fulfillerLocationCatalog[0][0]);
-                   ps.setInt(6, (Integer)fulfillerLocationCatalog[0][1]);
-                   locationNdx = 7;
-                }
-
                 if(items[ndx][3] != null) {
-                   ps.setString(locationNdx, items[ndx][3].toString());
+                   ps.setString(5, items[ndx][3].toString());
                 }
                 
                 ResultSet r = ps.executeQuery();
@@ -168,12 +161,10 @@ public class api {
         "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
         "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
          "AND lp.RetailerProductId = rp.Id AND rp.UPC = ? AND rp.SKU = ? AND rp.UPC = p.UPC " +
-         "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? " +
-         ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
-         "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
+         "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? ";
 
         String checkLocation = check
-                  + " AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
+                  + "AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
         
         check += "ORDER BY cb.OnHand";
         
@@ -190,12 +181,10 @@ public class api {
         "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
         "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
          "AND lp.RetailerProductId = rp.Id AND rp.UPC = ? AND rp.SKU = ? AND rp.UPC = p.UPC " +
-         "AND cb.Allocated >= ? " +
-         ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
-         "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
+         "AND cb.Allocated >= ? ";
         
         String checkLocation = check
-                  + " AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
+                  + "AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
 
         check += "ORDER BY cb.Allocated";
 
@@ -212,12 +201,10 @@ public class api {
         "FROM StoreBin b, ContainedInBin cb, Product p, LocationProduct lp, RetailerProduct rp " +
         "WHERE b.FulfillerId = ? AND b.Id = cb.BinId AND cb.LocationProductId = lp.Id " +
          "AND lp.RetailerProductId = rp.Id AND rp.UPC = ? AND rp.SKU = ? AND rp.UPC = p.UPC " +
-         "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? " +
-         ((fulfillerLocationCatalog == null || fulfillerLocationCatalog.length == 0 || fulfillerLocationCatalog[0] == null || fulfillerLocationCatalog[0].length < 2)? "" :
-         "AND p.ManufacturerId = ? AND p.CatalogId = ? ");
+         "AND cb.OnHand - cb.Allocated - lp.SafeStockLimit >= ? ";
 
         String checkLocation = check
-                  + " AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
+                  + "AND b.ExternalFulfillerLocationId = ? ORDER BY cb.OnHand";
 
         check += "ORDER BY cb.OnHand, cb.Allocated";
 
@@ -1230,7 +1217,7 @@ public class api {
       String checkAvailable = " AND cb.OnHand - cb.Allocated" +
                               ((ignoreSafetyStock == null || !ignoreSafetyStock)? " - lp.SafeStockLimit" : "") + " >= ? ";
       String sql =
-       "SELECT l.ExternalFulfillerLocationId, l.Name " +
+       "SELECT l.ExternalFulfillerLocationId, l.Name, " +
         "cb.OnHand, cb.OnHand - cb.Allocated, " +
         "rp.SKU, rp.UPC, lp.LTD, lp.SafeStockLimit, l.CountryCode " +
         "FROM Location l, ContainedInBin cb, LocationProduct lp, " +
