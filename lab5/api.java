@@ -656,8 +656,6 @@ public class api {
 		ResultSet manuIdHolder;
 		ResultSet upcHolder;
 		
-	//	System.out.println("updating Product");
-		
 		String catalog = "SELECT C.CatalogId " +
 		 "FROM CatalogServedByLocation C " +
 		 "WHERE C.InternalFulfillerLocationId = ?";
@@ -1032,17 +1030,12 @@ public class api {
            System.out.println("Couldn't find InternalFulfillerLocationId" + e);
         }
 		
-       // for (i = 0; i < item.length; i++) {
             updateProduct(item[i].UPC, internalFulfillerLocationId);
             updateRetailerProduct(item[i].UPC, item[i].partNumber, fulfillerId);
             updateLocationProduct(internalFulfillerLocationId, item[i].LTD, item[i].SafetyStock, item[i].UPC, item[i].partNumber,
              fulfillerId);
             updateContainedInBin(item[i].BinID, item[i].Quantity, internalFulfillerLocationId, item[i].LTD, item[i].SafetyStock, 
              item[i].UPC, item[i].partNumber, fulfillerId, externalLocId);
-//	      }
-
-      System.out.println("num: " + num);
-      num++;
 
       closeConnection();
       return 1;
