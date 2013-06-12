@@ -5,6 +5,7 @@ import api
 from allocateInventory import allocateInventory
 from deallocateInventory import deallocateInventory
 from fulfillInventory import fulfillInventory
+from adjustInventory import adjustInventory
 import MySQLdb
 from ZSI.ServiceContainer import AsServer
 from CoreServiceService_services_server import *
@@ -341,10 +342,36 @@ class Service(CoreServiceService):
         return res
 
     # STATUS: Needs to be properly connected to API call
+    #def adjustInventory(fulfillerID, fulfillerLocationID, refreshItems, db):
+    #FulfillerId
+    #FulfillerLocationId
+    #refreshItems: list of dictionaries with keys "Quantity", "partnumber", "BinId", "UPC" 
+    #   keys represent quantity to add to set, SKU, bin name, UPC
+    #pointer to the database
     def soap_adjustInventory(self, ps):
         res = CoreServiceService.soap_adjustInventory(self, ps)
         req = self.request
-        return res
+
+        itemList = []
+        items = req.get_element_Items().get_element_items()
+        for item in items:
+            BinID = item.get_element_BinID()
+            PartNumber = item.get_element_PartNumber()
+            Quantity = item.get_element_Quantity()
+            UPC = item.get_element_UPC()
+            FulfillerID = req.get_element_FulfillerID()
+            ExternalLocationID = req.get_element_ExternalLocationID()
+            itemList.append({
+                'BinId': BinID if BinID >= 0 else 'Default', # Negative BinID will select default
+                'Quantity': Quantity,
+                'partnumber': PartNumber,
+                'UPC': UPC
+            })
+
+        print 'adjustInventory:', FulfillerID, ExternalLocationID, itemList
+        response = adjustInventory(FulfillerID, ExternalLocationID, itemList, db)
+
+        return AdjustInventorySoapOut(response)
 
     # STATUS: Working with latest wsdl. 
     def soap_refreshInventory(self, ps):
