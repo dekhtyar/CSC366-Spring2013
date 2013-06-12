@@ -1,19 +1,5 @@
 import MySQLdb
-
-def selectItemBins(fulfiller_id, location_id, sku, db):
-    cur = db.cursor(MySQLdb.cursors.DictCursor)
-
-    try:
-        cur.execute('SELECT OnHand, Allocated, Name ' +
-                    'FROM StoredIn ' +
-                    'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s',
-                    (sku, fulfiller_id, location_id))
-        return cur.fetchall()
-    except Exception, e:
-        print e
-        return () 
-    finally:
-        cur.close()
+from util import *
 
 def itemCanBeDeallocated(fulfiller_id, location_id, item, db):
     cur = db.cursor()
@@ -36,10 +22,11 @@ def deallocateFromBin(fulfiller_id, location_id, sku, quantity, name, db):
     cur = db.cursor()
 
     try:
-        cur.execute('UPDATE StoredIn ' +
-                    'SET OnHand = OnHand + %s, Allocated = Allocated - %s ' +
-                    'WHERE SKU = %s AND FulfillerId = %s AND FulfillerLocationId = %s AND Name = %s',
-                    (quantity, quantity, sku, fulfiller_id, location_id, name))
+        cur.execute('''UPDATE StoredIn
+                       SET Allocated = Allocated - %s
+                       WHERE SKU = %s AND FulfillerId = %s AND
+                             FulfillerLocationId = %s AND Name = %s''',
+                    (quantity, sku, fulfiller_id, location_id, name))
     except Exception, e:
         print e
     finally:
@@ -62,13 +49,17 @@ def deallocateItem(fulfiller_id, location_id, item, db):
         if quantity == 0:
             return
 
-def deallocateInventory(fulfiller_id, location_id, items, db):
-    cur = db.cursor()
-
+def deallocateInventory(fulfiller_id, location_id, man_id, cat_id, items, db):
+    if not tenancyCheck(fulfiller_id, location_id, man_id, cat_id, db):
+        return False
+    
     for item in items:
         if not itemCanBeDeallocated(fulfiller_id, location_id, item, db):
-            print 'Insufficient allocated inventory. Aborting...'
-            return
+            print 'Insufficient allocated inventory.'
+            return False
 
     for item in items:
         deallocateItem(fulfiller_id, location_id, item, db)
+
+    print 'Successfully deallocated inventory.'
+    return True

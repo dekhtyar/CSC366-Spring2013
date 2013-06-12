@@ -137,6 +137,9 @@ class Service(CoreServiceService):
         FulfillerID = request.get_element_FulfillerID()
         FulfillerLocationCatalog = request.get_element_FulfillerLocationCatalog()
         ExternalLocationID = FulfillerLocationCatalog.get_element_ExternalLocationID()
+        ManufacturerCatalog = FulfillerLocationCatalog.get_element_ManufacturerCatalog()
+        ManufacturerID = ManufacturerCatalog.get_element_ManufacturerID()
+        CatalogID = ManufacturerCatalog.get_element_CatalogID()
         items = request.get_element_Items().get_element_items()
         Items = []
 
@@ -147,9 +150,8 @@ class Service(CoreServiceService):
                 'Quantity': item.get_element_Quantity()
             })
 
-        print "soap_allocateInventory:", FulfillerID, ExternalLocationID, Items
-
-        allocateInventory(FulfillerID, ExternalLocationID, Items, db)
+        print "soap_allocateInventory:", FulfillerID, ExternalLocationID, ManufacturerID, CatalogID, Items
+        allocateInventory(FulfillerID, ExternalLocationID, ManufacturerID, CatalogID, Items, db)
 
         return res
 
@@ -162,6 +164,9 @@ class Service(CoreServiceService):
         FulfillerID = request.get_element_FulfillerID()
         FulfillerLocationCatalog = request.get_element_FulfillerLocationCatalog()
         ExternalLocationID = FulfillerLocationCatalog.get_element_ExternalLocationID()
+        ManufacturerCatalog = FulfillerLocationCatalog.get_element_ManufacturerCatalog()
+        ManufacturerID = ManufacturerCatalog.get_element_ManufacturerID()
+        CatalogID = ManufacturerCatalog.get_element_CatalogID()
         items = request.get_element_Items().get_element_items()
         Items = []
 
@@ -172,9 +177,8 @@ class Service(CoreServiceService):
                 'Quantity': item.get_element_Quantity()
             })
 
-        print "soap_deallocateInventory:", FulfillerID, ExternalLocationID, Items
-
-        deallocateInventory(FulfillerID, ExternalLocationID, Items, db)
+        print "soap_deallocateInventory:", FulfillerID, ExternalLocationID, ManufacturerID, CatalogID, Items
+        deallocateInventory(FulfillerID, ExternalLocationID, ManufacturerID, CatalogID, Items, db)
 
         return res
 
@@ -187,6 +191,9 @@ class Service(CoreServiceService):
         FulfillerID = request.get_element_FulfillerID()
         FulfillerLocationCatalog = request.get_element_FulfillerLocationCatalog()
         ExternalLocationID = FulfillerLocationCatalog.get_element_ExternalLocationID()
+        ManufacturerCatalog = FulfillerLocationCatalog.get_element_ManufacturerCatalog()
+        ManufacturerID = ManufacturerCatalog.get_element_ManufacturerID()
+        CatalogID = ManufacturerCatalog.get_element_CatalogID()
         items = request.get_element_Items().get_element_items()
         Items = []
 
@@ -197,9 +204,8 @@ class Service(CoreServiceService):
                 'Quantity': item.get_element_Quantity()
             })
 
-        print "soap_fulfillInventory:", FulfillerID, ExternalLocationID, Items
-
-        fulfillInventory(FulfillerID, ExternalLocationID, Items, db)
+        print "soap_fulfillInventory:", FulfillerID, ExternalLocationID, ManufacturerID, CatalogID, Items
+        fulfillInventory(FulfillerID, ExternalLocationID, ManufacturerID, CatalogID, Items, db)
 
         return res
 
@@ -413,7 +419,7 @@ class Service(CoreServiceService):
         print 'adjustInventory:', FulfillerID, ExternalLocationID, itemList
         response = adjustInventory(FulfillerID, ExternalLocationID, itemList, db)
 
-        return AdjustInventorySoapOut(response)
+        return res
 
     # STATUS: Working with latest wsdl. 
     def soap_refreshInventory(self, ps):
