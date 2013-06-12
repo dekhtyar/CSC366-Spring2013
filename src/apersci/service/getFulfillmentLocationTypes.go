@@ -19,7 +19,7 @@ func getFulfillmentLocationTypes(w http.ResponseWriter, r *http.Request) (err er
 	}
 	defer conn.Close()
 
-	rows, err := conn.Query("SELECT DISTINCT type FROM locations")
+	rows, err := conn.Query("SELECT DISTINCT type FROM locations WHERE type IS NOT NULL")
 	if err != nil {
 		return
 	}
