@@ -89,9 +89,9 @@ def _modifyInventory(request, modification):
                   item.ExternalLocationID)
 
          if available_to_modify > 0:
-            max_can_modify = max(available_to_modify, quantity_left)
+            can_modify = min(available_to_modify, quantity_left)
 
-            d_num_allocated = max_can_modify  if modification == Modification.ALLOCATE else -max_can_modify
+            d_num_allocated = can_modify      if modification == Modification.ALLOCATE else -can_modify
             d_on_hand       = d_num_allocated if modification == Modification.FULFILL  else 0
 
             cur.execute(sql.INCREASE_NUM_ALLOCATED_AND_ON_HAND, {
@@ -103,7 +103,7 @@ def _modifyInventory(request, modification):
                'ext_ful_loc_id':  item.ExternalLocationID,
             })
 
-            quantity_left -= max_can_modify
+            quantity_left -= can_modify
             if quantity_left <= 0: # Should never be < 0, per max() above
                modified_all = True
                break
