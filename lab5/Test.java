@@ -31,9 +31,9 @@ public class Test {
 			 * TESTS HERE if (testCreateFulfiller())
 			 * System.out.println("createFulfiller failed");
 			 */
-			System.out
-					.println(!createBinTest1() ? "" : "createBinTest1 failed");
-
+			if(!createBinTest1()) {
+                        	System.out.println("createBinTest1 failed");
+                        }
 			if (!createBinTest2()) {
 				System.out.println("createBinTest2 failed");
 			}
@@ -112,8 +112,7 @@ public class Test {
 
 	// valid case 1
 	public static boolean createBinTest1() {
-		return apiCall.createBin(48590, null, "600", "General", "Pickable",
-				System.currentTimeMillis() + "") >= 0;
+		return apiCall.createBin(48590, null, "600", "General", "Pickable", System.currentTimeMillis() + "") >= 0;
 	}
 
 	// valid case 2: passing nulls case
