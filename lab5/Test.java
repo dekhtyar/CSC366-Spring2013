@@ -236,6 +236,8 @@ public class Test {
          System.out.println("BinType: " + binStatuses.get(ndx));
       }
 
+      System.out.println("Total bin Statuses returned: " + binStatuses.size());
+
       return binStatuses != null && binStatuses.size() > 0;
    }
 
