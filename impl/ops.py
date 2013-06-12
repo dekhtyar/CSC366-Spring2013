@@ -163,3 +163,51 @@ def AdjustRequest(request):
 @soap_op
 def RefreshRequest(request):
    return datatypes.RefreshResponse(1)
+
+class inventoryLocation(object):
+   def __init__(self, LocationName, CatalogID, ManufacturerID, OnHand, Available, PartNumber, UPC, LTD, SafetyStock, CountryCode):
+      self.LocationName = LocationName
+      self.CatalogID = CatalogID
+      self.ManufacturerID = ManufacturerID
+      self.OnHand = OnHand
+      self.Available = Available
+      self.PartNumber = PartNumber
+      self.UPC = UPC
+      self.LTD = LTD
+      self.SafetyStock = SafetyStock
+      self.CountryCode = CountryCode
+
+@soap_op
+def getInventory(request):
+   conn = sql.getConnection()
+   cursor = conn.cursor()
+   
+   IgnoreSafetyStock = ' - ha.safety_stock ' if request.IgnoreSafetyStock == False or request.IgnoreSafetyStock.lower() == "false"  else ''
+   LTD = ' ORDER by ha.LTD ' if request.OrderByLTD else ''
+   IncludeNegativeInventory = ' - ha.num_allocated ' if request.IncludeNegativeInventory  == False or request.IncludeNegativeInventory.lower() == "false" else ''
+   Limit = ' Limit ' + str(request.Limit) if request.Limit != '' else ''
+   LocationIDs = ' AND l.ext_ful_loc_id in (' + str(request.LocationIDs)[1:-1] + ') 'if request.LocationIDs != [] else ''
+
+   for item in request.Items:
+      PartNumber = item.PartNumber
+      UPC = item.UPC
+      Quantity = item.Quantity
+      query = (sql.GET_INVENTORY.format(
+         FulfillerID = request.FulfillerID,
+         LocationIDs = LocationIDs,
+         ManufacturerID = request.ManufacturerID,
+         CatalogID = request.CatalogID,
+         Type = request.Type,
+         Limit = Limit,
+         IgnoreSafetyStock = IgnoreSafetyStock,
+         OrderByLTD = LTD,
+         IncludeNegativeInventory = IncludeNegativeInventory,
+         LocationsIDs = LocationIDs,
+         PartNumber = PartNumber,
+         UPC = UPC,
+         Quantity = Quantity,
+      ));
+      print(query)
+      cursor.execute(query)
+      print(cursor.fetchall())
+   return datatypes.getInventoryResponse([])

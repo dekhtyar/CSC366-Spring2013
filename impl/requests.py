@@ -63,10 +63,9 @@ class RefreshRequest(object):
 
 class GetInventoryItem(object):
    def __init__(self, element):
-      items = getElement(element, "v4:items")
-      self.PartNumber = getElement(items, "v4:PartNumber").text
-      self.UPC = getElement(items, "v4:UPC").text
-      self.Quantity = getElement(items, "v4:Quantity").text
+      self.PartNumber = getElement(element, "v4:PartNumber").text
+      self.UPC = getElement(element, "v4:UPC").text
+      self.Quantity = getElement(element, "v4:Quantity").text
 
 class getInventory(object):
    def __init__(self, element):
@@ -88,4 +87,5 @@ class getInventory(object):
       self.Type = getElement(request, "v4:Type").text
       self.Limit = getElement(request, "v4:Limit").text
       self.IgnoreSafetyStock = getElement(request, "v4:IgnoreSafetyStock").text
+      self.IncludeNegativeInventory = getElement(request, "v4:IncludeNegativeInventory").text
       self.OrderByLTD = getElement(request, "v4:OrderByLTD").text
