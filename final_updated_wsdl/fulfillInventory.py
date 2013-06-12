@@ -61,5 +61,5 @@ def fulfillInventory(fulfiller_id, location_id, man_id, cat_id, items, db):
     for item in items:
         fulfillItem(fulfiller_id, location_id, item, db)
 
-    print 'Successfully deallocated inventory.'
+    print 'Successfully fulfilled inventory.'
     return True
