@@ -11,9 +11,11 @@ def getInventory(catalogue, fulfillerID, ignoreSafetyStock, includeNegativeInven
    #db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
    cursor = db.cursor()
    ordering = ""
-   safe = """AND ((si.OnHand > sa.SafetyStockLimit && sa.SafetystockLimit >= l.DefaultSafetyStockLimit) 
-                   OR (si.OnHand > l.DefaultSafetyStockLimit && l.DefaultSafetyStockLimit >= sa.SafetystockLimit))"""
+   #safe = """AND ((si.OnHand > sa.SafetyStockLimit && sa.SafetystockLimit >= l.DefaultSafetyStockLimit) 
+   #                OR (si.OnHand > l.DefaultSafetyStockLimit && l.DefaultSafetyStockLimit >= sa.SafetystockLimit))"""
+   safe = "- l.DefaultSafetyStockLimit "
    negative = "AND si.OnHand - si.Allocated > 0"
+   #negative = "- l.DefaultSafetyStockLimit "
    values = []
    numTuplesProcessed = 0
    callResults = [] #contains the raw values for the calls
@@ -24,13 +26,13 @@ def getInventory(catalogue, fulfillerID, ignoreSafetyStock, includeNegativeInven
    if(includeNegativeInventory): negative = ""
 
    # WORKAROUND: Removed catalog because underflow constraint won't allow zero values
-   constantSQLCommand = """SELECT l.Name, st.CatalogueId, st.ManufacturerId, si.OnHand, si.OnHand - si.Allocated as available, si.SKU,
+   constantSQLCommand = """SELECT l.Name, st.CatalogueId, st.ManufacturerId, si.OnHand, si.OnHand - si.Allocated %s  as available, si.SKU,
                  fb.UPC, sa.LTD, sa.SafetyStockLimit, l.DefaultSafetyStockLimit
                  FROM Locations l, SubscribeTo st, StoredIn si, FulfilledBy fb, StoredAt sa
                  WHERE st.ManufacturerId  = %s AND l.FulfillerId = %s  
                  AND st.FulfillerId = l.FulfillerId AND st.FulfillerLocationId = l.FulfillerLocationId AND sa.FulfillerLocationId = l.FulfillerLocationId
                  AND si.SKU = fb.SKU AND si.FulfillerId = fb.FulfillerId AND fb.fulfillerID = l.FulfillerId
-                 AND sa.SKU = si.SKU AND sa.FulfillerId = fb.FulfillerId AND si.FulfillerLocationId = l.FulfillerLocationId %s %s """ % (catalogue["ManufacturerID"], fulfillerID, safe, negative) #still have to put ordering, sku, upc, FulfillerLocationID, OnHand 
+                 AND sa.SKU = si.SKU AND sa.FulfillerId = fb.FulfillerId AND si.FulfillerLocationId = l.FulfillerLocationId %s""" % (safe, catalogue["ManufacturerID"], fulfillerID, negative) #still have to put ordering, sku, upc, FulfillerLocationID, OnHand 
 
    # With catalog
    #constantSQLCommand = """SELECT l.Name, st.CatalogueId, st.ManufacturerId, si.OnHand, si.OnHand - si.Allocated as available, si.SKU,
