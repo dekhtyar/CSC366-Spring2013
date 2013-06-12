@@ -11,37 +11,77 @@ def commitAndClose(conn):
 
 INCREASE_NUM_ALLOCATED_AND_ON_HAND = '''
    UPDATE StoredIn(sku, fulfiller_id, bin_name, ext_ful_loc_id, num_allocated)
-   SET num_allocated = num_allocated + {d_num_allocated} AND
-       on_hand       = on_hand + {d_on_hand}
-   WHERE sku            = {part_number}    AND
-         fuller_id      = {fulfiller_id}   AND
-         bin_name       = {bin_name}       AND
-         ext_ful_loc_id = {ext_ful_loc_id}
+   SET num_allocated = num_allocated + %(d_num_allocated)s AND
+       on_hand       = on_hand + %(d_on_hand)s
+   WHERE sku            = %(part_number)s    AND
+         fuller_id      = %(fulfiller_id)s   AND
+         bin_name       = %(bin_name)s       AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
 '''
 
 GET_BIN_NAMES = '''
    SELECT name
    FROM Bin
-   WHERE fulfiller_id   = {fulfiller_id} AND
-         ext_ful_loc_id = {ext_ful_loc_id} 
+   WHERE fulfiller_id   = %(fulfiller_id)s AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
 '''
 
 GET_ON_HAND_AND_NUM_ALLOCATED = '''
    SELECT on_hand, num_allocated
    FROM StoredIn
-   WHERE sku            = {sku}            AND
-         fulfiller_id   = {fulfiller_id}   AND
-         bin_name       = {bin_name}       AND
-         ext_ful_loc_id = {ext_ful_loc_id}
+   WHERE sku            = %(sku)s            AND
+         fulfiller_id   = %(fulfiller_id)s   AND
+         bin_name       = %(bin_name)s       AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
 '''
 
 GET_NUM_ALLOCATED = '''
    SELECT num_allocated
    FROM StoredIn
-   WHERE sku            = {sku}            AND
-         fulfiller_id   = {fulfiller_id}   AND
-         bin_name       = {bin_name}       AND
-         ext_ful_loc_id = {ext_ful_loc_id}
+   WHERE sku            = %(sku)s            AND
+         fulfiller_id   = %(fulfiller_id)s   AND
+         bin_name       = %(bin_name)s       AND
+         ext_ful_loc_id = %(ext_ful_loc_id)s
+'''
+
+GET_STATUSES = '''
+   SELECT status
+   FROM Location
+   WHERE fulfiller_id = %(fulfiller_id)s
+'''
+
+GET_BIN_TYPES = '''
+   SELECT DISTINCT type
+   FROM Bin
+'''
+
+GET_BIN_STATUSES = '''
+   SELECT DISTINCT status
+   FROM Bin
+'''
+
+GET_BINS = '''
+   SELECT fulfiller_id, name, ext_ful_loc_id, type, status
+   FROM Bin
+   WHERE fulfiller_id   = {fulfiller_id} AND
+         ext_ful_loc_id = {ext_ful_loc_id} AND
+         name           LIKE "%{name}%"
+   LIMIT {results_start}, {num_results}
+'''
+
+GET_FULFILLMENT_LOCATIONS = '''
+   SELECT DISTINCT h.fulfiller_id, h.ext_ful_loc_id
+   FROM Product p
+        INNER JOIN FulfillerSpecificProduct fsp ON( 
+           fsp.upc = p.upc
+        )
+        INNER JOIN HeldAt h ON(
+           fsp.fulfiller_id = h.fulfiller_id
+        )
+   WHERE
+        fsp.fulfiller_id = {fulfiller_id} AND
+        p.manufacturer_id = {manufacturer_id} AND
+        p.catalog_id = {catalog_id}
 '''
 
 CREATE_FULFILLER = '''

@@ -1,0 +1,22 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:getBinsResponse>
+         <v4:getBinsReturn>
+            <v4:Bins>
+               {% for item in response.items %}
+               <v4:items>
+                  <v4:FulfillerID>{{ item.FulfillerID }}</v4:FulfillerID>
+                  <v4:BinID>{{ item.BinID }}</v4:BinID>
+                  <v4:ExternalLocationID>{{ item.ExternalLocationID }}</v4:ExternalLocationID>
+                  <v4:BinType>{{ item.BinType }}</v4:BinType>
+                  <v4:BinStatus>{{ item.BinStatus }}</v4:BinStatus>
+                  <v4:Name>{{ item.Name }}</v4:Name>
+               </v4:items>
+               {% endfor %}
+            </v4:Bins>
+            <v4:ResultCount>{{ response.ResultCount }}</v4:ResultCount>
+         </v4:getBinsReturn>
+      </v4:getBinsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

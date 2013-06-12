@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:getFulfillmentLocationsResponse>
+         {% for location in response.locations %}
+         <v4:getFulfillmentLocationsReturn>
+            <v4:FulfillerID>{{ location.FulfillerID }}</v4:FulfillerID>
+            <v4:ExternalLocationID>{{ location.ExternalLocationID }}</v4:ExternalLocationID>
+         </v4:getFulfillmentLocationsReturn>
+         {% endfor %}
+      </v4:getFulfillmentLocationsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

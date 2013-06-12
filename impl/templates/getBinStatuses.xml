@@ -1,0 +1,12 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v4:getBinStatusesResponse>
+         {% for status in response.statuses %}
+         <v4:getBinStatusesReturn>
+            <v4:BinStatus>{{ status }}</v4:BinType>
+         </v4:getBinStatusesReturn>
+         {% endfor %}
+      </v4:getBinStatusesResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
