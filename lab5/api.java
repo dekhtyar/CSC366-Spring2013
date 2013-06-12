@@ -99,7 +99,7 @@ public class api {
             try {
                 String sku = items[ndx][0].toString();
                 String upc = items[ndx][1].toString();
-                Integer quantity = (Integer)items[ndx][2];     
+                Integer quantity = (Integer)items[ndx][2];
 
                 PreparedStatement ps;
 
@@ -141,17 +141,17 @@ public class api {
                 ps2.setInt(charCount-1, binId);
                 ps2.setString(charCount, locationId);
 
-                int rows = ps2.executeUpdate();
-                
-                System.out.println(rows + " updated");
+                if(ps2.executeUpdate() < 0) {
+                   System.out.println("No items were allocated/deallocated/fulfilled");
+                }
             }
             catch (Exception e) {
-                System.out.println("Allocation/deallocation failed");
+                System.out.println("Allocation/deallocation/fulfillment failed");
                 System.out.println(e.toString());
                 return;
             }
         }
-        
+
         closeConnection();
     }
     
@@ -1132,7 +1132,7 @@ public class api {
                ps.setInt(num++, (new Integer(quantities[ndx][2].toString())).intValue());
             }
 
-            for(int i = 0; i < locationIds.length; i++) {
+            for(int i = 0; locationIds != null && i < locationIds.length; i++) {
                ps.setString(num + i, locationIds[i]);
             }
             
