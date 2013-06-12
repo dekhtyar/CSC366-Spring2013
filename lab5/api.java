@@ -397,78 +397,75 @@ public class api {
 	}
 
 	public int getFulfillerStatus(int fulfillerId) {
-		int numStatus = 2;
-		String sql = "SELECT Status FROM Location WHERE FulfillerId = ?";
+		 int numStatus = -1;
+      String sql = "SELECT Status FROM Location WHERE FulfillerId = ?";
 
-		if (fulfillerId < 0)
-			return -1;
+      if(fulfillerId < 0)
+         return -1;
 
-		setUpConnection();
+      setUpConnection();
 
-		try {
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setInt(1, fulfillerId);
+      try {
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ps.setInt(1, fulfillerId);
 
-			ResultSet results = ps.executeQuery();
+         ResultSet results = ps.executeQuery();
 
-			/*
-			 * if(!results.first()) { System.out.println(
-			 * "No entry in Location table for tuple with fulfillerId of " +
-			 * fulfillerId); return -1; }
-			 */
+         String status = "";
 
-			String status = "";
+			while(results.next())
+         {
+            status = results.getString(1);
 
-			while (results.next()) {
-				status = results.getString(1);
+            if(status.equals("active"))
+            {
+               closeConnection();
+               return 1;
+            }
+            else if(status.equals("inactive"))
+            {
+               numStatus = 2;
+            }
+            else if(!status.equals("inactive"))
+            {
+               System.out.println("Description field of tuple with"
+                  + " fulfiller Id of " + fulfillerId
+                  + " contains unknown value: " + status);
+            }
+         }
+		}  catch(Exception e) {
+         System.out.println("Exception occured in getFulfillerStatus(): " + e);
+         return -1;
+      }
 
-				if (status.equals("active")) {
-					// numStatus = 1;
-					return 1;
-				}
-				/*
-				 * else if(status.equals("inactive")) { numStatus = 2; }
-				 */
-				else if (!status.equals("inactive")) {
-					System.out.println("Description field of tuple with"
-							+ " fulfiller Id of " + fulfillerId
-							+ " contains unknown value: " + status);
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("Exception occured in getFulfillerStatus(): "
-					+ e);
-			return -1;
-		}
+      closeConnection();
 
-		closeConnection();
-
-		return 2;
+      return numStatus;
 	}
 
 	public ArrayList<String> getFulfillmentLocationTypes() {
-		String sql = "SELECT DISTINCT Description FROM Location";
-		ArrayList<String> types = new ArrayList<String>();
+		String sql = "SELECT DISTINCT Type FROM Location";
+      ArrayList<String> types = new ArrayList<String>();
 
-		setUpConnection();
+      setUpConnection();
 
-		try {
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ResultSet results = ps.executeQuery();
+      try {
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet results = ps.executeQuery();
 
-			while (results.next()) {
-				types.add(results.getString(1));
-			}
-		} catch (Exception e) {
-			System.out
-					.println("Exception occured in getFulfillerLocationTypes(): "
-							+ e);
-			return null;
-		}
+         while(results.next())
+         {
+            types.add(results.getString(1));
+         }
+      }
+      catch(Exception e) {
+         System.out.println("Exception occured in getFulfillerLocationTypes(): "$
+         return null;
+      }
 
-		closeConnection();
+      closeConnection();
 
-		return types;
+      return types;
 	}
 
 	public ArrayList<Object[]> getBins(int fulfillerId,
