@@ -28,61 +28,80 @@ public static void main(String[] args) {
       }
 
       if(test) {
-         Object[][] fulfillerLocationCatalog = {{new Integer(10636), new Integer(0)}, {new Integer(600)}};
-         Object[][] items = {{"200033103", "200033103", new Integer(1), new Integer(600)}, {"201279746", "201279746", new Integer(1), new Integer(600)}};
-         //testModifyInventory(48590, fulfillerLocationCatalog, items);
-         testGetBins(48590, "600", "", 100000, 0);
-         testGetBinTypes();
-         testGetBinStatuses();
+         /*
+	 TESTS HERE
+	 if (testCreateFulfiller())
+	    System.out.println("createFulfiller failed");
+	 */
+         if(!createBinTest1()) {
+            System.out.println("createBinTest1 failed");
+         }
+         if(!createBinTest2()) {
+            System.out.println("createBinTest2 failed");
+         }
+         if(!createBinTest3()) {
+            System.out.println("createBinTest3 failed");
+         }
 
-         /*int fulfillerId = 48590;
-         int[] manCatalog = {11416, 0};
-         Object[][] quantities = {{"200235977", "200235977", 1},
-                                  {"200235976", "200235976", 1}};
-         String[] locationIds = {};
-         Object[] location = null;
-         String type = "ALL";
-         int limit = 1000;
-         Boolean ignoreSafetyStock = true;
-         Boolean includeNegativeInventory = true;
-         boolean orderByLtd = true;*/
-         /*int fulfillerId = 76061;
-         int[] manCatalog = {10636, 1};
-         Object[][] quantities = {{"22-14582-001", "22-14582-001", 1},
-                                  {"22-14582-002", "22-14582-002", 1}};
-         String[] locationIds = {};
-         Object[] location = {}
-         String type = "ANY";
-         int limit = 1000;
-         Boolean ignoreSafetyStock = null;
-         Boolean includeNegativeInventory = null;
-         boolean orderByLtd = false;*/
-      
-         int fulfillerId = 69170;
-         int[] manCatalog = null;
-         Object[][] quantities = {{"8888069843", "8888069843", 1},
-                                  {"8888074813", "8888074813", 1},
-                                   {"8888052689", "8888052689", 1}};
-         String[] locationIds = {};
-         Object[] location = {"MILES", 100, 0, new Float(40.742300),
-         new Float(-73.987900), "USA"};
-         String type = "ALL";
-         int limit = 1000;
-         Boolean ignoreSafetyStock = null;
-         Boolean includeNegativeInventory = null;
-         boolean orderByLtd = false;
+         if(!getBinsTest1()) {
+            System.out.println("getBinsTest1 failed");
+         }
+         if(!getBinsTest2()) {
+            System.out.println("getBinsTest2 failed");
+         }
+         if(!getBinsTest3()) {
+            System.out.println("getBinsTest3 failed");
+         }
+         if(!getBinsTest4()) {
+            System.out.println("getBinsTest4 failed");
+         }
 
-         System.out.println("Testing getInventory");
-         ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
-          manCatalog, quantities, locationIds, location, type, limit,
-          ignoreSafetyStock, includeNegativeInventory, orderByLtd);
-         System.out.println(inventory.size() + " results");
+         if(!getBinTypesTest()) {
+            System.out.println("getBinTypesTest failed");
+         }
 
-			/*
-				TESTS HERE
-				if (testCreateFulfiller())
-					System.out.println("createFulfiller failed");
-			*/
+         if(!getBinStatusesTest()) {
+            System.out.println("getBinStatusesTest failed");
+         }
+
+         if(!allocateInventoryTest1()) {
+            System.out.println("allocateInventoryTest1 failed");
+         }
+         if(!deallocateInventoryTest()) {
+            System.out.println("deallocateInventoryTest failed");
+         }
+
+         if(!allocateInventoryTest2()) {
+            System.out.println("allocateInventoryTest2 failed");
+         }
+         if(!fulfillInventoryTest()) {
+            System.out.println("fulfillInventoryTest failed");
+         }
+
+         if(!getInventoryTest1()) {
+            System.out.println("getInventoryTest1 failed");
+         }
+         if(!getInventoryTest2()) {
+            System.out.println("getInventoryTest2 failed");
+         }
+         if(!getInventoryTest3()) {
+            System.out.println("getInventoryTest3 failed");
+         }
+         if(!getInventoryTest4()) {
+            System.out.println("getInventoryTest4 failed");
+         }
+         if(!getInventoryTest5()) {
+            System.out.println("getInventoryTest5 failed");
+         }
+         if(!getInventoryTest6()) {
+            System.out.println("getInventoryTest6 failed");
+         }
+         if(!getInventoryTest7()) {
+            System.out.println("getInventoryTest7 failed");
+         }
+         if(!getInventoryTest8()) {
+            System.out.println("getInventoryTest8 failed");
+         }
       }
 
       if(cleanup)
@@ -92,6 +111,271 @@ public static void main(String[] args) {
       }
       
       closeConnection();
+   }
+
+   //valid case 1
+   public static boolean createBinTest1() {
+      return apiCall.createBin(48590, null, "600", "General",
+              "Pickable", System.currentTimeMillis() + "") >= 0;
+   }
+
+   //valid case 2: passing nulls case
+   public static boolean createBinTest2() {
+      return apiCall.createBin(48590, null, "600", "General",
+              "Pickable", null) >= 0;
+   }
+
+   //invalid case: negative fulfillerId and binId
+   public static boolean createBinTest3() {
+      return apiCall.createBin(-1, -1, "600", "General",
+              "Pickable", null) < 0;
+   }
+
+   //valid case 1
+   public static boolean getBinsTest1() {
+      ArrayList<Object[]> bins = apiCall.getBins(48590, "600", "", null, null);
+
+      return bins != null && bins.size() > 0;
+   }
+
+   //valid case 2: 1 bin or less
+   public static boolean getBinsTest2() {
+      ArrayList<Object[]> bins = apiCall.getBins(48590, "600", "", 1, 0);
+
+      return bins != null && (bins.size() == 1 || bins.size() ==  0);
+   }
+
+   //invalid case 1: Non-existant searchTerm
+   public static boolean getBinsTest3() {
+      ArrayList<Object[]> bins = apiCall.getBins(48590, "600", "DOESNOTEXIST", null, 0);
+
+      return bins != null && bins.size() == 0;
+   }
+
+   //invalid case 2: No results
+   public static boolean getBinsTest4() {
+      ArrayList<Object[]> bins = apiCall.getBins(-1, null, "", 100000, 0);
+
+      return bins != null && bins.size() == 0;
+   }
+
+   //only case
+   public static boolean getBinTypesTest() {
+      ArrayList<String> binTypes = apiCall.getBinTypes();
+
+      return binTypes != null && binTypes.size() > 0;
+   }
+
+   //only case
+   public static boolean getBinStatusesTest() {
+      ArrayList<String> binStatuses = apiCall.getBinStatuses();
+
+      return binStatuses != null && binStatuses.size() > 0;
+   }
+
+   public static boolean allocateInventoryTest1() {
+      Object[][] fulfillerLocationCatalog = null;
+         Object[][] items = {{"200033103", "200033103", new Integer(1), new Integer(600)}, {"201279746", "201279746", new Integer(1), "600"}};
+      apiCall.allocateInventory(48590, fulfillerLocationCatalog, items);
+
+      return true;
+   }
+
+   public static boolean deallocateInventoryTest() {
+      Object[][] fulfillerLocationCatalog = null;
+         Object[][] items = {{"200033103", "200033103", new Integer(1), new Integer(600)}, {"201279746", "201279746", new Integer(1), "600"}};
+      apiCall.deallocateInventory(48590, fulfillerLocationCatalog, items);
+
+      return true;
+   }
+
+   public static boolean allocateInventoryTest2() {
+      Object[][] fulfillerLocationCatalog = null;
+      Object[][] items = {{"200033103", "200033103", new Integer(1), new Integer(600)}, {"201279746", "201279746", new Integer(1), "600"}};
+      apiCall.allocateInventory(48590, fulfillerLocationCatalog, items);
+
+      return true;
+   }
+
+   public static boolean fulfillInventoryTest() {
+      Object[][] fulfillerLocationCatalog = null;
+      Object[][] items = {{"200033103", "200033103", new Integer(1), new Integer(600)}, {"201279746", "201279746", new Integer(1), "600"}};
+      apiCall.fulfillInventory(48590, fulfillerLocationCatalog, items);
+
+      return true;
+   }
+
+   //valid case 1: "PARTIAL" type
+   public static boolean getInventoryTest1() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"8888069843", "8888069843", 1},
+                               {"8888074813", "8888074813", 1},
+                               {"8888052689", "8888052689", 1}};
+      String[] locationIds = null;
+      Object[] location = null;
+      String type = "PARTIAL";
+      int limit = 1000;
+      Boolean ignoreSafetyStock = true;
+      Boolean includeNegativeInventory = false;
+      boolean orderByLtd = true;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   //valid case 2: "ANY" type
+   public static boolean getInventoryTest2() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"8888069843", "8888069843", 1},
+                               {"8888074813", "8888074813", 1},
+                               {"8888052689", "8888052689", 1}};
+      String[] locationIds = null;
+      Object[] location = null;
+      String type = "ALL";
+      int limit = 1000;
+      Boolean ignoreSafetyStock = false;
+      Boolean includeNegativeInventory = true;
+      boolean orderByLtd = true;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   //valid case 3: "ALL" type
+   public static boolean getInventoryTest3() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"8888069843", "8888069843", 1},
+                               {"8888074813", "8888074813", 1},
+                               {"8888052689", "8888052689", 1}};
+      String[] locationIds = null;
+      Object[] location = null;
+      String type = "ALL";
+      int limit = 1000;
+      Boolean ignoreSafetyStock = null;
+      Boolean includeNegativeInventory = null;
+      boolean orderByLtd = false;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   //valid case 4: "ALL_STORES" type
+   public static boolean getInventoryTest4() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"8888069843", "8888069843", 1},
+                               {"8888074813", "8888074813", 1},
+                               {"8888052689", "8888052689", 1}};
+      String[] locationIds = null;
+      Object[] location = null;
+      String type = "ALL_STORES";
+      int limit = 1000;
+      Boolean ignoreSafetyStock = false;
+      Boolean includeNegativeInventory = false;
+      boolean orderByLtd = true;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   //valid case 5: Location Id's
+   public static boolean getInventoryTest5() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"8888069843", "8888069843", 1}};
+      String[] locationIds = {"440777", "440777", "440004"};
+      Object[] location = null;
+      String type = "ALL";
+      int limit = 1000;
+      Boolean ignoreSafetyStock = null;
+      Boolean includeNegativeInventory = null;
+      boolean orderByLtd = false;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   //valid case 6: requestLocation
+   public static boolean getInventoryTest6() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"8888069843", "8888069843", 1},
+                               {"8888074813", "8888074813", 1},
+                               {"8888052689", "8888052689", 1}};
+      String[] locationIds = null;
+      Object[] location = {"MILES", 100, 0, new Float(40.742300),
+      new Float(-73.987900), "USA"};
+      String type = "ALL";
+      int limit = 1000;
+      Boolean ignoreSafetyStock = null;
+      Boolean includeNegativeInventory = null;
+      boolean orderByLtd = false;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   //valid case 7: Test limit value
+   public static boolean getInventoryTest7() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"8888069843", "8888069843", 1},
+                               {"8888074813", "8888074813", 1},
+                               {"8888052689", "8888052689", 1}};
+      String[] locationIds = null;
+      Object[] location = null;
+      String type = "PARTIAL";
+      int limit = 1;
+      Boolean ignoreSafetyStock = null;
+      Boolean includeNegativeInventory = null;
+      boolean orderByLtd = false;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() <= limit;
+   }
+
+   //invalid case
+   public static boolean getInventoryTest8() {
+      int fulfillerId = 69170;
+      int[] manCatalog = null;
+      Object[][] quantities = {{"DOES_NOT_EXIST", "DOES_NOT_EXIST", 1}};
+      String[] locationIds = {};
+      Object[] location = null;
+      String type = "ALL";
+      int limit = 10000;
+      Boolean ignoreSafetyStock = null;
+      Boolean includeNegativeInventory = null;
+      boolean orderByLtd = false;
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId,
+       manCatalog, quantities, locationIds, location, type, limit,
+       ignoreSafetyStock, includeNegativeInventory, orderByLtd);
+
+      return inventory != null && inventory.size() == 0;
    }
 
    public static void createDatabase() {
