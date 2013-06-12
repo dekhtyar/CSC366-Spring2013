@@ -1,5 +1,11 @@
 #!/usr/local/bin/python2.7
 
+# Kevin Stein  kestein@calpoly.edu
+# Alex Spotnitz  aspotnitz@gmail.com
+# Stephen Calabrese  sccalabr@calpoly.edu
+# Alex Boltunov  aboltunov@gmail.com
+# Luke Larson  lplarson@calpoly.edu
+
 import sys
 import api
 from allocateInventory import allocateInventory
@@ -317,7 +323,7 @@ class Service(CoreServiceService):
 
         return res
 
-    # STATUS: Connection in progress
+    # STATUS: Working with latest wsdl. 
     def soap_getInventory(self, ps):
         res = CoreServiceService.soap_getInventory(self, ps)
         req = self.request
@@ -363,8 +369,6 @@ class Service(CoreServiceService):
 
         InventoryReturnList = []
         for result in results:
-            #constantSQLCommand = """SELECT l.Name, st.CatalogueId, st.ManufacturerId, si.OnHand, si.OnHand - si.Allocated as available, si.SKU,
-            #                               fb.UPC, sa.LTD, sa.SafetyStockLimit, l.DefaultSafetyStockLimit
             getInventoryReturn = res.new_getInventoryReturn()
             getInventoryReturn.set_element_LocationName(result[0])
             getInventoryReturn.set_element_CatalogID(int(result[1]))
@@ -383,13 +387,7 @@ class Service(CoreServiceService):
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
-    #def adjustInventory(fulfillerID, fulfillerLocationID, refreshItems, db):
-    #FulfillerId
-    #FulfillerLocationId
-    #refreshItems: list of dictionaries with keys "Quantity", "partnumber", "BinId", "UPC" 
-    #   keys represent quantity to add to set, SKU, bin name, UPC
-    #pointer to the database
+    # STATUS: Working with latest wsdl. 
     def soap_adjustInventory(self, ps):
         res = CoreServiceService.soap_adjustInventory(self, ps)
         req = self.request

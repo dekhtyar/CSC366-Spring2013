@@ -1,5 +1,10 @@
 #!/usr/local/bin/python2.7
-# db2.thepicard.org
+
+# Kevin Stein  kestein@calpoly.edu
+# Alex Spotnitz  aspotnitz@gmail.com
+# Stephen Calabrese  sccalabr@calpoly.edu
+# Alex Boltunov  aboltunov@gmail.com
+# Luke Larson  lplarson@calpoly.edu
 
 from CoreServiceService_services import *
 import MySQLdb
