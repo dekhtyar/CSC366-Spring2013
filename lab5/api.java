@@ -902,6 +902,10 @@ public class api {
 		} else { // use insert
 			String CIB = "INSERT INTO ContainedInBin (BinId, LocationProductId, OnHand, Allocated) VALUES(?, ?, ?, ?)";
 
+
+
+
+
 			try {
 				s1 = conn.prepareStatement(CIB);
 				s1.setInt(1, binId);
@@ -1016,16 +1020,10 @@ public class api {
 		return 1;
 	}
 
-	public int adjustInventory(int internalFulfillerLocationId, int binId,
-			int onhand, double ltd, int safetyStock, int adjust) {
+	public int adjustInventory(int internalFulfillerLocationId, int binId, int onhand, double ltd, int safetyStock, String UPC, String partnum, int fulfillerid, String externalocation, int adjust) {
 
-		if (onhand + adjust > safetyStock) {
-			System.out.println("Adjusting larger than safety stock");
-		}
 		try {
-			// updateContainedInBin(binId, onhand+adjust,
-			// internalFulfillerLocationId, ltd, safetyStock);
-			System.out.println("Adjusted " + binId);
+			updateContainedInBin(binId, onhand+adjust, internalFulfillerLocationId, ltd, safetyStock, UPC, partnum, fulfillerid, externalocation);
 		} catch (Exception e) {
 			System.out.println("adjustInventory: " + e);
 			return -1;
