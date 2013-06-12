@@ -25,9 +25,17 @@ class createBinResponse(object):
    def __init__(self, createBinReturn):
       self.createBinReturn = createBinReturn
 
+class AdjustResponse(object):
+   def __init__(self, response_str):
+      self.AdjustResponse = response_str
+
 class RefreshResponse(object):
    def __init__(self, response_str):
       self.RefreshResponse = response_str
+
+class getInventoryResponse(object):
+   def __init__(self, locations):
+      self.locations = locations
 
 class getFulfillerStatusResponse(object):
    def __init__(self, getFulfillerStatusReturn):
@@ -61,5 +69,6 @@ class location(object):
       self.ExternalLocationID = ExternalLocationID
 
 class getFulfillmentLocationsResponse(object):
-   def __init__(self, locations):
-      self.locations = locations
+#Change this Mitch, this is only to make it compile
+   def __init__(self, a):
+      self.a = a

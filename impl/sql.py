@@ -95,8 +95,8 @@ CREATE_LOCATION = '''
 '''
 
 CREATE_BIN = '''
-   INSERT INTO Bin(name, ext_ful_loc_id, fulfiller_id, type, status)
-   VALUES (%s, %s, %s, %s, %s)
+   INSERT INTO Bin(name, bin_id, ext_ful_loc_id, fulfiller_id, type, status)
+   VALUES (%s, %s, %s, %s, %s, %s)
 '''
 
 CREATE_MANUFACTURER = '''
@@ -129,3 +129,54 @@ CREATE_STORED_AT = '''
    VALUES(%s, %s, %s, %s, %s)
 '''
 
+TEST_ADJUST = '''
+   SELECT *
+   FROM StoredIn
+   WHERE (on_hand + %s) >= 0
+     AND sku = %s
+     AND fulfiller_id = %s
+     AND bin_name = %s
+     AND ext_ful_loc_id = %s
+'''
+
+MODIFY_STORED_AT = '''
+   UPDATE StoredIn
+   SET on_hand = on_hand + %s
+   WHERE sku = %s
+     AND fulfiller_id = %s
+     AND bin_name = %s
+     AND ext_ful_loc_id = %s
+'''
+
+GET_INVENTORY = '''
+SELECT ValidLocation.ext_ful_loc_id, ValidLocation.catalog_id,
+   ValidLocation.manufacturer_id, si.on_hand, si.num_allocated, fp.sku, fp.upc, ha.ltd,
+   ha.safety_stock
+FROM
+   (SELECT l.ext_ful_loc_id, l.fulfiller_id, c.id as catalog_id, c.manufacturer_id
+    FROM Location l, Catalog c, Fulfiller f
+    WHERE f.id = l.fulfiller_id AND c.id = {CatalogID} AND
+      c.manufacturer_id = {ManufacturerID} {LocationIDs} AND l.fulfiller_id =
+      {FulfillerID} AND l.Type = {Type}
+    ) AS ValidLocation
+INNER JOIN Bin b ON(
+   b.ext_ful_loc_id = ValidLocation.ext_ful_loc_id AND
+   b.fulfiller_id = ValidLocation.fulfiller_id
+)
+INNER JOIN StoredIn si ON(
+   si.ext_ful_loc_id = b.ext_ful_loc_id AND
+   si.fulfiller_id = b.fulfiller_id AND
+   si.bin_name = b.name
+)
+INNER JOIN HeldAt ha ON(
+   ha.sku = si.sku AND
+   ha.ext_ful_loc_id = si.ext_ful_loc_id AND
+   ha.fulfiller_id = si.fulfiller_id
+)
+INNER JOIN FulfillerSpecificProduct fp ON(
+   fp.fulfiller_id = ha.fulfiller_id AND
+   fp.sku = ha.sku
+)
+WHERE fp.sku = {PartNumber} AND fp.upc = {UPC} AND
+   si.on_hand {IncludeNegativeInventory} >= {Quantity} {IgnoreSafetyStock} {OrderByLTD} {Limit}
+'''

@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS Product (
 
 CREATE TABLE IF NOT EXISTS Bin (
    name VARCHAR(100),
+   bin_id INT,
    ext_ful_loc_id VARCHAR(100),
    fulfiller_id INT, 
    type VARCHAR(100),

@@ -165,6 +165,7 @@ def createFulfillmentLocation(location):
 def createBin(bin_):
    values = (
          bin_.Name,
+         bin_.BinID,
          bin_.ExternalLocationID,
          bin_.FulfillerID,
          bin_.BinType,
@@ -180,11 +181,90 @@ def createBin(bin_):
 
 @soap_op
 def AdjustRequest(request):
-   pass
+   conn = sql.getConnection()
+   cursor = conn.cursor(buffered=True)
+
+   for item in request.Items:
+      cursor.execute(sql.TEST_ADJUST, (item.Quantity, item.PartNumber,
+         request.FulfillerID, item.BinID, request.ExternalLocationID))
+      if cursor.rowcount == 0:
+         raise SoapFault("Cannot have quantity < 0 for item %s in bin %s" %
+               (item.PartNumber, item.BinID))
+      cursor.fetchall()
+      cursor.execute(sql.MODIFY_STORED_AT, (item.Quantity, item.PartNumber,
+         request.FulfillerID, item.BinID, request.ExternalLocationID))
+
+   sql.commitAndClose(conn)
+   return datatypes.AdjustResponse(1)
 
 @soap_op
 def RefreshRequest(request):
+   conn = sql.getConnection()
+   cursor = conn.cursor()
+
+   for item in request.Items:
+      cursor.execute(sql.CREATE_MANUFACTURER, (0,))
+      cursor.execute(sql.CREATE_CATALOG, (0, 0))
+      cursor.execute(sql.CREATE_PRODUCT, (item.UPC, 0, 0, ''));
+      cursor.execute(sql.CREATE_FULFILLER_SPECIFIC_PRODUCT, (item.PartNumber,
+         request.FulfillerID, item.UPC))
+      cursor.execute(sql.CREATE_HELD_AT, (request.FulfillerID,
+         request.ExternalLocationID, item.PartNumber, item.LTD,
+         item.SafetyStock))
+      cursor.execute(sql.CREATE_STORED_AT, (item.PartNumber,
+         request.FulfillerID, item.BinID, request.ExternalLocationID,
+         item.Quantity))
+
+   sql.commitAndClose(conn)
    return datatypes.RefreshResponse(1)
+
+class inventoryLocation(object):
+   def __init__(self, LocationName, CatalogID, ManufacturerID, OnHand, Available, PartNumber, UPC, LTD, SafetyStock, CountryCode):
+      self.LocationName = LocationName
+      self.CatalogID = CatalogID
+      self.ManufacturerID = ManufacturerID
+      self.OnHand = OnHand
+      self.Available = Available
+      self.PartNumber = PartNumber
+      self.UPC = UPC
+      self.LTD = LTD
+      self.SafetyStock = SafetyStock
+      self.CountryCode = CountryCode
+
+@soap_op
+def getInventory(request):
+   conn = sql.getConnection()
+   cursor = conn.cursor()
+   
+   IgnoreSafetyStock = ' - ha.safety_stock ' if request.IgnoreSafetyStock == False or request.IgnoreSafetyStock.lower() == "false"  else ''
+   LTD = ' ORDER by ha.LTD ' if request.OrderByLTD else ''
+   IncludeNegativeInventory = ' - ha.num_allocated ' if request.IncludeNegativeInventory  == False or request.IncludeNegativeInventory.lower() == "false" else ''
+   Limit = ' Limit ' + str(request.Limit) if request.Limit != '' else ''
+   LocationIDs = ' AND l.ext_ful_loc_id in (' + str(request.LocationIDs)[1:-1] + ') 'if request.LocationIDs != [] else ''
+
+   for item in request.Items:
+      PartNumber = item.PartNumber
+      UPC = item.UPC
+      Quantity = item.Quantity
+      query = (sql.GET_INVENTORY.format(
+         FulfillerID = request.FulfillerID,
+         LocationIDs = LocationIDs,
+         ManufacturerID = request.ManufacturerID,
+         CatalogID = request.CatalogID,
+         Type = request.Type,
+         Limit = Limit,
+         IgnoreSafetyStock = IgnoreSafetyStock,
+         OrderByLTD = LTD,
+         IncludeNegativeInventory = IncludeNegativeInventory,
+         LocationsIDs = LocationIDs,
+         PartNumber = PartNumber,
+         UPC = UPC,
+         Quantity = Quantity,
+      ));
+      print(query)
+      cursor.execute(query)
+      print(cursor.fetchall())
+   return datatypes.getInventoryResponse([])
 
 @soap_op
 def getFulfillerStatus(request):
