@@ -95,8 +95,8 @@ CREATE_LOCATION = '''
 '''
 
 CREATE_BIN = '''
-   INSERT INTO Bin(name, ext_ful_loc_id, fulfiller_id, type, status)
-   VALUES (%s, %s, %s, %s, %s)
+   INSERT INTO Bin(name, bin_id, ext_ful_loc_id, fulfiller_id, type, status)
+   VALUES (%s, %s, %s, %s, %s, %s)
 '''
 
 CREATE_MANUFACTURER = '''
@@ -127,6 +127,25 @@ CREATE_HELD_AT = '''
 CREATE_STORED_AT = '''
    REPLACE StoredIn(sku, fulfiller_id, bin_name, ext_ful_loc_id, on_hand)
    VALUES(%s, %s, %s, %s, %s)
+'''
+
+TEST_ADJUST = '''
+   SELECT *
+   FROM StoredIn
+   WHERE (on_hand + %s) >= 0
+     AND sku = %s
+     AND fulfiller_id = %s
+     AND bin_name = %s
+     AND ext_ful_loc_id = %s
+'''
+
+MODIFY_STORED_AT = '''
+   UPDATE StoredIn
+   SET on_hand = on_hand + %s
+   WHERE sku = %s
+     AND fulfiller_id = %s
+     AND bin_name = %s
+     AND ext_ful_loc_id = %s
 '''
 
 GET_INVENTORY = '''

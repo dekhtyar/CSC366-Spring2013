@@ -75,6 +75,22 @@ class ManufacturerCatalog(object):
       self.ManufacturerID = int(getElement(element, "v4:ManufacturerID").text)
       self.CatalogID      = int(getElement(element, "v4:CatalogID").text)
 
+class AdjustRequestItem(object):
+   def __init__(self, element):
+      self.PartNumber = getElement(element, "v4:PartNumber").text
+      self.UPC = getElement(element, "v4:UPC").text
+      self.BinID = getElement(element, "v4:BinID").text
+      self.Quantity = getElement(element, "v4:Quantity").text
+
+class AdjustRequest(object):
+   def __init__(self, element):
+      self.FulfillerID = getElement(element, "v4:FulfillerID").text
+      self.ExternalLocationID = getElement(element,
+            "v4:ExternalLocationID").text
+      self.Items = []
+      for item in getElement(element, "v4:Items"):
+         self.Items.append(AdjustRequestItem(item))
+
 class RefreshRequestItem(object):
    def __init__(self, element):
       self.PartNumber = getElement(element, "v4:PartNumber").text

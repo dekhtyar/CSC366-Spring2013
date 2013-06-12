@@ -158,6 +158,7 @@ def createFulfillmentLocation(location):
 def createBin(bin_):
    values = (
          bin_.Name,
+         bin_.BinID,
          bin_.ExternalLocationID,
          bin_.FulfillerID,
          bin_.BinType,
@@ -173,10 +174,41 @@ def createBin(bin_):
 
 @soap_op
 def AdjustRequest(request):
-   pass
+   conn = sql.getConnection()
+   cursor = conn.cursor(buffered=True)
+
+   for item in request.Items:
+      cursor.execute(sql.TEST_ADJUST, (item.Quantity, item.PartNumber,
+         request.FulfillerID, item.BinID, request.ExternalLocationID))
+      if cursor.rowcount == 0:
+         raise SoapFault("Cannot have quantity < 0 for item %s in bin %s" %
+               (item.PartNumber, item.BinID))
+      cursor.fetchall()
+      cursor.execute(sql.MODIFY_STORED_AT, (item.Quantity, item.PartNumber,
+         request.FulfillerID, item.BinID, request.ExternalLocationID))
+
+   sql.commitAndClose(conn)
+   return datatypes.AdjustResponse(1)
 
 @soap_op
 def RefreshRequest(request):
+   conn = sql.getConnection()
+   cursor = conn.cursor()
+
+   for item in request.Items:
+      cursor.execute(sql.CREATE_MANUFACTURER, (0,))
+      cursor.execute(sql.CREATE_CATALOG, (0, 0))
+      cursor.execute(sql.CREATE_PRODUCT, (item.UPC, 0, 0, ''));
+      cursor.execute(sql.CREATE_FULFILLER_SPECIFIC_PRODUCT, (item.PartNumber,
+         request.FulfillerID, item.UPC))
+      cursor.execute(sql.CREATE_HELD_AT, (request.FulfillerID,
+         request.ExternalLocationID, item.PartNumber, item.LTD,
+         item.SafetyStock))
+      cursor.execute(sql.CREATE_STORED_AT, (item.PartNumber,
+         request.FulfillerID, item.BinID, request.ExternalLocationID,
+         item.Quantity))
+
+   sql.commitAndClose(conn)
    return datatypes.RefreshResponse(1)
 
 class inventoryLocation(object):
