@@ -57,7 +57,7 @@ angular.module('apersci', ['apersci.services', 'apersci.controllers', 'apersci.f
             request: {
                 FulfillerID:        { __label:'Fulfiller ID',         __placeholder:'positiveInteger', __value:'' },
                 BinID:              { __label:'Bin ID',               __placeholder:'positiveInteger', __value:'' },
-                FulfillerLocationID: { __label:'Fulfiller Location ID', __placeholder:'positiveInteger',          __value:'' },
+                ExternalLocationID: { __label:'External Location ID', __placeholder:'positiveInteger',          __value:'' },
                 BinType:            { __label:'Bin Type',             __placeholder:'string',          __value:'' },
                 BinStatus:          { __label:'Bin Status',           __placeholder:'string',          __value:'' },
                 Name:               { __label:'Bin Name',             __placeholder:'string',          __value:'' }
@@ -145,11 +145,13 @@ angular.module('apersci', ['apersci.services', 'apersci.controllers', 'apersci.f
     },
     getBins: {
         getBins: {
-            FulfillerID:        { __label:'Fulfiller ID',         __placeholder:'positiveInteger', __value:'' },
-            ExternalLocationID: { __label:'External Location ID', __placeholder:'string',          __value:'' },
-            SearchTerm:         { __label:'Search Term',          __placeholder:'string',          __value:'' },
-            NumResults:         { __label:'Num Results',          __placeholder:'positiveInteger', __value:'' },
-            ResultsStart:       { __label:'Results Start',        __placeholder:'positiveInteger', __value:'' }
+            request: {
+                FulfillerID:        { __label:'Fulfiller ID',         __placeholder:'positiveInteger', __value:'' },
+                ExternalLocationID: { __label:'External Location ID', __placeholder:'string',          __value:'' },
+                SearchTerm:         { __label:'Search Term',          __placeholder:'string',          __value:'' },
+                NumResults:         { __label:'Num Results',          __placeholder:'positiveInteger', __value:'' },
+                ResultsStart:       { __label:'Results Start',        __placeholder:'positiveInteger', __value:'' }
+            }
         }
     },
     getFulfillerStatus: {
@@ -168,6 +170,7 @@ angular.module('apersci', ['apersci.services', 'apersci.controllers', 'apersci.f
                     ManufacturerID: { __label:'Manufacturer ID', __placeholder:'positiveInteger', __value:'' },
                     CatalogID:      { __label:'Catalog ID',      __placeholder:'positiveInteger', __value:'' }
                 },
+                MaxLocations: { __label:'Max Locations', __placeholder:'positiveInteger', __value:'' },
                 Location: {
                     Unit:        { __label:'Unit',         __placeholder:'string',          __value:'MILES' },
                     Radius:      { __label:'Radius',       __placeholder:'positiveInteger', __value:'' },
@@ -216,7 +219,7 @@ angular.module('apersci', ['apersci.services', 'apersci.controllers', 'apersci.f
     refreshInventory: {
         RefreshRequest: {
             FulfillerID: { __label:'Fulfiller ID', __placeholder:'positiveInteger', __value:'' },
-            LocationName: { __label:'Location Name', __placeholder:'string', __value:'' },
+            ExternalLocationID: { __label:'External Location ID', __placeholder:'string', __value:'' },
             Items: [{
                 items: {
                     PartNumber:  { __label:'Part Number',  __placeholder:'string', __value:'' },

@@ -33,7 +33,7 @@ def destroyDatabase(db):
     process = Popen('mysql %s -u%s -p%s < DB-cleanup.sql' % ('inventory', 'root', 'busmajorz'),
                     stdout=PIPE, stdin=PIPE, shell=True)
 
-# Reset database, prepare for populating
+## Reset database, prepare for populating
 #db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
 #destroyDatabase(db)
 #time.sleep(.5)
@@ -61,8 +61,8 @@ port = loc.getCoreService()
 #        print 'createFulfillerRequest:', (row['fulfiller_id'], row['name'])
 #        res = port.createFulfiller(req)
 #        print 'createFulfillerResponse', res.get_element_createFulfillerReturn()
-
-
+#
+#
 ## createFulfillmentLocationRequest
 ## Bulk load Fulfillment locations
 ## STATUS: Working with latest wsdl.
@@ -88,8 +88,8 @@ port = loc.getCoreService()
 #                                                    1 if row['status'] == 'active' else 2)
 #        res = port.createFulfillmentLocation(req)
 #        print 'createFulfillmentLocationResponse:', res.get_element_createFulfillmentLocationReturn()
-
-
+#
+#
 ## createBin
 ## STATUS: Working with updated wsdl.
 ## external_fulfiller_location_id,internal_fulfiller_location_id,bin_name,bin_type,bin_status
@@ -109,8 +109,8 @@ port = loc.getCoreService()
 #                                    row['external_fulfiller_location_id'], row['bin_name'])
 #        res = port.createBin(req)
 #        print 'createBinResponse:', res.get_element_createBinReturn()
-
-
+#
+#
 ## refreshInventory
 ## STATUS: Working with updated wsdl.
 ## Example of manual testing of multiple items per request
@@ -137,8 +137,8 @@ port = loc.getCoreService()
 #res = port.refreshInventory(req)
 #print 'refreshInventory', res # res is an empty string
 #
-# CSV header
-# product_name,SKU,UPC,safety_stock,ltd,mfg_id,catalog_id,onhand,bin_name,external_fulfiller_location_id,internal_fulfiller_location_id
+## CSV header
+## product_name,SKU,UPC,safety_stock,ltd,mfg_id,catalog_id,onhand,bin_name,external_fulfiller_location_id,internal_fulfiller_location_id
 #def refreshInventoryWithFile(file_name):
 #    with open(file_name, 'rb') as csv_file:
 #        reader = csv.DictReader(csv_file, delimiter=",", quotechar="'")

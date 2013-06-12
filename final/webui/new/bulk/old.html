@@ -176,7 +176,7 @@
                     return [row[0], WSDL.createBin({
                         FulfillerID: 1,
                         BinID: '1',
-                        FulfillerLocationID: row[0],
+                        ExternalLocationID: row[0],
                         BinType: row[3],
                         BinStatus: row[4],
                         Name: row[2]
@@ -191,7 +191,7 @@
                 var productRequests = _.map(products, function(row) {
                     return [row[0], WSDL.refreshInventory({
                         FulfillerID: 1,
-                        LocationName: row[7],
+                        ExternalLocationID: row[7],
                         Items: [{
                             PartNumber: row[0],
                             UPC: row[1],
