@@ -73,7 +73,7 @@ class Service(CoreServiceService):
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Working with updated wsdl
     def soap_getFulfillmentLocations(self, ps):
         res = CoreServiceService.soap_getFulfillmentLocations(self, ps)
         req = self.request
@@ -108,14 +108,21 @@ class Service(CoreServiceService):
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Working with updated wsdl
     def soap_getFulfillmentLocationTypes(self, ps):
         res = CoreServiceService.soap_getFulfillmentLocationTypes(self, ps)
         req = self.request
 
-        # Call API function with arguments above
+        FulfillmentLocationTypes = api.getFulfillmentLocationTypes(db)
 
-        # Set these values with results from calliing API function
+        FulfillmentLocationTypesResponse= []
+        for FulfillmentLocationType in FulfillmentLocationTypes:
+            getFulfillmentLocationTypesReturn = res.new_getFulfillmentLocationTypesReturn()
+            getFulfillmentLocationTypesReturn.set_element_LocationType(FulfillmentLocationType[0])
+            FulfillmentLocationTypesResponse.append(getFulfillmentLocationTypesReturn)
+        
+        res.set_element_getFulfillmentLocationTypesReturn(FulfillmentLocationTypesResponse)
+        print "soap_getFulfillmentLocationTypes" 
 
         return res
 
@@ -140,10 +147,7 @@ class Service(CoreServiceService):
 
         print "soap_allocateInventory:", FulfillerID, ExternalLocationID, Items
 
-        # Call API function with arguments above
         allocateInventory(FulfillerID, ExternalLocationID, Items, db)
-
-        # Set these values with results from calliing API function
 
         return res
 
@@ -168,10 +172,7 @@ class Service(CoreServiceService):
 
         print "soap_deallocateInventory:", FulfillerID, ExternalLocationID, Items
 
-        # Call API function with arguments above
         deallocateInventory(FulfillerID, ExternalLocationID, Items, db)
-
-        # Set these values with results from calliing API function
 
         return res
 
@@ -196,10 +197,7 @@ class Service(CoreServiceService):
 
         print "soap_fulfillInventory:", FulfillerID, ExternalLocationID, Items
 
-        # Call API function with arguments above
         fulfillInventory(FulfillerID, ExternalLocationID, Items, db)
-
-        # Set these values with results from calliing API function
 
         return res
 
@@ -234,7 +232,6 @@ class Service(CoreServiceService):
         Name = r.get_element_Name()
         print "soap_createBin:", BinID, BinStatus, BinType, FulfillerID, ExternalLocationID, Name
 
-        #print ExternalLocationID 
         createBinReturn = api.createBin({'fulfiller_id': FulfillerID,
                                          'external_fulfiller_location_id': ExternalLocationID,
                                          'bin_name': Name, 'bin_type': BinType, 'bin_status': BinStatus}, db)
@@ -257,25 +254,15 @@ class Service(CoreServiceService):
         SearchTerm = r.get_element_SearchTerm()
         print "soap_getBins:", FulfillerID, ExternalLocationID, NumResults, ResultsStart, SearchTerm
 
-        # Call API function with arguments above
         results, resultsCount = api.getBins(FulfillerID, ExternalLocationID,
                                             SearchTerm, NumResults, ResultsStart, db)
-        #print results
 
         getBinsReturn = res.new_getBinsReturn()
         Bins = getBinsReturn.new_Bins()
         
-        #FulfillerId              VARCHAR(50),
-        #FulfillerLocationId      VARCHAR(50),
-        #Name                     VARCHAR(20),
-        #BinType                  VARCHAR(20),
-        #BinStatus                VARCHAR(20),
-        #'set_element_BinID', 'set_element_BinStatus', 'set_element_BinType', 'set_element_FulfillerID', 'set_element_FulfillerLocationID', 'set_element_Name'
         items = []
         for result in results:
             item = Bins.new_items()
-            #print dir(item)
-            #item.set_element_BinID()
             item.set_element_BinStatus(result[4])
             item.set_element_BinType(result[3])
             item.set_element_FulfillerID(int(result[0]))
@@ -284,19 +271,15 @@ class Service(CoreServiceService):
             items.append(item)
 
         Bins.set_element_items(items)
-        #print 'Bins', dir(Bins)
-        #print 'Bins.new_items()', dir(Bins.new_items())
 
         getBinsReturn.set_element_ResultCount(resultsCount)
         getBinsReturn.set_element_Bins(Bins)
 
         res.set_element_getBinsReturn(getBinsReturn)
-        # Set these values with results from calliing API function
-        #print dir(getBinsReturn)
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Working with latest wsdl. 
     def soap_getBinTypes(self, ps):
         res = CoreServiceService.soap_getBinTypes(self, ps)
         req = self.request
@@ -314,14 +297,21 @@ class Service(CoreServiceService):
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Working with latest wsdl. 
     def soap_getBinStatuses(self, ps):
         res = CoreServiceService.soap_getBinStatuses(self, ps)
         req = self.request
 
-        getBinStatusesReturn = res.new_getBinStatusesReturn()
-        getBinStatusesReturn.set_element_BinStatus('BinStatus')
-        res.set_element_getBinStatusesReturn([getBinStatusesReturn])
+        BinStatuses = api.getBinStatuses(db)
+
+        BinStatusesResponse = []
+        for BinStatus in BinStatuses:
+            getBinStatusesReturn = res.new_getBinStatusesReturn()
+            getBinStatusesReturn.set_element_BinStatus(BinStatus[0])
+            BinStatusesResponse.append(getBinStatusesReturn)
+        
+        res.set_element_getBinStatusesReturn(BinStatusesResponse)
+        print "soap_getBinStatuses" 
 
         return res
 
@@ -356,7 +346,7 @@ class Service(CoreServiceService):
         req = self.request
         return res
 
-    # STATUS: Ensure this still works with wsdl update
+    # STATUS: Working with latest wsdl. 
     def soap_refreshInventory(self, ps):
         res = CoreServiceService.soap_refreshInventory(self, ps)
         req = self.request

@@ -78,16 +78,16 @@ def getBinStatuses(db):
    cursor = db.cursor()
 
    try:
-         sqlCommand = """SELECT DINSTINCT b.BinStatus
-                          FROM Bins b""" 
-                   
-         cursor.execute(sqlCommand)
-         results = cursor.fetchall()
+      sqlCommand = """SELECT DISTINCT BinStatus FROM Bins""" 
+                
+      cursor.execute(sqlCommand)
+      results = cursor.fetchall()
 
+      return results
    except Exception, e:
       print e
+      return []
 
-   return results
 
 #@param: no inputs
 #return: array of BinTypes
@@ -288,15 +288,14 @@ def getFulfillmentLocations(fID, CID, MID, maxLocation, db):
       print e
       return []
  
- 
-def getFulfillmentLocationTypes(fID, fLID, db):
+# Function takes nothing and returns a list of location types
+def getFulfillmentLocationTypes(db):
    cursor = db.cursor()
    
    try:
-     cursor.execute('SELECT Type FROM Locations WHERE FulfillerId = %s AND FulfillerLocationId = %s',fID,fLID)
- 
-     locationType = cursor.fetchone()
-     
-     return locationType
+       cursor.execute('SELECT DISTINCT Type FROM Locations')
+       locationTypes = cursor.fetchall()
+       return locationTypes
    except Exception, e:
-     print e
+       print e
+       return []
