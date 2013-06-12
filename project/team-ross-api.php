@@ -227,7 +227,10 @@ class TeamRossAPI {
 
       // UPDATE INVENTORY FOR EACH ITEM
       foreach ($items as $item) {
-            
+        if (0 == $item->BinID) {
+          $item->BinID = 'Default';
+        }
+        error_log( "BinID: ".$item->BinID );        
         $stmt1->bindParam(':binName', $item->BinID);
         $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
         $stmt1->bindParam(':productUpc', $item->UPC);
@@ -237,7 +240,13 @@ class TeamRossAPI {
         $stmt2->bindParam(':productUpc', $item->UPC);
         $stmt2->bindParam(':sku', $item->PartNumber);
         
-        
+        $stmt3->bindParam(':storeSku',$item->PartNumber);
+        $stmt3->bindParam(':safetyStock',$item->SafetyStock);
+        $stmt3->bindParam(':ltd',$item->LTD);
+        $stmt3->bindParam(':fulfillerID',$FulfillerID);
+        $stmt3->bindParam(':productUpc',$item->UPC);
+        $stmt3->bindParam(':internalLocationId',$fetch['internalLocationId']);
+
         // create bin if missing
         if (!$this->getBin($item->BinID, $fetch['internalLocationId']))
           print "Bin doesn't exist.\n";
