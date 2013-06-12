@@ -9,8 +9,8 @@ public class Test {
    private static api apiCall = new api();
    private static boolean debug = false;
    private static boolean setup = false;
-   private static boolean test = false;
-   private static boolean cleanup = true;
+   private static boolean test = true;
+   private static boolean cleanup = false;
 
 public static void main(String[] args) {
       
