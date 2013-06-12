@@ -47,7 +47,7 @@ GET_NUM_ALLOCATED = '''
 GET_STATUSES = '''
    SELECT status
    FROM Location
-   WHERE fulfiller_id = %(fulfiller_id)s
+   WHERE fulfiller_id = {fulfiller_id}
 '''
 
 GET_BIN_TYPES = '''
