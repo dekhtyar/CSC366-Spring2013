@@ -1074,6 +1074,7 @@ public class api {
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
 
+      int count = 0;
       ArrayList<Object[]> inventory = new ArrayList<Object[]>();
       ArrayList<String> locations = new ArrayList<String>();
       ArrayList<String> locations2 = new ArrayList<String>();
@@ -1203,7 +1204,7 @@ public class api {
          sql2 += " ORDER BY lp.LTD";
       }
       
-      for(int ndx = 0; ndx < quantities.length; ndx++) {
+      for(int ndx = 0; count < limit && ndx < quantities.length; ndx++) {
          num = 4; 
          try {
             PreparedStatement ps = conn.prepareStatement(sql2);
@@ -1216,14 +1217,18 @@ public class api {
                ps.setInt(num++, (new Integer(quantities[ndx][2].toString())).intValue());
             } 
 
+            for(int i = 0; locationIds != null && i < locationIds.length; i++) {
+               ps.setString(num++, locationIds[i]);
+            }
+
             for(int i = 0; i < locations.size(); i++) {
-               ps.setString(num + i, locations.get(i));
+               ps.setString(num++, locations.get(i));
             }
             
             ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
-            int count = 0;
-            while(hasNext && count <= limit) {
+
+            while(hasNext && count < limit) {
                String locationId = r.getString(1);               
 
                if(distances == null || distances.size() == 0) {
@@ -1269,6 +1274,7 @@ public class api {
     Object[] location, String type, int limit, Boolean ignoreSafetyStock,
     Boolean includeNegativeInventory, boolean orderByLtd) {
 
+      int count = 0;
       ArrayList<Object[]> inventory = new ArrayList<Object[]>();
       ArrayList<Object[]> distances = null;
       String checkAvailable = " AND cb.OnHand - cb.Allocated" +
@@ -1311,7 +1317,7 @@ public class api {
          sql += " ORDER BY lp.LTD";
       }
         
-      for(int ndx = 0; ndx < quantities.length; ndx++) {
+      for(int ndx = 0; count < limit && ndx < quantities.length; ndx++) {
             
          try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -1337,9 +1343,8 @@ public class api {
                 
             ResultSet r = ps.executeQuery();
             boolean hasNext = r.next();
-            int count = 0;
                 
-            while(hasNext && count <= limit) {
+            while(hasNext && count < limit) {
                String locationId = r.getString(1);               
 
                if(distances == null || distances.size() == 0) {
