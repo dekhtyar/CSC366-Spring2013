@@ -417,7 +417,7 @@ class Service(CoreServiceService):
         print 'adjustInventory:', FulfillerID, ExternalLocationID, itemList
         response = adjustInventory(FulfillerID, ExternalLocationID, itemList, db)
 
-        return res
+        return AdjustInventorySoapOut(response)
 
     # STATUS: Working with latest wsdl. 
     def soap_refreshInventory(self, ps):
@@ -444,6 +444,6 @@ class Service(CoreServiceService):
 
 if __name__ == "__main__" :
     db = MySQLdb.connect("localhost", "root", "busmajorz", "inventory")
-    port = 443
+    port = 444
     AsServer(port, (Service(),))
     db.close()
