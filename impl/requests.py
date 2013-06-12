@@ -12,14 +12,6 @@ def getElementList(element, xpath):
    return element.xpath(xpath, namespaces=namespaces)
 
 class UpdateRequest(object):
-   def __init__(self, element):
-      self.FulfillerID = int(getElement(request, "v4:FulfillerID").text)
-      self.FulfillerLocationCatalog = FulfillerLocationCatalog(
-            getElement(request, "v4:FulfillerLocationCatalog"))
-      self.Items = []
-      for item in getElement(element, "v4:Items"):
-         self.Items.append(UpdateItem(item))
-
    class UpdateItem(object):
       def __init__(self, element):
          self.PartNumber         =     getElement(element, "v4:PartNumber").text
@@ -29,9 +21,25 @@ class UpdateRequest(object):
          self.ShipmentID         = int(getElement(element, "v4:ShipmentID").text)
          self.ExternalLocationID =     getElement(element, "v4:ExternalLocationID").text
 
+   def __init__(self, element):
+      self.FulfillerID = int(getElement(element, "v4:FulfillerID").text)
+      self.FulfillerLocationCatalog = FulfillerLocationCatalog(
+            getElement(element, "v4:FulfillerLocationCatalog"))
+      self.Items = []
+      for item in getElement(element, "v4:Items"):
+         self.Items.append(UpdateRequest.UpdateItem(item))
+
 class allocateInventory(object):
    def __init__(self, element):
-       self.request = UpdateRequest(getElement(element, "v4:request"))
+      self.update_request = UpdateRequest(getElement(element, "v4:request"))
+
+class deallocateInventory(object):
+   def __init__(self, element):
+      self.update_request = UpdateRequest(getElement(element, "v4:request"))
+
+class fulfillInventory(object):
+   def __init__(self, element):
+      self.update_request = UpdateRequest(getElement(element, "v4:request"))
 
 class getFulfillmentLocationTypes(object):
    def __init__(self, element):
@@ -78,6 +86,22 @@ class ManufacturerCatalog(object):
    def __init__(self, element):
       self.ManufacturerID = int(getElement(element, "v4:ManufacturerID").text)
       self.CatalogID      = int(getElement(element, "v4:CatalogID").text)
+
+class AdjustRequestItem(object):
+   def __init__(self, element):
+      self.PartNumber = getElement(element, "v4:PartNumber").text
+      self.UPC = getElement(element, "v4:UPC").text
+      self.BinID = getElement(element, "v4:BinID").text
+      self.Quantity = getElement(element, "v4:Quantity").text
+
+class AdjustRequest(object):
+   def __init__(self, element):
+      self.FulfillerID = getElement(element, "v4:FulfillerID").text
+      self.ExternalLocationID = getElement(element,
+            "v4:ExternalLocationID").text
+      self.Items = []
+      for item in getElement(element, "v4:Items"):
+         self.Items.append(AdjustRequestItem(item))
 
 class RefreshRequestItem(object):
    def __init__(self, element):

@@ -2,6 +2,14 @@ class allocateInventoryResponse(object):
    def __init__(self):
       pass
 
+class deallocateInventoryResponse(object):
+   def __init__(self):
+      pass
+
+class fulfillInventoryResponse(object):
+   def __init__(self):
+      pass
+
 class getFulfillmentLocationTypesResponse(object):
    types = ["RETAILER", "FULFILLER", "MANUFACTURER"]
 
@@ -16,6 +24,10 @@ class createFulfillmentLocationResponse(object):
 class createBinResponse(object):
    def __init__(self, createBinReturn):
       self.createBinReturn = createBinReturn
+
+class AdjustResponse(object):
+   def __init__(self, response_str):
+      self.AdjustResponse = response_str
 
 class RefreshResponse(object):
    def __init__(self, response_str):
