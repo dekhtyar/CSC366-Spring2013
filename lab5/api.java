@@ -459,7 +459,7 @@ public class api {
          }
       }
       catch(Exception e) {
-         System.out.println("Exception occured in getFulfillerLocationTypes(): "$
+         System.out.println("Exception occured in getFulfillerLocationTypes(): ");
          return null;
       }
 
