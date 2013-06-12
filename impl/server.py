@@ -41,7 +41,7 @@ def handleRequest():
       return build_fault(fault)
    except:
       traceback.print_exc()
-      return build_fault(SoapFault("Server error"))
+      return build_fault(SoapFault(traceback.format_exc()))
 
 if __name__ == "__main__":
    app.run(host='0.0.0.0', port=8080)
