@@ -7,7 +7,7 @@ CREATE TABLE Retailer (
 
 CREATE TABLE Location (
     FulfillerId INT REFERENCES Retailer(FulfillerId),
-    InternalFulfillerLocationId INT PRIMARY KEY
+    InternalFulfillerLocationId INT PRIMARY KEY,
     ExternalFulfillerLocationId VARCHAR(25),
     Name VARCHAR(50),
     Type VARCHAR(25), 
