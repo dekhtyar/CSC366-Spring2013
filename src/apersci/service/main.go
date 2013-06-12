@@ -13,7 +13,7 @@ import (
 )
 
 var dbConnType = "postgres"
-var dbConnInfo = "user=db2 database=db2 password=db2"
+var dbConnInfo = "user=cait database=cait password=cait"
 
 type httpOperationHandler func(w http.ResponseWriter, r *http.Request) (err error)
 
@@ -123,7 +123,7 @@ func main() {
 	http.HandleFunc("/createDatabase/", onlyPostAndCORS(execFile("sql/DB-setup.sql")))
 	http.HandleFunc("/clearDatabase/", onlyPostAndCORS(execFile("sql/DB-clear.sql")))
 	http.HandleFunc("/destroyDatabase/", onlyPostAndCORS(execFile("sql/DB-cleanup.sql")))
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		log.Fatal("Unable to start service: " + err.Error())
 	}

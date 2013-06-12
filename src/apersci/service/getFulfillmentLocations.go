@@ -4,12 +4,10 @@ import (
 	"apersci/input"
 	"apersci/output"
 	"apersci/soap"
-	//	"errors"
-	"fmt"
 	"net/http"
 )
 
-const mile_meter_conversion float64 = 1609.34
+const mile_meter_conversion = 1609.34
 
 func getFulfillmentLocations(w http.ResponseWriter, r *http.Request) (err error) {
 	req, err := input.GetFulfillmentLocationsRequest(r.Body)
@@ -22,32 +20,22 @@ func getFulfillmentLocations(w http.ResponseWriter, r *http.Request) (err error)
 		return
 	}
 	defer conn.Close()
-	/*
-		rows, err := conn.Query(`SELECT ST_Distance(
-								 ST_GeogFromText('POINT(-73 40)'),
-								 coordinates
-								)
-								FROM Locations WHERE fulfillerId = $1 AND status = 'active'`)
 
-		var count float64
+	var maxLocs uint
 
-		if rows.Next() {
-			err = rows.Scan(&count)
-			if err != nil {
-				return err
-			}
-			rows.Close()
-		} else {
-			return errors.New("Distance bad ugh")
-		}
+	if req.MaxLocations == 0 {
+		maxLocs = 9000
+	} else {
+		maxLocs = req.MaxLocations
+	}
 
-		fmt.Println(count)*/
-	rows, err := conn.Query(`SELECT fulfillerId, externalFulfillerId FROM Locations
+	rows, err := conn.Query(`SELECT fulfillerId, externalFulfillerId
+							 FROM Locations
 							 WHERE fulfillerId = $1 AND status = 'active'
-							 AND ST_DWithin(coordinates, ST_GeogFromText('POINT(' || $2 ||' ' || $3 || ')'), $4)`,
-		req.FulfillerID, req.Location.Longitude, req.Location.Latitude, req.Location.Radius*mile_meter_conversion)
-
-	fmt.Println(req.Location.Radius * mile_meter_conversion)
+							 AND ST_DWithin(coordinates, ST_SetSRID(ST_MakePoint($2,$3),4326), $4)
+							 ORDER BY ST_Distance(coordinates, ST_SetSRID(ST_MakePoint($2, $3), 4326))
+							 LIMIT $5`,
+		req.FulfillerID, req.Location.Longitude, req.Location.Latitude, req.Location.Radius*mile_meter_conversion, maxLocs)
 
 	if err != nil {
 		return
