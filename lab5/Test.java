@@ -70,7 +70,63 @@ public class Test {
               args[3], Integer.parseInt(args[4]), nillableStr(args[5])) ) {
             System.out.println("fulfillInventory failed");
          }
+     }
+      else if(args.length == 10 && args[0].equals("getInventory")) {
+         if(!getInventoryTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), args[5],
+              Integer.parseInt(args[6]), nillableBoolean(args[7]),
+              nillableBoolean(args[8]), Boolean.parseBoolean(args[9])) ) {
+            System.out.println("getInventory failed");
+         }
       }
+      else if(args.length == 13 && args[0].equals("getInventory2")) {
+         if(!getInventory2Test(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), args[5],
+              args[6], Integer.parseInt(args[7]), args[8],
+              Integer.parseInt(args[9]), nillableBoolean(args[10]),
+              nillableBoolean(args[11]), Boolean.parseBoolean(args[12])) ) {
+            System.out.println("getInventory2 failed");
+         }
+      }
+      else if(args.length == 12 && args[0].equals("getInventoryLocationIds")) {
+         if(!getInventoryLocationIdsTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), args[5], args[6], args[7],
+              Integer.parseInt(args[8]), nillableBoolean(args[9]),
+              nillableBoolean(args[10]), Boolean.parseBoolean(args[11])) ) {
+            System.out.println("getInventoryLocationIds failed");
+         }
+      }
+      else if(args.length == 15 && args[0].equals("getInventory2LocationIds")) {
+         if(!getInventory2LocationIdsTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), args[5],
+              args[6], Integer.parseInt(args[7]), args[8], args[9], args[10],
+              Integer.parseInt(args[11]), nillableBoolean(args[12]),
+              nillableBoolean(args[13]), Boolean.parseBoolean(args[14])) ) {
+            System.out.println("getInventory2LocationIds failed");
+         }
+      }
+      else if(args.length == 16 && args[0].equals("getInventoryRequestLocation")) {
+         if(!getInventoryRequestLocationTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), args[5],
+              Integer.parseInt(args[6]), args[7], Float.parseFloat(args[8]),
+              Float.parseFloat(args[9]), args[10], args[11],
+              Integer.parseInt(args[12]), nillableBoolean(args[13]),
+              nillableBoolean(args[14]), Boolean.parseBoolean(args[15])) ) {
+            System.out.println("getInventoryRequestLocation failed");
+         }
+      }
+      else if(args.length == 19 && args[0].equals("getInventory2RequestLocation")) {
+         if(!getInventory2RequestLocationTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), args[5],
+              args[6], Integer.parseInt(args[7]), args[8],
+              Integer.parseInt(args[9]), args[10], Float.parseFloat(args[11]),
+              Float.parseFloat(args[12]), args[13], args[14],
+              Integer.parseInt(args[15]), nillableBoolean(args[16]),
+              nillableBoolean(args[17]), Boolean.parseBoolean(args[18])) ) {
+            System.out.println("getInventory2RequestLocation failed");
+         }
+      }
+
 
 		if (args.length > 0 && args[0].equals("test")) {
 
@@ -110,6 +166,17 @@ public class Test {
 			closeConnection();
 		}
 	}
+
+   public static Boolean nillableBoolean(String str) {
+      if(str.equalsIgnoreCase("false")) {
+         return false;
+      }
+      else if(str.equalsIgnoreCase("true")) {
+         return true;
+      }
+
+      return null;
+   }
 
    public static String nillableStr(String str) {
       return str.equals("null") ? null : str;
@@ -197,6 +264,127 @@ public class Test {
       apiCall.fulfillInventory(fulfillerId, fulfillerLocationCatalog, items);
 
       return true;
+   }
+
+   public static void printInventory(ArrayList<Object[]> inventory) {
+
+      for(int ndx = 0; inventory != null && ndx < inventory.size(); ndx++) {
+         Object[] item = inventory.get(ndx);
+         System.out.println("\nResponse #" + (ndx+1));
+         System.out.println("LocationName: " + item[0]);
+         System.out.println("CatalogId: " + item[1]);
+         System.out.println("ManufacturerId: " + item[2]);
+         System.out.println("OnHand: " + item[3]);
+         System.out.println("Available: " + item[4]);
+         System.out.println("PartNumber: " + item[5]);
+         System.out.println("UPC: " + item[6]);
+         System.out.println("LTD: " + item[7]);
+         System.out.println("SafetyStock: " + item[8]);
+         System.out.println("CountryCode: " + item[9]);
+         System.out.println("Distance: " + item[10]);
+      }
+   }
+
+   public static boolean getInventoryTest(int fulfillerId, String partNumber,
+    String upc, int quantity, String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
+      Object[][] quantities = {{partNumber, upc, quantity}};
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId, null,
+       quantities, null, null, type, limit, ignoreSafetyStock,
+       includeNegativeInventory, orderByLtd);
+
+      printInventory(inventory);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   public static boolean getInventory2Test(int fulfillerId, String partNumber,
+    String upc, int quantity, String partNumber2, String upc2, int quantity2,
+    String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
+      Object[][] quantities = {{partNumber, upc, quantity},
+                               {partNumber2, upc2, quantity2}};
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId, null,
+       quantities, null, null, type, limit, ignoreSafetyStock,
+       includeNegativeInventory, orderByLtd);
+
+      printInventory(inventory);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   public static boolean getInventoryLocationIdsTest(int fulfillerId,
+    String partNumber, String upc, int quantity, String location,
+    String location2, String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
+      Object[][] quantities = {{partNumber, upc, quantity}};
+      String[] locationIds = {location, location2};
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId, null,
+       quantities, locationIds, null, type, limit, ignoreSafetyStock,
+       includeNegativeInventory, orderByLtd);
+
+      printInventory(inventory);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   public static boolean getInventory2LocationIdsTest(int fulfillerId,
+    String partNumber, String upc, int quantity, String partNumber2,
+    String upc2, int quantity2,String location, String location2, String type,
+    int limit, Boolean ignoreSafetyStock, Boolean includeNegativeInventory,
+    boolean orderByLtd) {
+      Object[][] quantities = {{partNumber, upc, quantity},
+                               {partNumber2, upc2, quantity2}};
+      String[] locationIds = {location, location2};
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId, null,
+       quantities, locationIds, null, type, limit, ignoreSafetyStock,
+       includeNegativeInventory, orderByLtd);
+
+      printInventory(inventory);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   public static boolean getInventoryRequestLocationTest(int fulfillerId,
+    String partNumber, String upc, int quantity, String unit, int radius,
+    String postalCode, float latitude, float longitude, String countryCode,
+    String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
+      Object[][] quantities = {{partNumber, upc, quantity}};
+      Object[] location = {unit, radius, postalCode, latitude, longitude,
+                           countryCode};
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId, null,
+       quantities, null, location, type, limit, ignoreSafetyStock,
+       includeNegativeInventory, orderByLtd);
+
+      printInventory(inventory);
+
+      return inventory != null && inventory.size() > 0;
+   }
+
+   public static boolean getInventory2RequestLocationTest(int fulfillerId,
+    String partNumber, String upc, int quantity, String partNumber2,
+    String upc2, int quantity2, String unit, int radius,
+    String postalCode, float latitude, float longitude, String countryCode,
+    String type, int limit, Boolean ignoreSafetyStock,
+    Boolean includeNegativeInventory, boolean orderByLtd) {
+      Object[][] quantities = {{partNumber, upc, quantity},
+                               {partNumber2, upc2, quantity2}};
+      Object[] location = {unit, radius, postalCode, latitude, longitude,
+                           countryCode};
+
+      ArrayList<Object[]> inventory = apiCall.getInventory(fulfillerId, null,
+       quantities, null, location, type, limit, ignoreSafetyStock,
+       includeNegativeInventory, orderByLtd);
+
+      printInventory(inventory);
+
+      return inventory != null && inventory.size() > 0;
    }
 
 	// valid case 1: "PARTIAL" type
