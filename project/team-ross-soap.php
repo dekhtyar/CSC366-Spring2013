@@ -12,6 +12,9 @@ class TeamRossSOAP {
 
     try {
       $db = new PDO("mysql:host=$hostname;dbname=$database", $username, $password);
+      //Both of these to throw exceptions
+      $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+      $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       $this->api = new TeamRossAPI($db);
     }
     catch (PDOException $e) {
@@ -24,9 +27,9 @@ class TeamRossSOAP {
   // GROUP
   // **********************************************************************
   function createFulfiller($FulfillerRequest) {
-		$request = $FulfillerRequest->request;
-    return array('createFulfillerReturn' => 
-			$this->api->createFulfiller($request->FulfillerID, $request->Name) ? 0 : -1);
+    $request = $FulfillerRequest->request;
+    return array('createFulfillerReturn' =>
+      $this->api->createFulfiller($request->FulfillerID, $request->Name) ? 0 : -1);
   }
 
   // **********************************************************************
@@ -40,18 +43,18 @@ class TeamRossSOAP {
   // RILEY
   // **********************************************************************
   function createFulfillmentLocation($CreateFulfillmentLocationRequest) {
-		$request = $CreateFulfillmentLocationRequest->request;
-		
+    $request = $CreateFulfillmentLocationRequest->request;
+
     $safetyStockLimitDefault = 0;
     $mfgIdDefault = 0;
-    $catalogIdDefaut = 0;
+    $catalogIdDefault = 0;
 
     $countrycode = $CreateFulfillmentLocationRequest->CountryCode; // FIXME: Doesn't exist in DB!
 
     // no longer checks if FulfillmentLocation exists. Just updates!
     return array('createFulfillmentLocationReturn' =>
-			$this->api->createFulfillmentLocation(
-						$request->LocationName,
+      $this->api->createFulfillmentLocation(
+            $request->LocationName,
             $request->ExternalLocationID,
             $request->RetailerLocationID,
             $request->FulfillerID,
@@ -70,8 +73,8 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-    return array('getFulfillmentLocationsReturn' => 
-				$this->api->findLocations($GetFulfillmentLocationsRequest->FulfillerID,
+    return array('getFulfillmentLocationsReturn' =>
+        $this->api->findLocations($GetFulfillmentLocationsRequest->FulfillerID,
                     $GetFulfillmentLocationsRequest->Catalog,
                     $GetFulfillmentLocationsRequest->Location,
                     $GetFulfillmentLocationsRequest->MaxLocations
@@ -116,9 +119,9 @@ class TeamRossSOAP {
   // MATT S
   // **********************************************************************
   function createBin($CreateBinRequest) {
-		$request = $CreateBinRequest->request;
+    $request = $CreateBinRequest->request;
     return array('createBinReturn' => $this->api->createBin(
-				$request->FulfillerId,
+				$request->FulfillerID, $request->ExternalLocationID,
 				$request->Name, $request->BinType,
 				$request->BinStatus
 			) ? 0 : -1
@@ -129,7 +132,7 @@ class TeamRossSOAP {
   // IAN
   // **********************************************************************
   function getBins($GetBinsRequest) {
-		$request = $GetBinsRequest->request;
+    $request = $GetBinsRequest->request;
     $bins = $this->api->getBins($request['SearchTerm'], $request['FulfillerLocationID']);
 
     return array(
@@ -200,8 +203,9 @@ class TeamRossSOAP {
   // MATT T
   // **********************************************************************
   function refreshInventory( $RefreshRequest ) {
-    $eid = $RefreshRequest['ExternalLocationID'];
-    $fid = $RefreshRequest['FulfillerID'];
-    return $this->api->refreshInventory($eid, $fid, $RefreshRequest['items']);
+    $out = print_r( $RefreshRequest, true );
+    $eid = $RefreshRequest->ExternalLocationID;
+    $fid = $RefreshRequest->FulfillerID;
+    return $this->api->refreshInventory($eid, $fid, $RefreshRequest->Items);
   }
 }
