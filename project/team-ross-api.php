@@ -421,22 +421,22 @@ class TeamRossAPI {
 
   public function getInventory($fulfillerID, $catalog, $quantities, $locationNames, $type, $limit, $ignoreSafetyStock, $includeNegInv, $orderByLTD) {
     $str = "SELECT externalLocationId AS LocationName,
-             catalogId AS CatalogID,
-             manufacturerId AS ManufacturerID,
-             onHand AS OnHand,
-             (onHand – allocated) – safetyStock AS Available,
-             sku AS PartNumber,
-             productUpc AS UPC,
-             ltd AS LTD,
-             safetyStock AS SafetyStock
-      FROM ((Locations
-      NATURAL JOIN LocationSellsProducts)
-      NATURAL JOIN LocationOffersCatalog)
-      NATURAL JOIN FulfillerCarriesProduct
-      WHERE fulfillerId = :fulfillerID
-      AND catalogId = :catalogID
-      AND manufacturerId = :manufacturerID
-      AND externalLocationId = :locationName";
+                   catalogId AS CatalogID,
+                   manufacturerId AS ManufacturerID,
+                   onHand AS OnHand,
+                   (onHand – allocated) – safetyStock AS Available,
+                   sku AS PartNumber,
+                   productUpc AS UPC,
+                   ltd AS LTD,
+                   safetyStock AS SafetyStock
+            FROM ((Locations
+                 NATURAL JOIN LocationSellsProducts)
+                 NATURAL JOIN LocationOffersCatalog)
+                 NATURAL JOIN FulfillerCarriesProduct
+            WHERE fulfillerId = :fulfillerID
+              AND catalogId = :catalogID
+              AND manufacturerId = :manufacturerID
+              AND externalLocationId = :locationName";
 
     // Build rest of query string
     if (!$includeNegInv) {
