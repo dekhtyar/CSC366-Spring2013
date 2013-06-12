@@ -180,7 +180,7 @@ def RefreshRequest(request):
    return datatypes.RefreshResponse(1)
 
 class inventoryLocation(object):
-   def __init__(self, LocationName, CatalogID, ManufacturerID, OnHand, Available, PartNumber, UPC, LTD, SafetyStock, CountryCode):
+   def __init__(self, LocationName, CatalogID, ManufacturerID, OnHand, Available, PartNumber, UPC, LTD, SafetyStock):
       self.LocationName = LocationName
       self.CatalogID = CatalogID
       self.ManufacturerID = ManufacturerID
@@ -190,29 +190,32 @@ class inventoryLocation(object):
       self.UPC = UPC
       self.LTD = LTD
       self.SafetyStock = SafetyStock
-      self.CountryCode = CountryCode
 
 @soap_op
 def getInventory(request):
    conn = sql.getConnection()
    cursor = conn.cursor()
    
-   IgnoreSafetyStock = ' - ha.safety_stock ' if request.IgnoreSafetyStock == False or request.IgnoreSafetyStock.lower() == "false"  else ''
+   IgnoreSafetyStock = ' - ifnull(ha.safety_stock, 0) ' if request.IgnoreSafetyStock == False or request.IgnoreSafetyStock.lower() == "false"  else ''
    LTD = ' ORDER by ha.LTD ' if request.OrderByLTD else ''
-   IncludeNegativeInventory = ' - ha.num_allocated ' if request.IncludeNegativeInventory  == False or request.IncludeNegativeInventory.lower() == "false" else ''
+   IncludeNegativeInventory = ' - ifnull(si.num_allocated, 0) ' if request.IncludeNegativeInventory  == False or request.IncludeNegativeInventory.lower() == "false" else ''
    Limit = ' Limit ' + str(request.Limit) if request.Limit != '' else ''
    LocationIDs = ' AND l.ext_ful_loc_id in (' + str(request.LocationIDs)[1:-1] + ') 'if request.LocationIDs != [] else ''
 
+   results = []
+   locations = []
+   numQueries = 0
    for item in request.Items:
-      PartNumber = item.PartNumber
-      UPC = item.UPC
+      numQueries = numQueries + 1
+      PartNumber = '\'' + item.PartNumber + '\''
+      UPC = '\'' + item.UPC + '\''
       Quantity = item.Quantity
       query = (sql.GET_INVENTORY.format(
          FulfillerID = request.FulfillerID,
          LocationIDs = LocationIDs,
-         ManufacturerID = request.ManufacturerID,
-         CatalogID = request.CatalogID,
-         Type = request.Type,
+         ManufacturerID = '\'' + request.ManufacturerID + '\'',
+         CatalogID = '\'' + request.CatalogID + '\'',
+         Type = '\'' + request.Type + '\'',
          Limit = Limit,
          IgnoreSafetyStock = IgnoreSafetyStock,
          OrderByLTD = LTD,
@@ -224,8 +227,16 @@ def getInventory(request):
       ));
       print(query)
       cursor.execute(query)
-      print(cursor.fetchall())
-   return datatypes.getInventoryResponse([])
+      row = cursor.fetchone()
+      while row is not None:
+         print("\n\nROW" + str(row) + "\n")
+         results.append(row)
+         row = cursor.fetchone()
+   if(len(results) > 0):
+      for location in results:
+         locations.append(inventoryLocation(location[0], location[1], location[2], location[3],
+         location[4], location[5], location[6], location[7], location[8]))
+   return datatypes.getInventoryResponse(locations)
 
 @soap_op
 def getFulfillerStatus(request):

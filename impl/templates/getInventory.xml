@@ -13,7 +13,6 @@
             <v4:UPC>{{ location.UPC }}</v4:UPC>
             <v4:LTD>{{ location.LTD }}</v4:LTD>
             <v4:SafetyStock>{{ location.SafetyStock }}</v4:SafetyStock>
-            <v4:CountryCode>{{ location.CountryCode }}</v4:CountryCode>
          </v4:getInventoryReturn>
          {% endfor %}
       </v4:getInventoryResponse>

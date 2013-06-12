@@ -2,7 +2,11 @@ namespaces = {'soapenv': "http://schemas.xmlsoap.org/soap/envelope/",
               'v4': "http://v4.core.coexprivate.api.shopatron.com"}
 
 def getElement(element, xpath):
-   return element.xpath(xpath, namespaces=namespaces)[0]
+   toRet = element.xpath(xpath, namespaces=namespaces)
+   if toRet == []:
+      return None
+   else:
+      return toRet[0]
 
 def getElementList(element, xpath):
    return element.xpath(xpath, namespaces=namespaces)
@@ -107,8 +111,10 @@ class getInventory(object):
       self.ManufacturerID = getElement(catalog, "v4:ManufacturerID").text
       self.CatalogID = getElement(catalog, "v4:CatalogID").text
       self.LocationIDs = []
-      for item in getElement(request, "v4:LocationIDs"):
-         self.LocationIDs.append(getElement(item, "v4:ExternalLocationID").text)
+      if getElement(request, "v4:LocationIDs") is not None:
+         #for item in getElement(request, "v4:LocationIDs"):
+         if(getElement(getElement(request, "v4:LocationIDs"), "v4:ExternalLocationID")) is not None:
+            self.LocationIDs.append(getElement(getElement(request, "v4:LocationIDs"), "v4:ExternalLocationID").text)
 
       self.Items = []
       for item in getElement(request, "v4:Quantities"):
