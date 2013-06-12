@@ -13,7 +13,7 @@ def getInventory(catalogue, fulfillerID, ignoreSafetyStock, includeNegativeInven
    ordering = ""
    #safe = """AND ((si.OnHand > sa.SafetyStockLimit && sa.SafetystockLimit >= l.DefaultSafetyStockLimit) 
    #                OR (si.OnHand > l.DefaultSafetyStockLimit && l.DefaultSafetyStockLimit >= sa.SafetystockLimit))"""
-   safe = "- l.DefaultSafetyStockLimit "
+   safe = "- sa.SafetyStockLimit "
    negative = "AND si.OnHand - si.Allocated > 0"
    #negative = "- l.DefaultSafetyStockLimit "
    values = []
