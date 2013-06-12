@@ -9,8 +9,8 @@ public class Test {
    private static api apiCall = new api();
    private static boolean debug = false;
    private static boolean setup = false;
-   private static boolean test = true;
-   private static boolean cleanup = false;
+   private static boolean test = false;
+   private static boolean cleanup = true;
 
 public static void main(String[] args) {
       
@@ -542,7 +542,7 @@ try {
          if(debug) {
             System.out.println("Line: " + locationName + ", " + fulfillerId +
                ", " + externalLocationId + ", " + internalFulfillerLocationId +
-               ", " + description + ", " + latitude + ", " + longitude +
+               ", " + type + ", " + latitude + ", " + longitude +
                ", " + status + ", " + safetyStockLimit + ", " + manufacturerId +
                ", " + catalogId);
          }
