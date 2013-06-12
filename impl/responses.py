@@ -2,6 +2,14 @@ class allocateInventoryResponse(object):
    def __init__(self):
       pass
 
+class deallocateInventoryResponse(object):
+   def __init__(self):
+      pass
+
+class fulfillInventoryResponse(object):
+   def __init__(self):
+      pass
+
 class getFulfillmentLocationTypesResponse(object):
    types = ["RETAILER", "FULFILLER", "MANUFACTURER"]
 

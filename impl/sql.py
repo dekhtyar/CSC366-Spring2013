@@ -10,11 +10,11 @@ def commitAndClose(conn):
    conn.close()
 
 INCREASE_NUM_ALLOCATED_AND_ON_HAND = '''
-   UPDATE StoredIn(sku, fulfiller_id, bin_name, ext_ful_loc_id, num_allocated)
+   UPDATE StoredIn
    SET num_allocated = num_allocated + %(d_num_allocated)s AND
        on_hand       = on_hand + %(d_on_hand)s
    WHERE sku            = %(part_number)s    AND
-         fuller_id      = %(fulfiller_id)s   AND
+         fulfiller_id      = %(fulfiller_id)s   AND
          bin_name       = %(bin_name)s       AND
          ext_ful_loc_id = %(ext_ful_loc_id)s
 '''

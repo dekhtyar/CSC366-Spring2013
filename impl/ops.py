@@ -7,25 +7,30 @@ import sql
 def getFulfillmentLocationTypes(request):
    return datatypes.getFulfillmentLocationTypesResponse
 
-def getAvailableToAllocate(sku, fulfiller_id, bin_name, ext_ful_loc_id):
-   (on_hand, num_allocated) = cur.execute(GET_ON_HAND_AND_NUM_ALLOCATED, {
+def getAvailableToAllocate(cur, sku, fulfiller_id, bin_name, ext_ful_loc_id):
+   cur.execute(sql.GET_ON_HAND_AND_NUM_ALLOCATED, {
       'sku':            sku,
       'fulfiller_id':   fulfiller_id,
       'bin_name':       bin_name,
-      'ext_ful_loc_id': ext_ful_loc_id
-   }).fetchone()
+      'ext_ful_loc_id': ext_ful_loc_id,
+   })
+   result = cur.fetchone()
+   if result is None:
+      return 0
+   return result[0] - result[1]
 
-   return on_hand - num_allocated
-
-def getAvailableToDeallocate(sku, fulfiller_id, bin_name, ext_ful_loc_id):
-   (num_allocated,) = cur.execute(GET_NUM_ALLOCATED, {
+def getAvailableToDeallocate(cur, sku, fulfiller_id, bin_name, ext_ful_loc_id):
+   result = cur.execute(sql.GET_NUM_ALLOCATED, {
       'sku':            sku,
       'fulfiller_id':   fulfiller_id,
       'bin_name':       bin_name,
-      'ext_ful_loc_id': ext_ful_loc_id
-   }).fetchone()
+      'ext_ful_loc_id': ext_ful_loc_id,
+   })
+   cur.fetchone()
 
-   return num_allocated
+   if result is None:
+      return 0
+   return result[0]
 
 # Ghetto Python 2.7 enum
 class Modification:
@@ -50,34 +55,38 @@ def _modifyInventory(request, modification):
    conn = sql.getConnection()
    cur = conn.cursor()
 
-   if modification == Modification.ALLOCATE:
-      response = allocateInventoryResponse
-   elif modification == Modification.DEALLOCATE:
-      response = deallocateInventoryResponse
-   else:
-      response = fulfillInventoryResponse
-
-   for item in request.Request.Items.Items:
+   update_request = request.update_request
+   for item in update_request.Items:
       quantity_left = item.Quantity
 
-      bin_names = cur.execute(GET_BIN_NAMES, {
-         'fulfiller_id':   request.Request.FulfillerID,
+      cur.execute(sql.GET_BIN_NAMES, {
+         'fulfiller_id':   update_request.FulfillerID,
          'ext_ful_loc_id': item.ExternalLocationID
-      }).fetchall()
+      })
+      bin_names = cur.fetchall()
+
+      if bin_names is None:
+         conn.close()
+         raise SoapFault("No bins at FulfillerID %s, ExternalLocationID %s" % (
+               update_request.FulfillerID, item.ExternalLocationID))
 
       # Modify as much as possible from each bin and stop once quantity is satisfied.
       modified_all = False
       for (bin_name,) in bin_names:
-         if modification == ALLOCATE:
-            available_to_modify = getAvailableToAllocate(item.PartNumber,
-                                                         request.Request.FulfillerID,
-                                                         bin_name,
-                                                         item.ExternalLocationID)
+         if modification == Modification.ALLOCATE:
+            available_to_modify = getAvailableToAllocate(
+                  cur,
+                  item.PartNumber, 
+                  update_request.FulfillerID,
+                  bin_name, 
+                  item.ExternalLocationID)
          else:
-            available_to_modify = getAvailableToDeallocate(item.PartNumber,
-                                                           request.Request.FulfillerID,
-                                                           bin_name,
-                                                           item.ExternalLocationID)
+            available_to_modify = getAvailableToDeallocate(
+                  cur,
+                  item.PartNumber, 
+                  update_request.FulfillerID, 
+                  bin_name, 
+                  item.ExternalLocationID)
 
          if available_to_modify > 0:
             max_can_modify = max(available_to_modify, quantity_left)
@@ -85,13 +94,13 @@ def _modifyInventory(request, modification):
             d_num_allocated = max_can_modify  if modification == Modification.ALLOCATE else -max_can_modify
             d_on_hand       = d_num_allocated if modification == Modification.FULFILL  else 0
 
-            cur.execute(INCREASE_NUM_ALLOCATED_AND_ON_HAND, {
+            cur.execute(sql.INCREASE_NUM_ALLOCATED_AND_ON_HAND, {
                'd_num_allocated': d_num_allocated,
                'd_on_hand':       d_on_hand,
                'part_number':     item.PartNumber,
-               'fulfiller_id':    request.Request.FulfillerID,
+               'fulfiller_id':    update_request.FulfillerID,
                'bin_name':        bin_name,
-               'ext_ful_loc_id':  item.ExternalLocationID
+               'ext_ful_loc_id':  item.ExternalLocationID,
             })
 
             quantity_left -= max_can_modify
@@ -101,16 +110,14 @@ def _modifyInventory(request, modification):
 
       if not modified_all:
          conn.close()
-         raise SoapFault("Insufficient quantity for %(operation)s" % {
-            'operation': {
-               ALLOCATE:   'allocateInventory',
-               DEALLOCATE: 'deallocateInventory',
-               FULFILL:    'fulfillInventory'
-            }[modification],
-        })
+         raise SoapFault("Insufficient quantity")
 
    sql.commitAndClose(conn)
-   return response()
+   return {
+      Modification.ALLOCATE:   datatypes.allocateInventoryResponse(),
+      Modification.DEALLOCATE: datatypes.deallocateInventoryResponse(),
+      Modification.FULFILL:    datatypes.fulfillInventoryResponse(),
+   }[modification]
 
 @soap_op
 def allocateInventory(request):
