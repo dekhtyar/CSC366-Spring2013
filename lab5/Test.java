@@ -9,14 +9,13 @@ public class Test {
 	private static api apiCall = new api();
 	private static boolean debug = false;
 	private static boolean setup = false;
-	private static boolean test = true;
+	private static boolean test = false;
 	private static boolean cleanup = false;
 
 	public static void main(String[] args) {
 
-		setupConnection();
-
-		if (setup) {
+		if (args.length > 0 && args[0].equals("setup")) {
+			setupConnection();
 			createDatabase();
 
 			parseFulfillerLocations("fulfiller locations.csv");
@@ -24,79 +23,57 @@ public class Test {
 			parseFulfillerInventory("fulfiller inventory available bins.csv");
 			parseFulfillerInventory("fulfiller inventory available.csv");
 			parseFulfillerInventory("fulfiller inventory not available.csv");
-		}
+			closeConnection();
+                }
 
-		if (test) {
-
-			if(!createBinTest1()) {
-				System.out.println("createBinTest1 failed");
+      if(args.length == 7 && args[0].equals("createBin")) {
+         if(!createBinTest(Integer.parseInt(args[1]),
+              nillableInt(args[2]), args[3], args[4], args[5],
+              nillableStr(args[6])) ) {
+            System.out.println("createBin failed");
          }
-			if (!createBinTest2()) {
-				System.out.println("createBinTest2 failed");
-			}
-			if (!createBinTest3()) {
-				System.out.println("createBinTest3 failed");
-			}
+         else {
+            System.out.println("createBin succeeded");
+         }
+      }
+      else if(args.length == 6 && args[0].equals("getBins")) {
+         if(!getBinsTest(Integer.parseInt(args[1]), args[2],
+              nillableStr(args[3]), nillableInt(args[4]),
+              nillableInt(args[5])) )  {
+            System.out.println("getBins failed");
+         }
+      }
+      else if(args.length == 1 && args[0].equals("getBinTypes")) {
+         if(!getBinTypesTest()) {
+            System.out.println("getBinTypes failed");
+         }
+      }
+      else if(args.length == 1 && args[0].equals("getBinStatuses")) {
+         if(!getBinStatusesTest()) {
+            System.out.println("getBinStatuses failed");
+         }
+      }
+      else if(args.length == 6 && args[0].equals("allocateInventory")) {
+         if(!allocateInventoryTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), nillableStr(args[5])) ) {
+            System.out.println("allocateInventory failed");
+         }
+      }
+      else if(args.length == 6 && args[0].equals("deallocateInventory")) {
+         if(!deallocateInventoryTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), nillableStr(args[5])) ) {
+            System.out.println("deallocateInventory failed");
+         }
+      }
+      else if(args.length == 6 && args[0].equals("fulfillInventory")) {
+         if(!fulfillInventoryTest(Integer.parseInt(args[1]), args[2],
+              args[3], Integer.parseInt(args[4]), nillableStr(args[5])) ) {
+            System.out.println("fulfillInventory failed");
+         }
+      }
 
-			if (!getBinsTest1()) {
-				System.out.println("getBinsTest1 failed");
-			}
-			if (!getBinsTest2()) {
-				System.out.println("getBinsTest2 failed");
-			}
-			if (!getBinsTest3()) {
-				System.out.println("getBinsTest3 failed");
-			}
-			if (!getBinsTest4()) {
-				System.out.println("getBinsTest4 failed");
-			}
+		if (args.length > 0 && args[0].equals("test")) {
 
-			if (!getBinTypesTest()) {
-				System.out.println("getBinTypesTest failed");
-			}
-
-			if (!getBinStatusesTest()) {
-				System.out.println("getBinStatusesTest failed");
-			}
-
-			if (!allocateInventoryTest1()) {
-				System.out.println("allocateInventoryTest1 failed");
-			}
-			if (!deallocateInventoryTest()) {
-				System.out.println("deallocateInventoryTest failed");
-			}
-
-			if (!allocateInventoryTest2()) {
-				System.out.println("allocateInventoryTest2 failed");
-			}
-			if (!fulfillInventoryTest()) {
-				System.out.println("fulfillInventoryTest failed");
-			}
-
-			if (!getInventoryTest1()) {
-				System.out.println("getInventoryTest1 failed");
-			}
-			if (!getInventoryTest2()) {
-				System.out.println("getInventoryTest2 failed");
-			}
-			if (!getInventoryTest3()) {
-				System.out.println("getInventoryTest3 failed");
-			}
-			if (!getInventoryTest4()) {
-				System.out.println("getInventoryTest4 failed");
-			}
-			if (!getInventoryTest5()) {
-				System.out.println("getInventoryTest5 failed");
-			}
-			if (!getInventoryTest6()) {
-				System.out.println("getInventoryTest6 failed");
-			}
-			if (!getInventoryTest7()) {
-				System.out.println("getInventoryTest7 failed");
-			}
-			if (!getInventoryTest8()) {
-				System.out.println("getInventoryTest8 failed");
-			}
 			if (testCreateFulfiller() < 0) {
 				System.out.println("createFulfiller failed");
 			}
@@ -126,113 +103,101 @@ public class Test {
 			}
 		}
 
-		if (cleanup) {
+		if (args.length > 0 && args[0].equals("cleanup")) {
+			setupConnection();
 			clearDatabase();
 			destroyDatabase();
+			closeConnection();
 		}
-
-		closeConnection();
 	}
 
-	// valid case 1
-	public static boolean createBinTest1() {
-		return apiCall.createBin(48590, null, "600", "General", "Pickable", System.currentTimeMillis() + "") >= 0;
-	}
+   public static String nillableStr(String str) {
+      return str.equals("null") ? null : str;
+   }
 
-	// valid case 2: passing nulls case
-	public static boolean createBinTest2() {
-		return apiCall.createBin(48590, null, "600", "General", "Pickable",
-				null) >= 0;
-	}
+   public static Integer nillableInt(String str) {
+      return str.equals("null") ? null : new Integer(str);
+   }
 
-	// invalid case: negative fulfillerId and binId
-	public static boolean createBinTest3() {
-		return apiCall.createBin(-1, -1, "600", "General", "Pickable", null) < 0;
-	}
+    public static boolean createBinTest(int fulfillerId, Integer binId, String externalLocationId, String binType, String binStatus, String name) {
+      return apiCall.createBin(fulfillerId, binId, externalLocationId,
+       binStatus, binType, name) >= 0;
+   }
 
-	// valid case 1
-	public static boolean getBinsTest1() {
-		ArrayList<Object[]> bins = apiCall
-				.getBins(48590, "600", "", null, null);
+   public static boolean getBinsTest(int fulfillerId,
+    String externalLocationId, String searchTerm, Integer numResults,
+    Integer resultsStart) {
+      ArrayList<Object[]> bins = apiCall.getBins(fulfillerId,
+       externalLocationId, searchTerm, numResults, resultsStart);
 
-		return bins != null && bins.size() > 0;
-	}
+      for(int ndx = 0; bins != null && ndx < bins.size(); ndx++) {
+         Object[] item = bins.get(ndx);
+         System.out.println("\nBinResponse #" + (ndx+1));
+         System.out.println("FulfillerId: " + item[0]);
+         System.out.println("BinId: " + item[1]);
+         System.out.println("ExternalLocationId: " + item[2]);
+         System.out.println("BinType: " + item[3]);
+         System.out.println("BinStatus: " + item[4]);
+         System.out.println("Name: " + item[5]);
+      }
 
-	// valid case 2: 1 bin or less
-	public static boolean getBinsTest2() {
-		ArrayList<Object[]> bins = apiCall.getBins(48590, "600", "", 1, 0);
+      System.out.println("\nTotal bins returned: " + bins.size());
 
-		return bins != null && (bins.size() == 1 || bins.size() == 0);
-	}
+      return bins != null;
+   }
 
-	// invalid case 1: Non-existant searchTerm
-	public static boolean getBinsTest3() {
-		ArrayList<Object[]> bins = apiCall.getBins(48590, "600",
-				"DOESNOTEXIST", null, 0);
+   public static boolean getBinTypesTest() {
+      ArrayList<String> binTypes = apiCall.getBinTypes();
 
-		return bins != null && bins.size() == 0;
-	}
+      System.out.println("\nBinTypesResponses: " + binTypes.size());
 
-	// invalid case 2: No results
-	public static boolean getBinsTest4() {
-		ArrayList<Object[]> bins = apiCall.getBins(-1, null, "", 100000, 0);
+      for(int ndx = 0; binTypes != null && ndx < binTypes.size(); ndx++) {
+         System.out.println("BinType: " + binTypes.get(ndx));
+      }
 
-		return bins != null && bins.size() == 0;
-	}
+      System.out.println("Total bin types returned: " + binTypes.size());
 
-	// only case
-	public static boolean getBinTypesTest() {
-		ArrayList<String> binTypes = apiCall.getBinTypes();
+      return binTypes != null && binTypes.size() > 0;
+   }
 
-		return binTypes != null && binTypes.size() > 0;
-	}
+   public static boolean getBinStatusesTest() {
+      ArrayList<String> binStatuses = apiCall.getBinStatuses();
 
-	// only case
-	public static boolean getBinStatusesTest() {
-		ArrayList<String> binStatuses = apiCall.getBinStatuses();
+      System.out.println("\nBinStatusessResponses: " + binStatuses.size());
 
-		return binStatuses != null && binStatuses.size() > 0;
-	}
+      for(int ndx = 0; binStatuses != null && ndx < binStatuses.size(); ndx++) {
+         System.out.println("BinType: " + binStatuses.get(ndx));
+      }
 
-	public static boolean allocateInventoryTest1() {
-		Object[][] fulfillerLocationCatalog = null;
-		Object[][] items = {
-				{ "200033103", "200033103", new Integer(1), new Integer(600) },
-				{ "201279746", "201279746", new Integer(1), "600" } };
-		apiCall.allocateInventory(48590, fulfillerLocationCatalog, items);
+      return binStatuses != null && binStatuses.size() > 0;
+   }
 
-		return true;
-	}
+   public static boolean allocateInventoryTest(int fulfillerId,
+    String partNumber, String upc, int quantity, String externalLocationId) {
+      Object[][] fulfillerLocationCatalog = null;
+      Object[][] items = {{partNumber, upc, quantity, externalLocationId}};
+      apiCall.allocateInventory(fulfillerId, fulfillerLocationCatalog, items);
 
-	public static boolean deallocateInventoryTest() {
-		Object[][] fulfillerLocationCatalog = null;
-		Object[][] items = {
-				{ "200033103", "200033103", new Integer(1), new Integer(600) },
-				{ "201279746", "201279746", new Integer(1), "600" } };
-		apiCall.deallocateInventory(48590, fulfillerLocationCatalog, items);
+      return true;
+   }
 
-		return true;
-	}
+   public static boolean deallocateInventoryTest(int fulfillerId,
+    String partNumber, String upc, int quantity, String externalLocationId) {
+      Object[][] fulfillerLocationCatalog = null;
+      Object[][] items = {{partNumber, upc, quantity, externalLocationId}};
+      apiCall.deallocateInventory(fulfillerId, fulfillerLocationCatalog, items);
 
-	public static boolean allocateInventoryTest2() {
-		Object[][] fulfillerLocationCatalog = null;
-		Object[][] items = {
-				{ "200033103", "200033103", new Integer(1), new Integer(600) },
-				{ "201279746", "201279746", new Integer(1), "600" } };
-		apiCall.allocateInventory(48590, fulfillerLocationCatalog, items);
+      return true;
+   }
 
-		return true;
-	}
+   public static boolean fulfillInventoryTest(int fulfillerId,
+    String partNumber, String upc, int quantity, String externalLocationId) {
+      Object[][] fulfillerLocationCatalog = null;
+      Object[][] items = {{partNumber, upc, quantity, externalLocationId}};
+      apiCall.fulfillInventory(fulfillerId, fulfillerLocationCatalog, items);
 
-	public static boolean fulfillInventoryTest() {
-		Object[][] fulfillerLocationCatalog = null;
-		Object[][] items = {
-				{ "200033103", "200033103", new Integer(1), new Integer(600) },
-				{ "201279746", "201279746", new Integer(1), "600" } };
-		apiCall.fulfillInventory(48590, fulfillerLocationCatalog, items);
-
-		return true;
-	}
+      return true;
+   }
 
 	// valid case 1: "PARTIAL" type
 	public static boolean getInventoryTest1() {
