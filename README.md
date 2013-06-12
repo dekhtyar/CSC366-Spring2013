@@ -7,3 +7,14 @@
 [Kevin Backers](http://github.com/ksteeleb) (kbackers)
 
 [Timothy Phan](http://github.com/timphan212) (tphan03)
+
+
+
+
+##Running final project webservice
+
+cd ./cxf_project/wsdl_first
+
+mvn clean install
+
+mvn -Pdriver
