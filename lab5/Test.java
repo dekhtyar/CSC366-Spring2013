@@ -501,7 +501,7 @@ StringTokenizer token;
 
 int fulfillerId, internalFulfillerLocationId,
 manufacturerId, catalogId, safetyStockLimit;
-      String externalLocationId, locationName, locationType, description,
+      String externalLocationId, locationName, locationType, type,
          status;
        double latitude, longitude;
 
@@ -531,7 +531,7 @@ try {
             
          externalLocationId = token.nextToken();
          internalFulfillerLocationId = (new Integer(token.nextToken())).intValue();
-         description = token.nextToken();
+         type = token.nextToken();
          latitude = (new Double(token.nextToken())).doubleValue();
          longitude = (new Double(token.nextToken())).doubleValue();
          status = token.nextToken();
@@ -547,7 +547,7 @@ try {
                ", " + catalogId);
          }
 
-         apiCall.createFulfillmentLocation(fulfillerId, internalFulfillerLocationId, externalLocationId, locationName, null, latitude, longitude, status, null);
+         apiCall.createFulfillmentLocation(fulfillerId, internalFulfillerLocationId, externalLocationId, locationName, type, latitude, longitude, status, null);
       }
 
 }
