@@ -19,7 +19,7 @@ func getBinStatuses(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 	defer conn.Close()
 
-	rows, err := conn.Query("SELECT DISTINCT status FROM Bins")
+	rows, err := conn.Query("SELECT DISTINCT status FROM Bins WHERE status IS NOT NULL")
 	if err != nil {
 		return
 	}
