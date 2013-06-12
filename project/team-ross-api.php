@@ -89,7 +89,7 @@ class TeamRossAPI {
       VALUES
         ((SELECT internalLocationId
 					FROM Locations
-					WHERE fulfillerId = :fulfillerId 
+					WHERE fulfillerId = :fulfillerId
 					AND externalLocationId = :externalLocationId
 					LIMIT 1),
 					:binName, :binType, :status);
@@ -115,10 +115,10 @@ class TeamRossAPI {
       WHERE binName = :binName
       AND internalLocationId = :internalLocationId
     ");
-  
+
     if( $binName == 0 ) {
       $binName = 'Default';
-    }  
+    }
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
@@ -136,7 +136,7 @@ class TeamRossAPI {
 
     if( $binName = 0 ) {
       $binName = 'Default';
-    }  
+    }
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
@@ -189,7 +189,7 @@ class TeamRossAPI {
           (binName, internalLocationId, productUpc, fulfillerId)
         VALUES
           (:binName, :internalLocationId, :productUpc, :fulfillerId)
-          ON DUPLICATE KEY UPDATE 
+          ON DUPLICATE KEY UPDATE
             binName=VALUES(binName),
             internalLocationId=VALUES(internalLocationId),
             productUpc=VALUES(productUpc),
@@ -207,7 +207,7 @@ class TeamRossAPI {
 
       $stmt3 = $this->db->prepare("
         UPDATE LocationSellsProducts SET
-          storeSku=:storeSku, safetyStock=:safetyStock, ltd=:ltd 
+          storeSku=:storeSku, safetyStock=:safetyStock, ltd=:ltd
           WHERE fulfillerId=:fulfillerID
             AND productUpc=:productUpc
             AND internalLocationId=:internalLocationId
@@ -230,16 +230,16 @@ class TeamRossAPI {
         if (0 == $item->BinID) {
           $item->BinID = 'Default';
         }
-        error_log( "BinID: ".$item->BinID );        
+        error_log( "BinID: ".$item->BinID );
         $stmt1->bindParam(':binName', $item->BinID);
         $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
         $stmt1->bindParam(':productUpc', $item->UPC);
         $stmt1->bindParam(':fulfillerId', $FulfillerID);
-        
+
         $stmt2->bindParam(':fulfillerId', $FulfillerID);
         $stmt2->bindParam(':productUpc', $item->UPC);
         $stmt2->bindParam(':sku', $item->PartNumber);
-        
+
         $stmt3->bindParam(':storeSku',$item->PartNumber);
         $stmt3->bindParam(':safetyStock',$item->SafetyStock);
         $stmt3->bindParam(':ltd',$item->LTD);
@@ -257,7 +257,7 @@ class TeamRossAPI {
           $stmt2->execute();
           $stmt3->execute();
         }
-        
+
       }
     } catch ( Exception $e ) {
       error_log( $e->getMessage() );

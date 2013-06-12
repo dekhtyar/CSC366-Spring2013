@@ -17,12 +17,18 @@
   endswitch;
 
   function createFulfiller($client, $request) {
+    $fulfillersProcessed = array();
     $data = get_csv_data('csv_data/fulfiller_locations.csv');
     $request->request = new \stdClass;
 
     foreach ($data as $location) {
       $request->request->FulfillerID = $location['fulfiller_id'];
       $request->request->Name = $location['name'];
+
+      if (in_array($location['fulfiller_id'], $fulfillersProcessed))
+        continue;
+      else
+        $fulfillersProcessed[] = $location['fulfiller_id'];
 
       $ret = $client->createFulfiller($request);
       print_r($ret);
@@ -41,7 +47,7 @@
 
     foreach ($data as $location) {
       $request->request->FulfillerID = $location['fulfiller_id'];
-			$request->request->ExternalLocationID = $location['external_fulfiller_location_id']; 
+			$request->request->ExternalLocationID = $location['external_fulfiller_location_id'];
 			$request->request->RetailerLocationID = $location['internal_fulfiller_location_id'];
       $request->request->LocationName = $location['name'];
       $request->request->LocationType = null;
@@ -131,11 +137,11 @@
 
   function refreshInventory($client, $Request) {
 
-    $Request->ExternalLocationID = 440008; 
+    $Request->ExternalLocationID = 440008;
     $Request->FulfillerID = 69170;
     $item = new \stdClass;
     $item->PartNumber = 8888010248;
-    $item->UPC = 8888010248;  
+    $item->UPC = 8888010248;
     $item->BinID = 'Default';
     $item->Quantity = 99;
     $item->LTD = 20;
@@ -143,7 +149,7 @@
     $Request->Items  = array( $item );
 
     print_r($client->refreshInventory($Request));
-    
+
   }
 
   // **********************************************************************
