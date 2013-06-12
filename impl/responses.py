@@ -57,4 +57,6 @@ class location(object):
       self.ExternalLocationID = ExternalLocationID
 
 class getFulfillmentLocationsResponse(object):
-   
+#Change this Mitch, this is only to make it compile
+   def __init__(self, a):
+      self.a = a
