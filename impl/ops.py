@@ -264,11 +264,9 @@ def getInventory(request):
          UPC = UPC,
          Quantity = Quantity,
       ));
-      print(query)
       cursor.execute(query)
       row = cursor.fetchone()
       while row is not None:
-         print("\n\nROW" + str(row) + "\n")
          results.append(row)
          row = cursor.fetchone()
    if(len(results) > 0):

@@ -135,6 +135,7 @@ class getInventory(object):
       self.ManufacturerID = getElement(catalog, "v4:ManufacturerID").text
       self.CatalogID = getElement(catalog, "v4:CatalogID").text
       self.LocationIDs = []
+     
       if getElement(request, "v4:LocationIDs") is not None:
          #for item in getElement(request, "v4:LocationIDs"):
          if(getElement(getElement(request, "v4:LocationIDs"), "v4:ExternalLocationID")) is not None:
