@@ -3,6 +3,7 @@
 import sys
 import api
 from allocateInventory import allocateInventory
+from newGetInventory import getInventory
 from deallocateInventory import deallocateInventory
 from fulfillInventory import fulfillInventory
 from adjustInventory import adjustInventory
@@ -316,28 +317,69 @@ class Service(CoreServiceService):
 
         return res
 
-    # STATUS: Needs to be properly connected to API call
+    # STATUS: Connection in progress
     def soap_getInventory(self, ps):
         res = CoreServiceService.soap_getInventory(self, ps)
         req = self.request
 
-        r = req.new_request()
-        
-        Catalog = r.get_element_Catalog()
-        FulfillerID = r.get_element_FulfillerID()
-        IgnoreSafetyStock = r.get_element_IgnoreSafetyStock()
-        IncludeNegativeInventory = r.get_element_IncludeNegativeInventory()
-        Limit = r.get_element_Limit()
-        Location = r.get_element_Location()
-        LocationNames = r.get_element_LocationNames()
-        OrderByLTD = r.get_element_OrderByLTD()
-        Quantities = r.get_element_Quantities()
-        Type = r.get_element_Type()
-        print "soap_getInventory:", Catalog, FulfillerID, IgnoreSafetyStock, IncludeNegativeInventory, Limit, Location, LocationNames, OrderByLTD, Quantities, Type
+        request = req.get_element_request()
+        Catalog = request.get_element_Catalog()
+        CatalogID = Catalog.get_element_CatalogID() 
+        ManufacturerID = Catalog.get_element_ManufacturerID()
+        Location = request.get_element_Location()
+        CountryCode = Location.get_element_CountryCode()
+        Latitude = Location.get_element_Latitude()
+        Longitude = Location.get_element_Longitude()
+        PostalCode = Location.get_element_PostalCode()
+        Radius = Location.get_element_Radius()
+        Unit = Location.get_element_Unit()
+        LocationIDs = request.get_element_LocationIDs().get_element_ExternalLocationID() # array of loc ids
+        Quantities = request.get_element_Quantities()
+        items = Quantities.get_element_items()
+        itemList = []
+        for item in items:
+            PartNumber = item.get_element_PartNumber()
+            Quantity = item.get_element_Quantity()
+            UPC = item.get_element_UPC()
+            itemList.append({
+                'partnumber': PartNumber,
+                'UPC': UPC,
+                'Quantity': Quantity
+            })
+        Type = request.get_element_Type()
+        FulfillerID = request.get_element_FulfillerID()
+        IgnoreSafetyStock = request.get_element_IgnoreSafetyStock()
+        IncludeNegativeInventory = request.get_element_IncludeNegativeInventory()
+        Limit = request.get_element_Limit()
+        OrderByLTD = request.get_element_OrderByLTD()
 
-        # Call API function with arguments above
+        print 'soap_getInventory:', CatalogID, FulfillerID, IgnoreSafetyStock, IncludeNegativeInventory, Limit, 0, LocationIDs, OrderByLTD, itemList, Type
 
-        # Set these values with results from calliing API function
+        results = getInventory({'CatalogID': CatalogID,
+                                'ManufacturerID': ManufacturerID},
+                                FulfillerID, IgnoreSafetyStock,
+                                IncludeNegativeInventory, Limit, 0,
+                                LocationIDs, OrderByLTD, itemList, Type, db)
+
+        InventoryReturnList = []
+        for result in results:
+            #constantSQLCommand = """SELECT l.Name, st.CatalogueId, st.ManufacturerId, si.OnHand, si.OnHand - si.Allocated as available, si.SKU,
+            #                               fb.UPC, sa.LTD, sa.SafetyStockLimit, l.DefaultSafetyStockLimit
+            getInventoryReturn = res.new_getInventoryReturn()
+            getInventoryReturn.set_element_LocationName(result[0])
+            getInventoryReturn.set_element_CatalogID(int(result[1]))
+            getInventoryReturn.set_element_ManufacturerID(int(result[2]))
+            getInventoryReturn.set_element_OnHand(int(result[3]))
+            getInventoryReturn.set_element_Available(int(result[4]))
+            getInventoryReturn.set_element_PartNumber(result[5])
+            getInventoryReturn.set_element_UPC(result[6])
+            getInventoryReturn.set_element_LTD(float(result[7]))
+            getInventoryReturn.set_element_SafetyStock(int(result[8]))
+            getInventoryReturn.set_element_CountryCode('USA')
+            getInventoryReturn.set_element_Distance(0)
+            InventoryReturnList.append(getInventoryReturn)
+
+        res.set_element_getInventoryReturn(InventoryReturnList)
 
         return res
 
