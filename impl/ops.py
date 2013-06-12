@@ -142,26 +142,6 @@ def createFulfiller(request):
    return datatypes.createFulfillerResponse(1)
 
 @soap_op
-def createFulfillmentLocation(location):
-   values = (
-         location.ExternalLocationID,
-         location.RetailerLocationID,
-         location.FulfillerID,
-         location.LocationName,
-         location.LocationType,
-         location.Latitude,
-         location.Longitude,
-         location.Status)
-
-   conn = sql.getConnection()
-   cursor = conn.cursor()
-
-   cursor.execute(sql.CREATE_LOCATION, values)
-
-   sql.commitAndClose(conn)
-   return datatypes.createFulfillmentLocationResponse(1)
-
-@soap_op
 def createBin(bin_):
    values = (
          bin_.Name,
@@ -178,6 +158,36 @@ def createBin(bin_):
 
    sql.commitAndClose(conn)
    return datatypes.createBinResponse(1)
+
+@soap_op
+def createFulfillmentLocation(location):
+   values = (
+         location.ExternalLocationID,
+         location.RetailerLocationID,
+         location.FulfillerID,
+         location.LocationName,
+         location.LocationType,
+         location.Latitude,
+         location.Longitude,
+         location.Status)
+
+   bin_values = (
+         "Default",
+         0,
+         location.ExternalLocationID,
+         location.FulfillerID,
+         "Pickable",
+         1)
+
+   conn = sql.getConnection()
+   cursor = conn.cursor()
+
+   cursor.execute(sql.CREATE_LOCATION, values)
+
+   cursor.execute(sql.CREATE_BIN, bin_values)
+
+   sql.commitAndClose(conn)
+   return datatypes.createFulfillmentLocationResponse(1)
 
 @soap_op
 def AdjustRequest(request):
@@ -272,7 +282,7 @@ def getInventory(request):
    if(len(results) > 0):
       for location in results:
          locations.append(inventoryLocation(location[0], location[1], location[2], location[3],
-         location[4], location[5], location[6], location[7], location[8]))
+         location[3] - location[4] - (0 if IgnoreSafetyStock else location[8]), location[5], location[6], location[7], location[8]))
    return datatypes.getInventoryResponse(locations)
 
 @soap_op
@@ -318,6 +328,7 @@ def getBinStatuses(request):
 def getBins(request):
    conn = sql.getConnection()
    cur = conn.cursor()
+   print(request.FulfillerID)
    
    cur.execute(
       sql.GET_BINS.format(
@@ -331,7 +342,7 @@ def getBins(request):
    count = 0
    items = []
    for result in cur:
-      items.append(datatypes.item(result[BinInfo.fulfiller_id], 1, result[BinInfo.ext_ful_loc_id],\
+      items.append(datatypes.item(request.FulfillerID, 1, result[BinInfo.ext_ful_loc_id],\
               result[BinInfo.bin_type], result[BinInfo.bin_status], result[BinInfo.name]))
       count = count + 1
    return datatypes.getBinsResponse(count, items)

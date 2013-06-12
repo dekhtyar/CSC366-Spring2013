@@ -176,4 +176,9 @@ class getBins(object):
 class getFulfillmentLocations(object):
    def __init__(self, element):
       request = getElement(element, "v4:request")
-      
+                  
+      self.FulfillerID = getElement(request, "v4:FulfillerID").text
+      catalog = getElement(request, "v4:Catalog")
+      self.ManufacturerID = getElement(catalog, "v4:ManufacturerID").text
+      self.CatalogID = getElement(catalog, "v4:CatalogID").text
+
