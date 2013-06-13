@@ -1,6 +1,6 @@
 /*
  * Team GLADE
- * Lab 5
+ * CSC 366
  * api.java
  */
 
