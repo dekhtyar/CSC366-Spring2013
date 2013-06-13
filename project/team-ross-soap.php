@@ -78,8 +78,8 @@ class TeamRossSOAP {
                     $GetFulfillmentLocationsRequest->request->Catalog,
                     $GetFulfillmentLocationsRequest->request->Location,
                     $GetFulfillmentLocationsRequest->request->MaxLocations
-                    ) 
-                ); 
+                    )
+                );
   }
 
   // **********************************************************************
@@ -100,19 +100,17 @@ class TeamRossSOAP {
   // Matt S
   // **********************************************************************
   function allocateInventory($UpdateRequest) {
-    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-      $UpdateItem['Items']) ? 0 : -1;
+    return $this->api->allocateInventory($UpdateRequest) ? 0 : -1;
   }
 
   // **********************************************************************
   // Ian
   // **********************************************************************
   function deallocateInventory($UpdateItem) {
-    foreach ($UpdateItem['Items'] as $CurrElem)
-      $CurrElem['Quantity'] = $CurrElem['Quantity'] * -1;
+    foreach ($UpdateItem->Items as $CurrElem)
+      $CurrElem->Quantity = $CurrElem->Quantity * -1;
 
-    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-                         $UpdateItem['Items']) ? 0 : -1;
+    return $this->api->deallocateInventory($UpdateItem) ? 0 : -1;
   }
 
   // **********************************************************************
@@ -194,7 +192,7 @@ class TeamRossSOAP {
   // *********************************************************************
   function getInventory($GetInventoryRequest) {
 		error_log(print_r($GetInventoryRequest->request->Quantities, true));
-	
+
     $GetInventoryRequest = $GetInventoryRequest->request;
     $ret = $this->api->getInventory($GetInventoryRequest->FulfillerID,
             $GetInventoryRequest->Catalog,
@@ -218,8 +216,8 @@ class TeamRossSOAP {
   // Group
   // **********************************************************************
   function adjustInventory() {
-    if ($this->api->adjustInventory($AdjustRequest['FulfillerId'],
-      $AdjustRequest['ExternalLocationID'], $AdjustRequest['items'])) {
+    if ($this->api->adjustInventory($AdjustRequest->FulfillerId,
+      $AdjustRequest->ExternalLocationID, $AdjustRequest->items)) {
       return "SUCCESS!";
     }
     return "FAILURE!";
