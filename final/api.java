@@ -1123,6 +1123,7 @@ public class api {
 
                if (locations2.contains(l)) {
                   if (distances == null || distances.size() == 0) {
+                     //System.out.println("ADDING location");
                      locations.add(l);
                   } else {
                      for (int j = 0; j < distances.size(); j++) {
@@ -1163,6 +1164,9 @@ public class api {
       if (locations.size() > 0) {
          sql2 += loc + ")";
       }
+      else if(quantities.length > 1){
+         return inventory;
+      }
 
       if (orderByLtd) {
          sql2 += " ORDER BY lp.LTD";
@@ -1202,7 +1206,6 @@ public class api {
                         r.getInt(3), r.getInt(4), r.getString(5),
                         r.getString(6), r.getDouble(7), r.getInt(8),
                         r.getString(9), 0 };
-
                   inventory.add(returnObj);
                } else {
                   for (int i = 0; i < distances.size(); i++) {
@@ -1212,7 +1215,6 @@ public class api {
                               r.getString(5), r.getString(6),
                               r.getDouble(7), r.getInt(8),
                               r.getString(9), distances.get(i)[2] };
-
                         inventory.add(returnObj);
                         break;
                      }
@@ -1318,7 +1320,7 @@ public class api {
                         r.getString(6), r.getDouble(7), r.getInt(8),
                         r.getString(9), 0 };
 
-                  inventory.add(returnObj);
+               inventory.add(returnObj);
                } else {
                   for (int i = 0; i < distances.size(); i++) {
                      if (locationId.equals(distances.get(i)[1])) {
