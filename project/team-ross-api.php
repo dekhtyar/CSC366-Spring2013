@@ -577,71 +577,63 @@ class TeamRossAPI {
     }
 
     $i = 0;
-    foreach($quantities as $currItem) {
-        if ($i > 0) {
-            if ($type = "ANY" || $type == "PARTIAL") {
-                $str = $str . "\nOR ";
-            }
-            else {
-                $str = $str . "\nAND ";
-            }
-        }
+    foreach ($quantities as $currItem) {
+      if ($i > 0) {
+        if ($type = "ANY" || $type == "PARTIAL")
+          $str = $str . "\nOR ";
+        else
+          $str = $str . "\nAND ";
+      }
 
-        if ( !($includeNegInv && $type == "ANY") ) {
-            $str = $str . "( (onHand - allocated ";
-            if (!$ignoreSafetyStock) {
-                $str = $str . "- safetyStock ";
-            }
-            $str = $str . ") >= :quantity" . $i . " AND ";
-        }
+      if ( !($includeNegInv && $type == "ANY") ) {
+        $str = $str . "( (onHand - allocated ";
 
-        $str = $str . "productUpc = :upc" . $i . ")";
-        // We can ignore PartNumber since UPC isn't nillable
+        if (!$ignoreSafetyStock)
+            $str = $str . "- safetyStock ";
 
-        $i++;
+        $str = $str . ") >= :quantity" . $i . " AND ";
+      }
+
+      $str = $str . "productUpc = :upc" . $i . ")";
+      // We can ignore PartNumber since UPC isn't nillable
+
+      $i++;
     }
 
     $str = $str . ")";
 
-    if ($orderByLTD) {
-      $str = $str . "\n            ORDER BY ltd DESC";
-    }
-
-    if ($limit != null) {
-      $str = $str . "\n            LIMIT 0, :limit";
-    }
+    if ($orderByLTD) $str    = $str . "\n            ORDER BY ltd DESC";
+    if ($limit != null) $str = $str . "\n            LIMIT 0, :limit";
 
     $stmt = $this->db->prepare($str);
 
     $stmt->bindParam(':fulfillerID', $fulfillerID, PDO::PARAM_INT);
     $stmt->bindParam(':catalogID', $catalog->CatalogID, PDO::PARAM_INT);
     $stmt->bindParam(':manufacturerID', $catalog->ManufacturerID, PDO::PARAM_INT);
-    if ($limit != null) {
+
+    if ($limit != null)
       $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-    }
 
     $i = 0;
     foreach($quantities as $currItem) {
-        $stmt->bindParam(":upc" . $i, $currItem->UPC);
+      $stmt->bindParam(":upc" . $i, $currItem->UPC);
 
-        if (type == "ANY") {
-            $stmt->bindParam(":quantity" . $i, 1, PDO::PARAM_INT);
-        }
-        else {
-            $stmt->bindParam(":quantity" . $i, $currItem->Quantity, PDO::PARAM_INT);
-        }
+      if (type == "ANY")
+        $stmt->bindParam(":quantity" . $i, 1, PDO::PARAM_INT);
+      else
+        $stmt->bindParam(":quantity" . $i, $currItem->Quantity, PDO::PARAM_INT);
 
-        $i++;
+      $i++;
     }
 
     if (!$stmt->execute()) {
 			error_log(print_r($stmt->errorInfo(), true));
 		}
-		
+
     $arr = array();
-    while ($sel = $stmt->fetch(PDO::FETCH_OBJ)) {
+    while ($sel = $stmt->fetch(PDO::FETCH_OBJ))
       $arr[] = $sel;
-		}
+
     return $arr;
   }
 }
