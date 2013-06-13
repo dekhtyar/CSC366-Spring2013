@@ -214,8 +214,6 @@ function db_destroy_tables($db) {
 // Seed data from CSV files
 // **********************************************************************
 function db_seed($db) {
-  $api = new TeamRossAPI($db);
-
   $csv = array();
   $csv['locations']           = 'csv_data/fulfiller_locations.csv';
   $csv['location_bins']       = 'csv_data/fulfiller_location_bins.csv';
@@ -223,24 +221,26 @@ function db_seed($db) {
   $csv['inv_available']       = 'csv_data/fulfiller_inventory_available.csv';
   $csv['inv_not_available']   = 'csv_data/fulfiller_inventory_not_available.csv';
 
-
   // **********************************************************************
   // Locations
   // **********************************************************************
   print "Seeding Locations";
   $data = get_csv_data($csv['locations']);
   $fulfillerCheckStmt = $db->prepare("SELECT * FROM Fulfillers WHERE fulfillerId = :id");
+  $fulfillersProcessed = array();
 
-  foreach($data as &$location) {
+  foreach ($data as &$location) {
     $fulfillerCheckStmt->bindValue(':id', $location['fulfiller_id']);
     $fulfillerCheckStmt->execute();
 
     // Create new fulfiller if we need to
-    if (!$fulfillerCheckStmt->fetch(PDO::FETCH_ASSOC))
-      $api->createFulfiller($location['fulfiller_id'], $location['name']);
+    if (!$fulfillerCheckStmt->fetch(PDO::FETCH_ASSOC) && !in_array($location['fulfiller_id'], $fulfillersProcessed)) {
+      createFulfiller($location['fulfiller_id'], $location['name'], $db);
+      $fulfillersProcessed[] = $location['fulfiller_id'];
+    }
 
     // Create Fulfiller location
-    $api->createFulfillmentLocation(
+    createFulfillmentLocation(
       $location['name'],
       $location['external_fulfiller_location_id'],
       $location['internal_fulfiller_location_id'],
@@ -251,7 +251,8 @@ function db_seed($db) {
       $location['status'],
       $location['safety_stock'],
       $location['mfg_id'],
-      $location['catalog_id']
+      $location['catalog_id'],
+      $db
     );
 
     if (++$count % 50 == 0) print ".";
@@ -265,11 +266,13 @@ function db_seed($db) {
   $count = 0;
 
   foreach($data as &$bin) {
-    $api->createBin(
+    createBin(
       $bin['internal_fulfiller_location_id'],
+      $bin['external_fulfiller_location_id'],
       $bin['bin_name'],
       $bin['bin_type'],
-      $bin['bin_status']
+      $bin['bin_status'],
+      $db
     );
 
     if (++$count % 150 == 0) print ".";
@@ -286,11 +289,253 @@ function db_seed($db) {
 
   print ".";
   foreach($data as &$data_chunk) {
-    $api->seedInventory($data_chunk);
+    seedInventory($data_chunk, $db);
     print ".";
   }
 
   print "\nData seeded.\n";
+}
+
+function seedInventory($items, $db) {
+  // STATEMENTS
+  $stmt1 = $db->prepare("
+    INSERT INTO BinContainsProducts
+      (binName, internalLocationId, productUpc, fulfillerId)
+    VALUES
+      (:binName, :internalLocationId, :productUpc, :fulfillerId)
+  ");
+
+  $stmt2 = $db->prepare("
+    INSERT INTO FulfillerCarriesProducts(fulfillerId, productUpc, sku)
+    VALUES(:fulfillerId, :productUpc, :sku)
+  ");
+
+  $stmt3 = $db->prepare("
+    INSERT INTO LocationSellsProducts (internalLocationId, productUpc, storeSku, safetyStock, ltd, allocated, onHand, fulfillerId)
+    VALUES(:internalLocationId, :productUpc, :storeSku, :safetyStock, :ltd, '0', :onHand, :fulfillerId)
+  ");
+
+  // UPDATE INVENTORY FOR EACH ITEM
+  foreach ($items as $item) {
+    $fulfillerId = getFulfillerIdFromLocationId($item['internal_fulfiller_location_id'], $db);
+
+    $stmt1->bindParam(':binName', $item['bin_name']);
+    $stmt1->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+    $stmt1->bindParam(':productUpc', $item['UPC']);
+    $stmt1->bindParam(':fulfillerId', $fulfillerId);
+
+    $stmt2->bindParam(':fulfillerId', $fulfillerId);
+    $stmt2->bindParam(':productUpc', $item['UPC']);
+    $stmt2->bindParam(':sku', $item['SKU']);
+
+    $stmt3->bindParam(':internalLocationId', $item['internal_fulfiller_location_id']);
+    $stmt3->bindParam(':productUpc', $item['UPC']);
+    $stmt3->bindParam(':storeSku', $item['SKU']);
+    $stmt3->bindParam(':safetyStock', $item['safety_stock']);
+    $stmt3->bindParam(':ltd', $item['ltd']);
+    $stmt3->bindParam(':onHand', $item['onHand']);
+    $stmt3->bindParam(':fulfillerId', $fulfillerId);
+
+    // create product if missing
+    if (!getProductFromUpc($item['UPC'], $db))
+      createProduct($item, $db);
+
+    // create bin if missing
+    if (!getBin($item['bin_name'], $item['internal_fulfiller_location_id'], $db))
+      print "Bin doesn't exist.\n";
+
+    // execute queries
+    else {
+      $stmt1->execute();
+      $stmt2->execute();
+      $stmt3->execute();
+    }
+  }
+}
+
+function createBin($fulfillerId, $externalLocationId, $name, $binType, $status, $db) {
+  $stmt = $db->prepare("
+    INSERT INTO Bins
+      (internalLocationId, binName, binType, status)
+    VALUES
+      ((SELECT internalLocationId
+        FROM Locations
+        WHERE fulfillerId = :fulfillerId
+        AND externalLocationId = :externalLocationId
+        LIMIT 1),
+        :binName, :binType, :status);
+  ");
+
+  $stmt->bindValue(':fulfillerId', $fulfillerId);
+  $stmt->bindValue(':externalLocationId', $externalLocationId);
+  $stmt->bindValue(':binName', $name);
+  $stmt->bindValue(':binType', $binType);
+  $stmt->bindValue(':status', $status);
+
+  if (!$stmt->execute()) {
+    print "\ncreateBin\n";
+    $out = print_r($stmt->errorInfo(), True);
+    error_log($out);
+    return False;
+  }
+  return True;
+}
+
+function createFulfillmentLocation($locationName, $extLID, $intLID,
+  $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock,$mfgId, $catalogId, $db) {
+  $success = TRUE;
+    // Create Location, update if exists
+    $stmt = $db->prepare("
+       INSERT INTO Locations
+         (externalLocationId, internalLocationId, fulfillerId, locationType,
+          latitude, longitude, status, safetyStockLimitDefault)
+        VALUES
+          (:externalLocationId, :internalLocationId, :fulfillerId, :locationType,
+          :latitude, :longitude, :status, :safetyStockLimitDefault)
+    ");
+
+  $stmt->bindValue(':externalLocationId', $extLID);
+  $stmt->bindValue(':internalLocationId', $intLID);
+  $stmt->bindValue(':fulfillerId', $fulfillerId);
+  $stmt->bindValue(':locationType', $locationType);
+  $stmt->bindValue(':latitude', strval($latitude));
+  $stmt->bindValue(':longitude', strval($longitude));
+  $stmt->bindValue(':status', $status);
+  $stmt->bindValue(':safetyStockLimitDefault', $safetyStock);
+  if (!$stmt->execute()) {
+    print "\ncreateFulfillmentLocation\n";
+    $out = print_r($stmt->errorInfo(), True);
+    error_log($out);
+    $success = FALSE;
+  }
+
+  // Create catalog if missing
+  if (!getCatalog($catalogId, $db))
+    createCatalog($catalogId, $mfgId, $db);
+
+  // Create default Bin
+  print $intLID . "\n";
+  if (!getBin('Default', $intLID, $db))
+    createBin($fulfillerId, $extLID, 'Default', 'Default', $status, $db);
+
+  // Create LocationOffersCatalog
+  $relational = $db->prepare("
+    INSERT INTO LocationOffersCatalogs (catalogId, manufacturerId, internalLocationId)
+    VALUES (:catalogId, :manufacturerId, :internalLocationId);
+  ");
+
+  $relational->bindParam(':catalogId', $catalogId);
+  $relational->bindParam(':manufacturerId', $mfgId);
+  $relational->bindParam(':internalLocationId', $intLID);
+
+  if (!$relational->execute())  {
+    print "\ncreateFulfillmentLocation RELATIONAL\n";
+    $out = print_r($relational->errorInfo(), true);
+    error_log($out);
+    $success = FALSE;
+  }
+
+  return (($success == FALSE) ? 0 : 1);
+}
+
+function createFulfiller( $id, $name, $db ) {
+  $stmt = $db->prepare("INSERT INTO Fulfillers (fulfillerId, name) VALUES (:id,:name)");
+  $stmt->bindValue(':id', $id);
+  $stmt->bindValue(':name',$name);
+
+  if (!$stmt->execute()) {
+    print "\ncreateFulfiller\n";
+    print_r($stmt->errorInfo());
+  }
+}
+
+function getBin($binName, $internalLocationId, $db) {
+  $stmt = $db->prepare("
+    SELECT * FROM Bins
+    WHERE binName = :binName
+    AND internalLocationId = :internalLocationId
+  ");
+
+  if ($binName == 0)
+    $binName = 'Default';
+
+  $stmt->bindValue(':binName', $binName);
+  $stmt->bindValue(':internalLocationId', $internalLocationId);
+
+  $stmt->execute();
+
+  return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function createProduct($product, $db) {
+  if (!getCatalog($product['catalog_id'], $db))
+    createCatalog($product['catalog_id'], $product['mfg_id'], $db);
+
+  $stmt = $db->prepare("
+    INSERT INTO Products
+      (upc, catalogId, manufacturerId, name)
+    VALUES
+      (:upc, :catalogId, :manufacturerId, :name);
+  ");
+
+  $stmt->bindParam(':upc', $product['UPC']);
+  $stmt->bindParam(':catalogId', $product['catalog_id']);
+  $stmt->bindParam(':manufacturerId', $product['mfg_id']);
+  $stmt->bindParam(':name', $product['product_name']);
+
+  $stmt->execute();
+}
+
+function getCatalog($catalog_id, $db) {
+  $stmt = $db->prepare("
+    SELECT * FROM Catalogs
+    WHERE catalogId = :catalogId
+  ");
+  $stmt->bindParam(':catalogId', $catalog_id);
+
+  if (!$stmt->execute()) {
+    print "\ngetCatalog\n";
+    print_r($stmt->errorInfo());
+  }
+
+  return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function createCatalog($catalog_id, $mfg_id, $db) {
+  $stmt = $db->prepare("
+    INSERT INTO Catalogs
+      (catalogId, manufacturerId)
+    VALUES
+      (:catalogId, :manufacturerId)
+  ");
+
+  $stmt->bindParam(':catalogId', $catalog_id);
+  $stmt->bindParam(':manufacturerId', $mfg_id);
+
+  if (!$stmt->execute()) {
+    print "\ncreateCatalog\n";
+    print_r($stmt->errorInfo());
+  }
+}
+
+function getProductFromUpc($upc, $db) {
+  $stmt = $db->prepare("
+    SELECT * FROM Products
+    WHERE upc = :upc
+  ");
+  $stmt->bindParam(':upc', $upc);
+  $stmt->execute();
+
+  return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function getFulfillerIdFromLocationId($internalLocationId, $db) {
+  $stmt = $db->prepare("SELECT fulfillerId FROM Locations WHERE internalLocationId = :internalLocationId");
+  $stmt->bindParam(':internalLocationId', $internalLocationId);
+  $stmt->execute();
+
+  $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $fetch['fulfillerId'];
 }
 
 // **********************************************************************
