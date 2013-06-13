@@ -268,7 +268,6 @@ function db_seed($db) {
   foreach($data as &$bin) {
     createBin(
       $bin['internal_fulfiller_location_id'],
-      $bin['external_fulfiller_location_id'],
       $bin['bin_name'],
       $bin['bin_type'],
       $bin['bin_status'],
@@ -353,24 +352,18 @@ function seedInventory($items, $db) {
   }
 }
 
-function createBin($fulfillerId, $externalLocationId, $name, $binType, $status, $db) {
+function createBin($internalLocationId, $binName, $binType, $binStatus, $db) {
   $stmt = $db->prepare("
     INSERT INTO Bins
       (internalLocationId, binName, binType, status)
     VALUES
-      ((SELECT internalLocationId
-        FROM Locations
-        WHERE fulfillerId = :fulfillerId
-        AND externalLocationId = :externalLocationId
-        LIMIT 1),
-        :binName, :binType, :status);
+      (:internal_location_id, :binName, :binType, :status);
   ");
 
-  $stmt->bindValue(':fulfillerId', $fulfillerId);
-  $stmt->bindValue(':externalLocationId', $externalLocationId);
-  $stmt->bindValue(':binName', $name);
+  $stmt->bindValue(':internal_location_id', $internalLocationId);
+  $stmt->bindValue(':binName', $binName);
   $stmt->bindValue(':binType', $binType);
-  $stmt->bindValue(':status', $status);
+  $stmt->bindValue(':status', $binStatus);
 
   if (!$stmt->execute()) {
     print "\ncreateBin\n";
@@ -416,7 +409,7 @@ function createFulfillmentLocation($locationName, $extLID, $intLID,
   // Create default Bin
   print $intLID . "\n";
   if (!getBin('Default', $intLID, $db))
-    createBin($fulfillerId, $extLID, 'Default', 'Default', $status, $db);
+    createBin($intLID, 'Default', 'Default', $status, $db);
 
   // Create LocationOffersCatalog
   $relational = $db->prepare("
