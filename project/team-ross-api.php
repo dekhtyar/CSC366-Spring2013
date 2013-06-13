@@ -566,15 +566,14 @@ class TeamRossAPI {
 
     $i = 0;
     foreach ($locationNames as $currLoc) {
-        if( $i != 0 ) {
-            $str .= " OR ";
-        }
-        $str .= "externalLocationId = :location" . $i;
+      if ($i != 0)
+        $str .= " OR ";
+
+      $str .= "externalLocationId = :location" . $i;
     }
 
-    if (count($locationNames) > 0) {
+    if (count($locationNames) > 0)
       $str = $str . ") AND (";
-    }
 
     $i = 0;
     foreach ($quantities as $currItem) {
@@ -589,7 +588,7 @@ class TeamRossAPI {
         $str = $str . "( (onHand - allocated ";
 
         if (!$ignoreSafetyStock)
-            $str = $str . "- safetyStock ";
+          $str = $str . "- safetyStock ";
 
         $str = $str . ") >= :quantity" . $i . " AND ";
       }
