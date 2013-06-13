@@ -106,7 +106,16 @@
     $item->ShipmentID = null;
     $item->ExternalLocationID = 440008;
 
-    $request->request->Items = array($item);
+    $item2 = new \stdClass;
+    $item2->PartNumber = 8888010248;
+    $item2->UPC = 8888010248;
+    $item2->Quantity = 3;
+    $item2->OrderID = null;
+    $item2->OrderItemID = null;
+    $item2->ShipmentID = null;
+    $item2->ExternalLocationID = 440008;
+
+    $request->request->Items = array($item, $item2);
 
     $ret = $client->fulfillInventory($request);
     print_r($ret);

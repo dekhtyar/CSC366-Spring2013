@@ -317,6 +317,11 @@ class TeamRossAPI {
     $stmt->bindParam(":fulfillerId", $fulfillerId);
     $stmt->bindParam(":fulfillerId2", $fulfillerId);
 
+    // Convert items to a type we can understand
+    if (!is_array($items->items))
+      $items = array($items->items);
+    else $items = $items->items;
+
     foreach ($items as $item) {
       error_log("Updating " . $item->UPC . " with new quantity: " . $item->Quantity);
       $stmt->bindParam(":productUpc", $item->UPC);
@@ -462,7 +467,7 @@ class TeamRossAPI {
   }
 
   public function getInventory($fulfillerID, $catalog, $quantities, $locationNames, $type, $limit, $ignoreSafetyStock, $includeNegInv, $orderByLTD) {
-      $str = "SELECT externalLocationId AS LocationName, 
+      $str = "SELECT externalLocationId AS LocationName,
                    catalogId AS CatalogID,
                    manufacturerId AS ManufacturerID,
                    onHand AS OnHand,
@@ -483,7 +488,7 @@ class TeamRossAPI {
               AND catalogId = :catalogID
               AND manufacturerId = :manufacturerID
               AND (";
-    
+
     $i = 0;
     foreach ($locationNames as $currLoc) {
         if( $i != 0 ) {
@@ -491,11 +496,11 @@ class TeamRossAPI {
         }
         $str .= "externalLocationId = :location" . $i;
     }
-          
+
     $str = $str . ") AND (";
-  
+
     $i = 0;
-    foreach($quantities as $currItem) {      
+    foreach($quantities as $currItem) {
         if ($i > 0) {
             if ($type = "ANY" || $type == "PARTIAL") {
                 $str = $str . " OR ";
@@ -504,10 +509,10 @@ class TeamRossAPI {
                 $str = $str . " AND ";
             }
         }
-        
-        $str = $str . "productUpc = :upc" . $i . ")"; 
+
+        $str = $str . "productUpc = :upc" . $i . ")";
         // We can ignore PartNumber since UPC isn't nillable
-        
+
         if ( !($includeNegInv && $type == "ANY") ) {
             $str = $str . "( (onHand - allocated ";
             if (!$ignoreSafetyStock) {
@@ -515,25 +520,25 @@ class TeamRossAPI {
             }
             $str = $str . ") >= :quantity" . $i . " AND ";
         }
-        
+
         $i++;
     }
-  
+
     $str = $str . ")";
-    
+
     if ($orderByLTD) {
       $str = $str . " ORDER BY ltd DESC";
     }
-    
+
     if ($limit != null) {
       $str = $str . " LIMIT 0, :limit";
     }
-    
+
     $str = $str . ";";
-    
+
     error_log($str);
-    $stmt = $this->db->prepare($str);    
-    
+    $stmt = $this->db->prepare($str);
+
     $stmt->bindParam(':fulfillerID', $fulfillerID);
     $stmt->bindParam(':catalogID', $catalog['CatalogID']);
     $stmt->bindParam(':manufacturerID', $catalog['ManufacturerID']);
@@ -542,19 +547,19 @@ class TeamRossAPI {
     }
 
     $i = 0;
-    foreach($quantities as $currItem) {      
+    foreach($quantities as $currItem) {
         $stmt->bindParam(":upc" . $i, $currItem->UPC);
-        
+
         if (type == "ANY") {
             $stmt->bindParam(":quantity" . $i, 1);
         }
         else {
             $stmt->bindParam(":quantity" . $i, $currItem['Quantity']);
         }
-        
+
         $i++;
     }
-    
+
     $stmt->execute();
     $arr = array();
     while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
