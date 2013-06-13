@@ -92,7 +92,7 @@ class TeamRossSOAP {
 	  $locationTypeRetailer->LocationType = "RETAILER";
 		$locationTypeManufacturer = new \stdClass;
 	  $locationTypeManufacturer->LocationType = "MANUFACTURER";
-	
+
     return array($locationTypeFulfiller, $locationTypeRetailer, $locationTypeManufacturer);
   }
 
@@ -180,15 +180,13 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getBinStatuses() {
-    $bins = $this->api->getBinStatuses;
+    $statuses = $this->api->getBinStatuses();
     $returnArr = array();
 
-    foreach ($bins as $bin)
-      if ($bin['BinStatus'])
-        $returnArr[]['BinStatus'] = $bin['status'];
+    foreach ($statuses as $status)
+      $returnArr[]['BinStatus'] = $status;
 
     return array('getBinStatusesReturn' => $returnArr);
-
   }
 
   // **********************************************************************

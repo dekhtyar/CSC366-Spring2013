@@ -178,7 +178,8 @@ class TeamRossAPI {
 
     $arr = array();
     while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
-      $arr[] = $sel;
+      $arr[] = $sel['status'];
+
     return $arr;
   }
 
