@@ -61,10 +61,7 @@
   }
 
   function getFulfillmentLocations($client, $request) {
-    //$data = get_csv_data('csv_data/fulfiller_locations.csv');
     $request->request = new \stdClass;
-
-    //foreach ($data as $location) {
 
     $request->request->FulfillerID = 91710;
     $request->request->Catalog = new \stdClass;
@@ -79,12 +76,8 @@
     $request->request->Location->CountryCode = 5;
     $request->request->MaxLocations = 5;
 
-     // $request->request->FulfillerID = $location['fulfiller_id'];
-     // $request->request->Catalog = $location['catalog_id'];
     $ret = $client->getFulfillmentLocations($request);
-    //  $ret = array('GetFulfillerId' => 1, 2);
     print_r($ret);
-    //}
   }
 
   function getFulfillmentLocationTypes($client, $request) {
