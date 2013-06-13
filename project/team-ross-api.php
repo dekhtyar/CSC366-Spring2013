@@ -333,7 +333,7 @@ class TeamRossAPI {
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-      SET allocated = (allocated - :quantity)
+      SET allocated = if(  allocated - :quantity < 0, 0, allocated-:quantity1)
       WHERE fulfillerId = :fulfillerId
       AND productUpc = :productUpc
       AND internalLocationId =
@@ -360,6 +360,7 @@ class TeamRossAPI {
       $stmt->bindParam(":productUpc", $item->UPC);
       $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
       $stmt->bindParam(":quantity", $item->Quantity);
+      $stmt->bindParam(":quantity1", $item->Quantity);
 
       if (!$stmt->execute())
         $success = False;
