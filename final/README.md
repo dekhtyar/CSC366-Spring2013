@@ -18,7 +18,7 @@ Fulfillment locations (getFulfillmentLocations) can be searched by radius of a g
 
 Inventory (getInventory) can be searched by radius of a given request location
 
-There are a few known bugs:
+There are a couple of known bugs:
 
 It only happened once (during the demo), but an allocation of something that could not be allocated resulted in an
 incosistency between the available number of items and the onHand. However, that error could not be recreated with 
