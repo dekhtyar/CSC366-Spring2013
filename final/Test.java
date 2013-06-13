@@ -126,38 +126,52 @@ public class Test {
             System.out.println("getInventory2RequestLocation failed");
          }
       }
-
-
-      if (args.length > 0 && args[0].equals("test")) {
-
-         if (testCreateFulfiller() < 0) {
-            System.out.println("createFulfiller failed");
-         }
-         if (testGetFulfillerStatus() < 0) {
-            System.out.println("getFulfillerStatus failed");
-         }
-         if (testCreateFulfilmentLocation() < 0) {
-            System.out.println("createFulfillmentLocation failed");
-         }
-         if (testGetFulfillmentLocations() < 0) {
-            System.out.println("getFulfillmentLocations failed");
-         }
-         if (testGetFulfillmentLocations2() < 0) {
-            System.out.println("getFulfillmentLocations failed");
-         }
-         if (testGetFulfillmentLocations3() < 0) {
-            System.out.println("getFulfillmentLocations failed");
-         }
-         if (testGetFulfillmentLocationTypes() < 0) {
-            System.out.println("getFulfillmentLocationTypes failed");
-         }
-         if (testAdjustInventory() < 0) {
-            System.out.println("adjustInventory failed");
-         }
-         if (testRefreshInventory() < 0) {
-            System.out.println("refreshInventory failed");
-         }
-      }
+	  else if (args.length == 3 && args[0].equals("createFulfiller")) {
+		 apiCall.setUpConnection();
+		 if (!testCreateFulfiller(Integer.parseInt(args[1]), args[2])) {
+			 System.out.println("createFulfiller failed");
+		 }	  
+		 apiCall.closeConnection();
+	  }
+	  else if (args.length == 2 && args[0].equals("getFulfillerStatus")) {
+		 if (!testGetFulfillerStatus(Integer.parseInt(args[1]))) {
+			 System.out.println("getFulfillerStatus failed");
+		 }
+	  }
+	  else if (args.length == 10 && args[0].equals("createFulfillmentLocation")) {
+		 if (!testCreateFulfillmentLocation(Integer.parseInt(args[1]),Integer.parseInt(args[2]),
+			 args[3], args[4], args[5], Double.parseDouble(args[6]), Double.parseDouble(args[7]),
+			 args[8], args[9])) {
+			System.out.println("createFulfillmentLocation failed");
+		 }
+	  }
+	  else if (args.length == 11 && args[0].equals("getFulfillmentLocations")) {
+		 if (!testGetFulfillmentLocations(Integer.parseInt(args[1]), Float.parseFloat(args[2]),
+			Float.parseFloat(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]),
+			args[6], Integer.parseInt(args[7]), Integer.parseInt(args[8]), args[9],
+			Integer.parseInt(args[10]))) {
+			 System.out.println("getFulfillmentLocations failed");
+		 }
+	  }
+	  else if (args.length == 1 && args[0].equals("getFulfillmentLocationTypes")) {
+		 if (!testGetFulfillmentLocationTypes()) {
+			System.out.println("getFulfillmentLocationTypes failed");
+		 }
+	  }
+	  else if (args.length == 11 && args[0].equals("adjustInventory")) {
+		 if (!testAdjustInventory(Integer.parseInt(args[1]), Integer.parseInt(args[2]),
+			Integer.parseInt(args[3]), Double.parseDouble(args[4]), Integer.parseInt(args[5]),
+			args[6], args[7], Integer.parseInt(args[8]), args[9], Integer.parseInt(args[10]))) {
+			 System.out.println("adjustInventory failed");
+		 }
+	  }
+	  else if (args.length == 9 && args[0].equals("refreshInventory")) {
+		 if (!testRefreshInventory(Integer.parseInt(args[1]), args[2], args[3],
+			args[4], Integer.parseInt(args[5]), Integer.parseInt(args[6]),
+			Double.parseDouble(args[7]), Integer.parseInt(args[8]))) {
+			 System.out.println("refreshInventory failed");
+		 }
+	  }
 
       if (args.length > 0 && args[0].equals("cleanup")) {
          setupConnection();
@@ -934,144 +948,102 @@ public class Test {
          Object[][] fulfillerLocationCatalog, Object[][] items) {
 
       System.out.println("Testing modification of Inventory");
-
       // apiCall.allocateInventory(fulfillerId, fulfillerLocationCatalog,
+
       // items);
       // apiCall.deallocateInventory(fulfillerId, fulfillerLocationCatalog,
       // items);
       apiCall.fulfillInventory(fulfillerId, fulfillerLocationCatalog, items);
    }
 
-   public static int testCreateFulfiller() {
-      if (apiCall.createFulfiller(0, null) < 0) return -1;
-      if (apiCall.createFulfiller(91710, "Drop Ship the House") < 0) return -1;
-      if (apiCall.createFulfiller(210, "Name of Store") >= 0) return -1;
-
-      return 0;
+   public static boolean testCreateFulfiller(int fulfillerId, String locationName) {
+      int returnFulfiller = apiCall.createFulfiller(fulfillerId, locationName);
+	  System.out.println("FulfillerId: " +returnFulfiller);
+      return returnFulfiller >= 0;
    }
 
-   public static int testGetFulfillerStatus() { 
-      if (apiCall.getFulfillerStatus(-1) < 0) return -1;
-
-      if (apiCall.getFulfillerStatus(48590) < 0 ) return -1;
-
-      if (apiCall.getFulfillerStatus(485901) >= -0 ) return -1;
-
-      return 0;
+   public static boolean testGetFulfillerStatus(int fulfillerId) { 
+      int returnFulfiller = apiCall.getFulfillerStatus(fulfillerId);
+	  System.out.println("FulfillerId: " +returnFulfiller);
+      return returnFulfiller >=0;
    } 
 
-   public static int testCreateFulfilmentLocation() {
-      return apiCall.createFulfillmentLocation(600, 1000, "600", "Somewhere", "General", 1.0, 1.0, "Pickable", "01");
+   public static boolean testCreateFulfillmentLocation(int fulfillerId,
+         int internalFulfillerLocationId, String externalLocationId,
+         String locationName, String type, double latitude,
+         double longitude, String status, String countryCode) {
+		  
+	  System.out.println("FulfillerId: " +fulfillerId);
+	  System.out.println("InternalFulfillerLocationId: " +internalFulfillerLocationId);
+	  System.out.println("ExternalLocationId: " +externalLocationId);
+	  System.out.println("LocationName: " +locationName);
+	  System.out.println("Type: " +type);
+	  System.out.println("Latitude: " +latitude);
+	  System.out.println("Longitude: " +longitude);
+	  System.out.println("Status: " +status);
+	  System.out.println("CountryCode: " +countryCode);
+	  
+      int returnVal = apiCall.createFulfillmentLocation(fulfillerId, internalFulfillerLocationId,
+	   externalLocationId, locationName, type, latitude, longitude, status, countryCode);
+	   
+	  return returnVal >= 0;
    }
 
-   public static int testGetFulfillmentLocations() {
-      int fulfillerId = -1;
-      Float latitude = new Float(-1);
-      Float longitude = new Float(-1);
-      Object[] manufacturerCatalog = {-1, -1};
-      Object[] requestLocation = {"", -1, -1, latitude, longitude, ""};
-      int maxLocations = -1;
-      Object[] locationResult;
+   public static boolean testGetFulfillmentLocations(int fulfillerId, Float latitude,
+		Float longitude, int manuOne, int manuTwo, String reqOne, int reqTwo,
+		int reqThree, String reqFour, int maxLocations) {
+      Object[] manufacturerCatalog = {manuOne, manuTwo};
+      Object[] requestLocation = {reqOne, reqTwo, reqThree, latitude, longitude, reqFour};
 
       ArrayList<Object[]> results = apiCall.getFulfillmentLocations(fulfillerId, manufacturerCatalog, requestLocation, maxLocations);
-      if (results != null)
-         return -1;
-      return 0;
+ 
+	  if (results == null) return false;
+	  
+	  for (int i = 0; i < results.size(); i++) {
+	     System.out.println("Location: " +results.get(i)[0] +", " +results.get(i)[1]);
+		 System.out.println("Distance: " +results.get(i)[2]);
+	  }
+	  
+      return true;
    }
 
-   public static int testGetFulfillmentLocations2() {
-      int fulfillerId = 91772;
-      Float latitude = new Float(43.070700);
-      Float longitude = new Float(-89.198300);
-      Object[] manufacturerCatalog = {1748, 7};
-      Object[] requestLocation = {"MILES", 50, 0, latitude, longitude, "USA"};
-      int maxLocations = 5;
-      ArrayList<Object[]>results = apiCall.getFulfillmentLocations(fulfillerId, manufacturerCatalog, requestLocation, maxLocations);
-
-      if ((Integer)(results.get(0))[0] != 91772 && (String)(results.get(0))[1] != "1392" && (Double)(results.get(0))[2] != 0.0)
-         return -1;
-      return 0;
-   }
-
-   public static int testGetFulfillmentLocations3() {
-      int fulfillerId = 69170;
-      Float latitude = new Float(40.742300);
-      Float longitude = new Float(-73.987900);
-      Object[] manufacturerCatalog = {11416, 0};
-      Object[] requestLocation = {"KM", 20, 0, latitude, longitude, "USA"};
-      int maxLocations = 10;
-      ArrayList<Object[]>results = apiCall.getFulfillmentLocations(fulfillerId, manufacturerCatalog, requestLocation, maxLocations);
-
-      for (int i = 0; i < results.size(); i++) {
-         if (i == 0) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440777" && (Double)(results.get(i))[2] != 0.0)
-               return -1;
-         }
-         else if (i == 1) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440001" && (Double)(results.get(i))[2] != 1.1089803496102637)
-               return -1;
-         }
-         else if (i == 2) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440007" && (Double)(results.get(i))[2] != 1.7323223797662888)
-               return -1;
-         }
-         else if (i == 3) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440029" && (Double)(results.get(i))[2] != 1.7323223797662888)
-               return -1;
-         }
-         else if (i == 4) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440011" && (Double)(results.get(i))[2] != 2.1172124335724054)
-               return -1;
-         }
-         else if (i == 5) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440002" && (Double)(results.get(i))[2] != 3.70647286229575)
-               return -1;
-         }
-         else if (i == 6) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440005" && (Double)(results.get(i))[2] != 3.9187283068760888)
-               return -1;
-         }
-         else if (i == 7) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440013" && (Double)(results.get(i))[2] != 26.18545833673029)
-               return -1;
-         }
-         else if (i == 8) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440777" && (Double)(results.get(i))[2] != 40.59383240417262)
-               return -1;
-         }
-         else if (i == 9) {
-            if ((Integer)(results.get(i))[0] != 69170 && (String)(results.get(i))[1] != "440028" && (Double)(results.get(i))[2] != 44.465672657134846)
-               return -1;
-         }
-      }
-
-      return 0;
-   }
-
-   public static int testGetFulfillmentLocationTypes() {
+   public static boolean testGetFulfillmentLocationTypes() {
       ArrayList<String> types = apiCall.getFulfillmentLocationTypes();
 
-      if (types != null && (types.size() > 0)) 
-         return 1;
-      else
-         return -1;
+	  if (types == null) return false;
+	  
+	  for (int i = 0; i < types.size(); i++) {
+		System.out.println("Type: " +types.get(i));
+	  }
+	  
+      return true;
    }
 
-   public static int testAdjustInventory() {
-      if (apiCall.adjustInventory(102,0,1,0.0,0,"8888010248","0",102,"440777", 2) < 0) return -1;
-   
-      if (apiCall.adjustInventory(54802,0,1,0.0,0,"8888010248","0",102,"440777",2) >= 0) return -1;
-
-      return 0;
+   public static boolean testAdjustInventory(int internalFulfillerLocationId, 
+		int binId, int onhand, double ltd, int safetyStock, String UPC, 
+		String partnum, int fulfillerid, String externalocation, int adjust) {
+	  
+	  int returnVal = apiCall.adjustInventory(internalFulfillerLocationId, binId, onhand, ltd, 
+		safetyStock, UPC, partnum, fulfillerid, externalocation, adjust);
+			
+	  System.out.println("InternalFulfillerLocationId: " +internalFulfillerLocationId);
+	  System.out.println("BinId: " +binId);
+	  System.out.println("Onhand: " +onhand);
+	  System.out.println("LTD: " +ltd);
+	  System.out.println("SafetyStock: " +safetyStock);
+	  System.out.println("UPC: " +UPC);
+	  System.out.println("Partnum: " +partnum);
+	  System.out.println("FulfillerId: " +fulfillerid);
+	  System.out.println("ExternalLocation: " +externalocation);
+	  
+      return returnVal >= 0;
    }
 
-   public static int testRefreshInventory() {
-      Integer binid = 0;
-      int bid = apiCall.createBin(123, binid, "321", "General", "Pickable", "01010103");
-      if (bid < 0)
-         return -1;
-      apiCall.refreshInventory(123, "321", "12", "31", bid, 0, 0.0, 0);
-      return 0; 
+   public static boolean testRefreshInventory(int fulfillerId, String externalLocId,
+         String SKU, String UPC, int binId, int onhand, double ltd, int safetyStock) {
+      int returnVal = apiCall.refreshInventory(fulfillerId, externalLocId, SKU,
+		UPC, binId, onhand, ltd, safetyStock);
+      return returnVal >= 0; 
    }
 
    public static boolean setupConnection() {
