@@ -225,7 +225,7 @@
     print_r($ret);
   }
 
-  function getInventory($client, $request) {
+  function getInventoryStandard($client, $request) {
     $iq1 = new \stdClass;
     $iq1->PartNumber = 14239745;
     $iq1->UPC = 14239745;
@@ -251,6 +251,31 @@
     $ret = $client->getInventory($request);
     print_r($ret);
   }
+
+  function getInventoryNoLocs($client, $request) {
+    $iq1 = new \stdClass;
+    $iq1->PartNumber = 8888032133;
+    $iq1->UPC = 8888032133;
+    $iq1->Quantity = 2;
+
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 69170;
+    $request->request->Catalog = new \stdClass;
+    $request->request->Catalog->ManufacturerID = 11416;
+    $request->request->Catalog->CatalogID = 0;
+    $request->request->Quantities = array($iq1);
+    $request->request->LocationNames = null;
+    $request->request->Location = null;
+    $request->request->Type = "ANY";
+    $request->request->Limit = 500;
+    $request->request->IgnoreSafetyStock = true;
+    $request->request->IncludeNegativeInventory = false;
+    $request->request->OrderByLTD = false;
+
+    $ret = $client->getInventory($request);
+    print_r($ret);
+  }
+
 
   function adjustInventory($client, $request) {
 		$Request->ExternalLocationID = 440008;
