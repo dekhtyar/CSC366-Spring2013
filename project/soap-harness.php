@@ -87,7 +87,29 @@
   }
 
   function fulfillInventory($client, $request) {
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 69170;
 
+    $request->request->FulfillerLocationCatalog = new \stdClass;
+    $request->request->FulfillerLocationCatalog->ExternalLocationID = 440008;
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog = new \stdClass;
+
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog->ManufacturerID = 11416;
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog->CatalogID = 0;
+
+    $item = new \stdClass;
+    $item->PartNumber = 8888010248;
+    $item->UPC = 8888010248;
+    $item->Quantity = 2;
+    $item->OrderID = null;
+    $item->OrderItemID = null;
+    $item->ShipmentID = null;
+    $item->ExternalLocationID = 440008;
+
+    $request->request->Items = array($item);
+
+    $ret = $client->fulfillInventory($request);
+    print_r($ret);
   }
 
   function createBin($client, $request) {

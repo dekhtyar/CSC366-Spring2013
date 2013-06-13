@@ -296,31 +296,38 @@ class TeamRossAPI {
 
   public function fulfillInventory($fulfillInventoryRequest) {
     $success = true;
-    $fulfillerId = $fulfillInventoryRequest['FulfillerId'];
-    $items = $fulfillInventoryRequest['Items'];
+    $fulfillerId = $fulfillInventoryRequest->request->FulfillerID;
+    $items = $fulfillInventoryRequest->request->Items;
 
     # TODO: Use getInventory to get the quantity before trying to subtract
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-      SET quantity = (quantity - :quantity)
+      SET onHand = (onHand - :quantity)
       WHERE fulfillerId = :fulfillerId
-        AND internalLocationId =
-          (SELECT FIRST(internalLocationId)
-          FROM Locations
-          WHERE fulfillerId = :fulfillerId2
-            AND externalLocationId = :externalLocationId);
+      AND productUpc = :productUpc
+      AND internalLocationId =
+        (SELECT internalLocationId
+        FROM Locations
+        WHERE fulfillerId = :fulfillerId2
+        AND externalLocationId = :externalLocationId
+        LIMIT 1);
     ");
 
     $stmt->bindParam(":fulfillerId", $fulfillerId);
     $stmt->bindParam(":fulfillerId2", $fulfillerId);
 
     foreach ($items as $item) {
-      $stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
-      $stmt->bindParam(":quantity", $item['Quantity']);
+      error_log("Updating " . $item->UPC . " with new quantity: " . $item->Quantity);
+      $stmt->bindParam(":productUpc", $item->UPC);
+      $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
+      $stmt->bindParam(":quantity", $item->Quantity);
 
-      if (!$stmt->execute())
+      if (!$stmt->execute()) {
         $success = false;
+        $err = print_r($stmt->errorInfo(), true);
+        error_log($err);
+      }
     }
 
     return $success;
