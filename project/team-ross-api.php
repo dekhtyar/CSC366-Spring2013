@@ -138,8 +138,9 @@ class TeamRossAPI {
           LIMIT 1)
     ");
 
-    if ($binName == 0)
+    if ($binName === 0) {
       $binName = 'Default';
+    }
 
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':fulfillerId', $fulfillerId);
@@ -506,7 +507,7 @@ class TeamRossAPI {
         $err = print_r($stmt->errorInfo(), true);
         error_log($err);
 		}
-		
+
 		$arr = array();
     while ($loc = $stmt->fetch(PDO::FETCH_ASSOC)) {
 			$assignment = new \stdClass;
