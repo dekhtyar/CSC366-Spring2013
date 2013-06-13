@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.6.2  Built on : Apr 17, 2012 (05:33:49 IST) -->
+<serviceGroup>
+    <service name="CoreServiceService">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="com.shopatron.api.coexprivate.core.v4.CoreServiceServiceMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">com.shopatron.api.coexprivate.core.v4.CoreServiceServiceSkeleton</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="getInventory" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getInventoryRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getInventoryResponse</outputActionMapping>
+        </operation>
+        <operation name="createFulfillmentLocation" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/createFulfillmentLocationRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/createFulfillmentLocationResponse</outputActionMapping>
+        </operation>
+        <operation name="refreshInventory" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/refreshInventoryRequest2</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/refreshInventoryResponse2</outputActionMapping>
+        </operation>
+        <operation name="getBins" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getBinsRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getBinsResponse</outputActionMapping>
+        </operation>
+        <operation name="createFulfiller" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/createFulfillerRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/createFulfillerResponse</outputActionMapping>
+        </operation>
+        <operation name="getFulfillmentLocationTypes" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getFulfillmentLocationTypesRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getFulfillmentLocationTypesResponse</outputActionMapping>
+        </operation>
+        <operation name="fulfillInventory" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/fulfillInventoryRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/fulfillInventoryResponse</outputActionMapping>
+        </operation>
+        <operation name="getFulfillerStatus" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getFulfillerStatusRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getFulfillerStatusResponse</outputActionMapping>
+        </operation>
+        <operation name="allocateInventory" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/allocateInventoryRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/allocateInventoryResponse</outputActionMapping>
+        </operation>
+        <operation name="createBin" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/createBinRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/createBinResponse</outputActionMapping>
+        </operation>
+        <operation name="getFulfillmentLocations" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getFulfillmentLocationsRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getFulfillmentLocationsResponse</outputActionMapping>
+        </operation>
+        <operation name="getBinStatuses" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getBinStatusesRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getBinStatusesResponse</outputActionMapping>
+        </operation>
+        <operation name="adjustInventory" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/adjustInventoryRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/adjustInventoryResponse</outputActionMapping>
+        </operation>
+        <operation name="getBinTypes" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getBinTypesRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/getBinTypesResponse</outputActionMapping>
+        </operation>
+        <operation name="deallocateInventory" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://v4.core.coexprivate.api.shopatron.com">
+            <actionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/deallocateInventoryRequest</actionMapping>
+            <outputActionMapping>http://v4.core.coexprivate.api.shopatron.com/CoreService/deallocateInventoryResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>
