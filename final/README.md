@@ -10,7 +10,7 @@ After the program is compiled like this:
 javac -cp mysql-connector-java-5.1.25-bin.jar api.java Test.java
 
 Api calls can be performed by providing command line arguments. More information about running these tests is provided in
-the file test_cases
+the file test_cases.txt
 
 Extra credit implemented:
 
