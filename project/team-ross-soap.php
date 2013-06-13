@@ -77,8 +77,6 @@ class TeamRossSOAP {
                     $GetFulfillmentLocationsRequest->request->MaxLocations
                     ) ;
 
-				$out = print_r($locs, true);
-				error_log($out);
     return array('getFulfillmentLocationsReturn' =>
                 $locs);
   }

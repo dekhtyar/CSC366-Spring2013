@@ -474,7 +474,7 @@ class TeamRossAPI {
   // developers.google.com/maps/articles/phpsqlsearch_v3
     $stmt = $this->db->prepare("
         SELECT
-          l.fulfillerId AS FulFillerId,
+          l.fulfillerId AS FulfillerID,
           l.externalLocationId AS ExternalLocationID,
           ( 3959 * acos( cos( radians(:latitude0) ) * cos( radians( l.latitude ) ) *
           cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude1) ) *
@@ -506,7 +506,7 @@ class TeamRossAPI {
 		$arr = array();
     while ($loc = $stmt->fetch(PDO::FETCH_ASSOC)) {
 			$assignment = new \stdClass;
-			$assignment->FulfillerID = $loc['FulfillerId'];
+			$assignment->FulfillerID = $loc['FulfillerID'];
 			$assignment->ExternalLocationID = $loc['ExternalLocationID'];
       $arr[] = $assignment;
 		}
