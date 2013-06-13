@@ -104,9 +104,9 @@ class TeamRossAPI {
 		if (!$stmt->execute()) {
 			$out = print_r($stmt->errorInfo(), True);
 			error_log($out);
-			return False;
+			return false;
 		}
-		return True;
+		return true;
   }
 
   private function getBin($binName, $internalLocationId) {

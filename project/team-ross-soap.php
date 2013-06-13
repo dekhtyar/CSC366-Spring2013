@@ -12,9 +12,6 @@ class TeamRossSOAP {
 
     try {
       $db = new PDO("mysql:host=$hostname;dbname=$database", $username, $password);
-      //Both of these to throw exceptions
-      $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-      $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       $this->api = new TeamRossAPI($db);
     }
     catch (PDOException $e) {
@@ -73,7 +70,7 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-		$locs = 
+		$locs =
         $this->api->findLocations($GetFulfillmentLocationsRequest->request->FulfillerID,
                     $GetFulfillmentLocationsRequest->request->Catalog,
                     $GetFulfillmentLocationsRequest->request->Location,
@@ -130,7 +127,7 @@ class TeamRossSOAP {
 				$request->FulfillerID, $request->ExternalLocationID,
 				$request->Name, $request->BinType,
 				$request->BinStatus
-			) ? 0 : -1
+			) ? 2 : 1
     );
   }
 
