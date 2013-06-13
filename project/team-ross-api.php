@@ -605,7 +605,6 @@ class TeamRossAPI {
     if ($limit != null) $str = $str . "\n            LIMIT 0, :limit";
 
     $stmt = $this->db->prepare($str);
-
     $stmt->bindParam(':fulfillerID', $fulfillerID, PDO::PARAM_INT);
     $stmt->bindParam(':catalogID', $catalog->CatalogID, PDO::PARAM_INT);
     $stmt->bindParam(':manufacturerID', $catalog->ManufacturerID, PDO::PARAM_INT);
@@ -613,11 +612,12 @@ class TeamRossAPI {
     if ($limit != null)
       $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
 
+    // Bind Quantities
     $i = 0;
-    foreach($quantities as $currItem) {
+    foreach ($quantities as $currItem) {
       $stmt->bindParam(":upc" . $i, $currItem->UPC);
 
-      if (type == "ANY")
+      if ($type == "ANY")
         $stmt->bindParam(":quantity" . $i, 1, PDO::PARAM_INT);
       else
         $stmt->bindParam(":quantity" . $i, $currItem->Quantity, PDO::PARAM_INT);
@@ -625,9 +625,14 @@ class TeamRossAPI {
       $i++;
     }
 
-    if (!$stmt->execute()) {
+    // Bind locations
+    $i = 0;
+    foreach ($locationNames as $currLoc)
+      $stmt->bindParam(':location' . $i, $currLoc);
+
+    // Execute
+    if (!$stmt->execute())
 			error_log(print_r($stmt->errorInfo(), true));
-		}
 
     $arr = array();
     while ($sel = $stmt->fetch(PDO::FETCH_OBJ))
