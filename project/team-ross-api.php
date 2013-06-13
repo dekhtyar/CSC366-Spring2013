@@ -368,8 +368,6 @@ class TeamRossAPI {
     $fulfillerId = $fulfillInventoryRequest->request->FulfillerID;
     $items = $fulfillInventoryRequest->request->Items;
 
-    # TODO: Use getInventory to get the quantity before trying to subtract
-
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
       SET onHand = (onHand - :quantity)
