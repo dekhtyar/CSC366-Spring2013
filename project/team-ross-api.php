@@ -614,11 +614,12 @@ class TeamRossAPI {
 
     // Bind Quantities
     $i = 0;
+    $one = 1;
     foreach ($quantities as $currItem) {
       $stmt->bindParam(":upc" . $i, $currItem->UPC);
 
-      if ($type == "ANY")
-        $stmt->bindParam(":quantity" . $i, 1, PDO::PARAM_INT);
+      if ($type === "ANY")
+        $stmt->bindParam(":quantity" . $i, $one, PDO::PARAM_INT);
       else
         $stmt->bindParam(":quantity" . $i, $currItem->Quantity, PDO::PARAM_INT);
 
