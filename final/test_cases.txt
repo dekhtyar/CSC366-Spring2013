@@ -1,0 +1,164 @@
+creating and retrieving a bin:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test createBin FulfillerID BinID ExternalLocationID BinType BinStatus Name
+(BinID, Name can be substituted with null)
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test createBin 48590 null 600 General Pickable binName
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBins 48590 600 binName null null
+
+
+
+getBins Test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBins FulfillerID ExternalLocationID SearchTerm NumResults ResultsStart
+(SearchTerm, NumResults, ResultsStart can be substituted with null)
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBins 48590 600 null null null
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBins 48590 600 null 1 null
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBins 48590 600 null 1 1
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBins 48590 600 DOES_NOT_EXIST null null
+
+
+
+getBinTypes test case:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBinTypes
+
+
+
+getBinStatuses test case:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getBinStatuses
+
+
+
+allocateInventory test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test allocateInventory FulfillerId PartNumber UPC Quantity ExternalLocationID
+(ExternalLocationID can be substituted with null)
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test allocateInventory 48590 200033103 200033103 1 600
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test allocateInventory 48590 200033103 200033103 1 null
+
+to check allocation:
+SELECT b.FulfillerId, rp.SKU, rp.UPC, cb.OnHand, cb.Allocated, b.ExternalFulfillerLocationId FROM StoreBin b, ContainedInBin cb, LocationProduct lp, RetailerProduct rp WHERE b.Id = cb.BinId AND cb.LocationProductId = lp.Id AND lp.RetailerProductId = rp.Id AND cb.Allocated > 0;
+
+
+
+deallocateInventory test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test deallocateInventory FulfillerInventory PartNumber UPC Quantity ExternalLocationID
+(ExternalLocationID can be substituted with null)
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test deallocateInventory 48590 200033103 200033103 1 600
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test deallocateInventory 48590 200033103 200033103 1 null
+
+
+
+
+fulfillInventory test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test fulfillInventory FulfillerInventory PartNumber UPC Quantity ExternalLocationID
+(ExternalLocationID can be substituted with null)
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test fulfillInventory 48590 200033103 200033103 1 600
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test fulfillInventory 48590 200033103 200033103 1 null
+
+
+
+
+getInventory test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory fulfillerId partNumber upc quantity type limit ignoreSafetyStock includeNegativeInventory orderByLtd
+(ignoreSafetyStock, includeNegativeInventory can be substituted with null)
+
+// ALL
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory 69170 8888069843 8888069843 3 ALL 1000 null null true
+
+// PARTIAL
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory 69170 8888069843 8888069843 3 PARTIAL 1000 null null true
+
+// ANY
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory 69170 8888069843 8888069843 3 ANY 1000 null null true
+
+// Limit the number of responses to 2
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory 69170 8888069843 8888069843 3 ANY 2 null null true
+
+// AlocateInventory (Do this at the end followed by another PARTIAL test)
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test allocateInventory 69170 8888069843 8888069843 3 null
+
+// PARTIAL (last test case)
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory 69170 8888069843 8888069843 3 PARTIAL 1000 null null true
+
+getInventory2 test case:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2 fulfillerId partNumber upc quantity partNumber2 upc2 quantity2 type limit ignoreSafetyStock includeNegativeInventory orderByLtd
+(ignoreSafetyStock, includeNegativeInventory can be substituted with null)
+
+// Any quantity of each product can be found in many stores
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2 69170 8888076831 8888076831 2 8888076940 8888076940 2 ANY 1000 null null false
+
+// Complete quantities of each product can be found in some stores
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2 69170 8888076831 8888076831 2 8888076940 8888076940 2 PARTIAL 1000 null null false
+
+// Both products are completely available at the same store
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2 69170 8888076831 8888076831 2 8888076940 8888076940 2 ALL 1000 null null false
+
+getInventoryLocationIds test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryLocationIds fulfillerId partNumber upc quantity location location2 type limit ignoreSafetyStock includeNegativeInventory orderByLtd
+
+// Product exists at both locations
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryLocationIds 69170 8888076940 8888076940 1 440777 440020 PARTIAL 1000 null null false
+
+// Product only exists at one of the locations
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryLocationIds 69170 8888069843 8888069843 1 440777 440004 PARTIAL 1000 null null false
+
+//Product does not exist at either location
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryLocationIds 69170 8888069843 8888069843 1 10 20 PARTIAL 1000 null null false
+
+
+
+getInventory2LocationIds test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2LocationIds fulfillerId partNumber upc quantity partNumber2 upc2 quantity2 location location2 type limit ignoreSafetyStock includeNegativeInventory orderByLtd
+
+// One of the products exists at both locations
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2LocationIds 69170 8888069843 8888069843 1 8888074813 8888074813 1 440777 440004 PARTIAL 1000 null null false
+
+// One of the products exists at one of the locations
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2LocationIds 69170 8888069843 8888069843 1 8888074813 8888074813 1 440777 20 PARTIAL 1000 null null false
+
+// None of the products exist at either of the locations
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2LocationIds 69170 8888069843 8888069843 1 8888074813 8888074813 1 10 20 PARTIAL 1000 null null false
+
+
+
+getInventoryRequestLocation test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryRequestLocation fulfillerId partNumber upc quantity unit radius postalCode latitude longitude countryCode type limit ignoreSafetyStock includeNegativeInventory orderByLtd
+(ignoreSafetyStock, includeNegativeInventory can be substituted with null)
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryRequestLocation 69170 8888069843 8888069843 1 MILES 20 0 40.7423 -73.9879 USA ALL 1000 null null false
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryRequestLocation 69170 8888069843 8888069843 1 MILES 10 0 40.7423 -73.9879 USA ALL 1000 null null false
+
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventoryRequestLocation 69170 8888069843 8888069843 1 MILES 5 0 40.7423 -73.9879 USA ALL 1000 null null false
+
+
+
+getInventory2RequestLocation test cases:
+Ex:
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2RequestLocation fulfillerId partNumber upc quantity partNumber2 upc2 quantity2 unit radius postalCode latitude longitude countryCode type limit ignoreSafetyStock includeNegativeInventory orderByLtd
+(ignoreSafetyStock, includeNegativeInventory can be substituted with null)
+
+// Each product is at a different store within the radius
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2RequestLocation 69170 8888069843 8888069843 1 8888074813 8888074813 1 MILES 100 0 40.7423 -73.9879 USA PARTIAL 1000 null null false
+
+// Both products are at the same store within the radius
+java -cp mysql-connector-java-5.1.25-bin.jar:. Test getInventory2RequestLocation 69170 8888076831 8888076831 1 8888076940 8888076940 1 MILES 100 0 40.7423 -73.9879 USA ALL 1000 null null false
