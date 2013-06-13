@@ -72,9 +72,9 @@
     $request->request->Catalog->CatalogID = 1;
     $request->request->Location = new \stdClass;
     $request->request->Location->Unit = 'MILES';
-    $request->request->Location->Radius = 200000;
+    $request->request->Location->Radius = 100;
     $request->request->Location->PostalCode = 93450;
-    $request->request->Location->Latitude = 45.000100;
+    $request->request->Location->Latitude = 45.200100;
     $request->request->Location->Longitude = -93.083100;
     $request->request->Location->CountryCode = 5;
     $request->request->MaxLocations = 5;
