@@ -1,0 +1,118 @@
+<ns1:deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns1="http://xml.apache.org/axis/wsdd/">
+ <ns1:globalConfiguration>
+  <ns1:parameter name="sendMultiRefs" value="true"/>
+  <ns1:parameter name="disablePrettyXML" value="true"/>
+  <ns1:parameter name="adminPassword" value="admin"/>
+  <ns1:parameter name="attachments.Directory" value="/home/kyle/Workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/SlightlyBlue/WEB-INF/attachments"/>
+  <ns1:parameter name="dotNetSoapEncFix" value="true"/>
+  <ns1:parameter name="enableNamespacePrefixOptimization" value="false"/>
+  <ns1:parameter name="sendXMLDeclaration" value="true"/>
+  <ns1:parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <ns1:parameter name="sendXsiTypes" value="true"/>
+  <ns1:requestFlow>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="session"/>
+   </ns1:handler>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="request"/>
+    <ns1:parameter name="extension" value=".jwr"/>
+   </ns1:handler>
+  </ns1:requestFlow>
+ </ns1:globalConfiguration>
+ <ns1:handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <ns1:handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <ns1:handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <ns1:service name="CoreService" provider="java:RPC" style="document" use="literal">
+  <ns1:parameter name="allowedMethods" value="*"/>
+  <ns1:parameter name="typeMappingVersion" value="1.2"/>
+  <ns1:parameter name="wsdlPortType" value="CoreService"/>
+  <ns1:parameter name="className" value="com.shopatron.api.coexprivate.core.v4.CoreServiceSoapBindingSkeleton"/>
+  <ns1:parameter name="wsdlServicePort" value="CoreService"/>
+  <ns1:parameter name="schemaQualified" value="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:parameter name="wsdlTargetNamespace" value="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:parameter name="wsdlServiceElement" value="CoreServiceService"/>
+  <ns2:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns1:FulfillmentLocationType" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.FulfillmentLocationType" xmlns:ns1="http://v4.core.coexprivate.api.shopatron.com" xmlns:ns2="http://xml.apache.org/axis/wsdd/"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns2:InventoryRequest" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.InventoryRequest" xmlns:ns2="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns3:FulfillerRequest" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.FulfillerRequest" xmlns:ns3="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns4:&gt;getFulfillmentLocations" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetFulfillmentLocations" xmlns:ns4="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns5:&gt;createBin" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.CreateBin" xmlns:ns5="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns6:FulfillmentLocation" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.FulfillmentLocation" xmlns:ns6="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns7:&gt;getBinStatuses" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetBinStatuses" xmlns:ns7="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns8:BinResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.BinResponse" xmlns:ns8="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns9:RefreshItem" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.RefreshItem" xmlns:ns9="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns10:InventoryResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.InventoryResponse" xmlns:ns10="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns11:&gt;deallocateInventory" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.DeallocateInventory" xmlns:ns11="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns12:&gt;createBinResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.CreateBinResponse" xmlns:ns12="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns13:&gt;AdjustRequest" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.AdjustRequest" xmlns:ns13="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns14:BinStatus" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.BinStatus" xmlns:ns14="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns15:&gt;createFulfillerResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.CreateFulfillerResponse" xmlns:ns15="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns16:InventoryRequestType" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.InventoryRequestType" xmlns:ns16="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns17:&gt;createFulfillmentLocationResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.CreateFulfillmentLocationResponse" xmlns:ns17="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns18:&gt;getFulfillmentLocationTypes" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetFulfillmentLocationTypes" xmlns:ns18="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns19:&gt;getBinTypes" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetBinTypes" xmlns:ns19="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns20:&gt;allocateInventory" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.AllocateInventory" xmlns:ns20="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns21:&gt;allocateInventoryResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.AllocateInventoryResponse" xmlns:ns21="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns22:FulfillmentLocationCatalog" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.FulfillmentLocationCatalog" xmlns:ns22="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns23:ItemQuantity" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.ItemQuantity" xmlns:ns23="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns24:&gt;fulfillInventory" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.FulfillInventory" xmlns:ns24="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns25:&gt;fulfillInventoryResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.FulfillInventoryResponse" xmlns:ns25="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns26:AssignmentResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.AssignmentResponse" xmlns:ns26="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns27:&gt;getInventory" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetInventory" xmlns:ns27="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns28:UpdateItem" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.UpdateItem" xmlns:ns28="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns29:RequestLocation" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.RequestLocation" xmlns:ns29="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns30:UpdateRequest" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.UpdateRequest" xmlns:ns30="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns31:BinType" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.BinType" xmlns:ns31="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns32:&gt;getBinsResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetBinsResponse" xmlns:ns32="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns33:&gt;getFulfillerStatus" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetFulfillerStatus" xmlns:ns33="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns34:&gt;createFulfiller" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.CreateFulfiller" xmlns:ns34="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns35:AdjustItem" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.AdjustItem" xmlns:ns35="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns36:ManufacturerCatalog" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.ManufacturerCatalog" xmlns:ns36="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns37:BinRequest" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.BinRequest" xmlns:ns37="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns38:OrderRequest" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.OrderRequest" xmlns:ns38="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns39:&gt;getBins" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetBins" xmlns:ns39="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns40:&gt;deallocateInventoryResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.DeallocateInventoryResponse" xmlns:ns40="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns41:&gt;getFulfillerStatusResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.GetFulfillerStatusResponse" xmlns:ns41="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory" encodingStyle="" qname="ns42:&gt;FulfillmentLocation&gt;Status" serializer="org.apache.axis.encoding.ser.EnumSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.FulfillmentLocationStatus" xmlns:ns42="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns43:Bin" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.Bin" xmlns:ns43="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns44:&gt;createFulfillmentLocation" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.CreateFulfillmentLocation" xmlns:ns44="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns45:&gt;RefreshRequest" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.shopatron.api.coexprivate.core.v4.RefreshRequest" xmlns:ns45="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns46:FulfillmentLocationType" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.FulfillmentLocationType[]" qname="ns46:getFulfillmentLocationTypesResponse" xmlns:ns46="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns47:RefreshItem" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.RefreshItem[]" qname="ns47:ArrayOf_impl_RefreshItem" xmlns:ns47="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns48:InventoryResponse" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.InventoryResponse[]" qname="ns48:getInventoryResponse" xmlns:ns48="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns49:BinType" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.BinType[]" qname="ns49:getBinTypesResponse" xmlns:ns49="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns50:AdjustItem" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.AdjustItem[]" qname="ns50:ArrayOf_impl_AdjustItem" xmlns:ns50="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns51:AssignmentResponse" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.AssignmentResponse[]" qname="ns51:getFulfillmentLocationsResponse" xmlns:ns51="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns52:ItemQuantity" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.ItemQuantity[]" qname="ns52:ArrayOf_impl_ItemQuantity" xmlns:ns52="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns53:UpdateItem" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.UpdateItem[]" qname="ns53:ArrayOf_impl_UpdateItem" xmlns:ns53="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns54:Bin" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.Bin[]" qname="ns54:ArrayOf_impl_Bin" xmlns:ns54="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="ns55:BinStatus" languageSpecificType="java:com.shopatron.api.coexprivate.core.v4.BinStatus[]" qname="ns55:getBinStatusesResponse" xmlns:ns55="http://v4.core.coexprivate.api.shopatron.com"/>
+  <ns1:arrayMapping innerType="xsd:string" languageSpecificType="java:java.lang.String[]" qname="ns56:ArrayOfLocationIDs" xmlns:ns56="http://v4.core.coexprivate.api.shopatron.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+ </ns1:service>
+ <ns1:service name="AdminService" provider="java:MSG">
+  <ns1:parameter name="allowedMethods" value="AdminService"/>
+  <ns1:parameter name="enableRemoteAdmin" value="false"/>
+  <ns1:parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <ns1:namespace>http://xml.apache.org/axis/wsdd/</ns1:namespace>
+ </ns1:service>
+ <ns1:service name="Version" provider="java:RPC">
+  <ns1:parameter name="allowedMethods" value="getVersion"/>
+  <ns1:parameter name="className" value="org.apache.axis.Version"/>
+ </ns1:service>
+ <ns1:transport name="http">
+  <ns1:requestFlow>
+   <ns1:handler type="URLMapper"/>
+   <ns1:handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+  </ns1:requestFlow>
+  <ns1:parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <ns1:parameter name="qs.list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs.method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs.wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+ </ns1:transport>
+ <ns1:transport name="local">
+  <ns1:responseFlow>
+   <ns1:handler type="LocalResponder"/>
+  </ns1:responseFlow>
+ </ns1:transport>
+</ns1:deployment>
