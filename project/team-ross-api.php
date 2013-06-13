@@ -542,6 +542,10 @@ class TeamRossAPI {
   }
 
   public function getInventory($fulfillerID, $catalog, $quantities, $locationNames, $type, $limit, $ignoreSafetyStock, $includeNegInv, $orderByLTD) {
+	if (!is_array($quantities->items))
+	  $items = array($quantities->items);
+  else $items = $quantities->items;
+	
       $str = "SELECT externalLocationId AS LocationName,
                    catalogId AS CatalogID,
                    manufacturerId AS ManufacturerID,
@@ -573,10 +577,10 @@ class TeamRossAPI {
     }
 
     if (count($locationNames) > 0)
-      $str = $str . ") AND (";
+      $str = $str . ") \nAND (";
 
     $i = 0;
-    foreach ($quantities as $currItem) {
+    foreach ($items as $currItem) {
       if ($i > 0) {
         if ($type = "ANY" || $type == "PARTIAL")
           $str = $str . "\nOR ";
@@ -601,6 +605,9 @@ class TeamRossAPI {
 
     $str = $str . ")";
 
+
+		error_log($str);
+
     if ($orderByLTD) $str    = $str . "\n            ORDER BY ltd DESC";
     if ($limit != null) $str = $str . "\n            LIMIT 0, :limit";
 
@@ -615,7 +622,7 @@ class TeamRossAPI {
     // Bind Quantities
     $i = 0;
     $one = 1;
-    foreach ($quantities as $currItem) {
+    foreach ($items as $currItem) {
       $stmt->bindParam(":upc" . $i, $currItem->UPC);
 
       if ($type === "ANY")
@@ -629,11 +636,13 @@ class TeamRossAPI {
     // Bind locations
     $i = 0;
     foreach ($locationNames as $currLoc)
-      $stmt->bindParam(':location' . $i, $currLoc);
+      $stmt->bindParam(':location' . $i++, $currLoc);
 
     // Execute
     if (!$stmt->execute())
 			error_log(print_r($stmt->errorInfo(), true));
+
+		error_log($stmt->rowCount());
 
     $arr = array();
     while ($sel = $stmt->fetch(PDO::FETCH_OBJ))

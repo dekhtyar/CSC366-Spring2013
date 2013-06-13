@@ -240,7 +240,7 @@
     $request->request->Catalog->ManufacturerID = 10636;
     $request->request->Catalog->CatalogID = 0;
     $request->request->Quantities = array($iq1);
-    $request->request->LocationNames = $loc1;
+    $request->request->LocationIDs = $loc1;
     $request->request->Location = null;
     $request->request->Type = "ANY";
     $request->request->Limit = 500;
@@ -257,14 +257,14 @@
     $iq1->PartNumber = 8888032133;
     $iq1->UPC = 8888032133;
     $iq1->Quantity = 2;
-
+		
     $request->request = new \stdClass;
     $request->request->FulfillerID = 69170;
     $request->request->Catalog = new \stdClass;
     $request->request->Catalog->ManufacturerID = 11416;
     $request->request->Catalog->CatalogID = 0;
     $request->request->Quantities = array($iq1);
-    $request->request->LocationNames = null;
+    $request->request->LocationIDs = null;
     $request->request->Location = null;
     $request->request->Type = "ANY";
     $request->request->Limit = 500;
@@ -288,7 +288,7 @@
     $request->request->Catalog->ManufacturerID = 11416;
     $request->request->Catalog->CatalogID = 0;
     $request->request->Quantities = array($iq1);
-    $request->request->LocationNames = array("440005");
+    $request->request->LocationIDs = array('ExternalLocationID' => "440006");
     $request->request->Location = null;
     $request->request->Type = "ANY";
     $request->request->Limit = 500;
@@ -309,7 +309,12 @@
     $iq2 = new \stdClass;
     $iq2->PartNumber = 8888056664;
     $iq2->UPC = 8888056664;
-    $iq2->Quantity = 5;
+    $iq2->Quantity = 2;
+
+    $iq3 = new \stdClass;
+    $iq3->PartNumber = 14239745;
+    $iq3->UPC = 14239745;
+    $iq3->Quantity = 1;
 
     $locs = new \stdClass;
     $locs->ExternalLocationID = 440005;
@@ -319,10 +324,42 @@
     $request->request->Catalog = new \stdClass;
     $request->request->Catalog->ManufacturerID = 11416;
     $request->request->Catalog->CatalogID = 0;
-    $request->request->Quantities = array($iq1, $iq2);
-    $request->request->LocationNames = $locs;
+    $request->request->Quantities = array($iq1, $iq2, $iq3);
+    $request->request->LocationIDs = $locs;
     $request->request->Location = null;
     $request->request->Type = "PARTIAL";
+    $request->request->Limit = 500;
+    $request->request->IgnoreSafetyStock = true;
+    $request->request->IncludeNegativeInventory = false;
+    $request->request->OrderByLTD = false;
+
+    $ret = $client->getInventory($request);
+    print_r($ret);
+  }
+
+  function getInventoryAll($client, $request) {
+    $iq1 = new \stdClass;
+    $iq1->PartNumber = 8888032133;
+    $iq1->UPC = 8888032133;
+    $iq1->Quantity = 1;
+
+    $iq2 = new \stdClass;
+    $iq2->PartNumber = 8888056664;
+    $iq2->UPC = 8888056664;
+    $iq2->Quantity = 2;
+
+    $locs = new \stdClass;
+    $locs->ExternalLocationID = 440005;
+
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 69170;
+    $request->request->Catalog = new \stdClass;
+    $request->request->Catalog->ManufacturerID = 11416;
+    $request->request->Catalog->CatalogID = 0;
+    $request->request->Quantities = array($iq1, $iq2, $iq3);
+    $request->request->LocationIDs = $locs;
+    $request->request->Location = null;
+    $request->request->Type = "ALL";
     $request->request->Limit = 500;
     $request->request->IgnoreSafetyStock = true;
     $request->request->IncludeNegativeInventory = false;
