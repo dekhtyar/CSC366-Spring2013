@@ -24,7 +24,7 @@ public class Test {
          parseFulfillerInventory("fulfiller inventory available.csv");
          parseFulfillerInventory("fulfiller inventory not available.csv");
          closeConnection();
-                }
+      }
 
       if(args.length == 7 && args[0].equals("createBin")) {
          if(!createBinTest(Integer.parseInt(args[1]),
@@ -285,6 +285,10 @@ public class Test {
          System.out.println("CountryCode: " + item[9]);
          System.out.println("Distance: " + item[10]);
       }
+
+      if(inventory != null && inventory.size() == 0) {
+         System.out.println("No inventory returned");
+      }
    }
 
    public static boolean getInventoryTest(int fulfillerId, String partNumber,
@@ -298,7 +302,7 @@ public class Test {
 
       printInventory(inventory);
 
-      return inventory != null && inventory.size() > 0;
+      return inventory != null;
    }
 
    public static boolean getInventory2Test(int fulfillerId, String partNumber,
@@ -314,7 +318,7 @@ public class Test {
 
       printInventory(inventory);
 
-      return inventory != null && inventory.size() > 0;
+      return inventory != null;
    }
 
    public static boolean getInventoryLocationIdsTest(int fulfillerId,
@@ -330,7 +334,7 @@ public class Test {
 
       printInventory(inventory);
 
-      return inventory != null && inventory.size() > 0;
+      return inventory != null;
    }
 
    public static boolean getInventory2LocationIdsTest(int fulfillerId,
@@ -348,7 +352,7 @@ public class Test {
 
       printInventory(inventory);
 
-      return inventory != null && inventory.size() > 0;
+      return inventory != null;
    }
 
    public static boolean getInventoryRequestLocationTest(int fulfillerId,
@@ -366,7 +370,7 @@ public class Test {
 
       printInventory(inventory);
 
-      return inventory != null && inventory.size() > 0;
+      return inventory != null;
    }
 
    public static boolean getInventory2RequestLocationTest(int fulfillerId,
@@ -386,7 +390,7 @@ public class Test {
 
       printInventory(inventory);
 
-      return inventory != null && inventory.size() > 0;
+      return inventory != null;
    }
 
    // valid case 1: "PARTIAL" type
