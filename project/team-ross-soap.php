@@ -86,7 +86,14 @@ class TeamRossSOAP {
   // Matt T
   // **********************************************************************
   function getFulfillmentLocationTypes() {
-    return array("FULFILLER", "RETAILER","RETAILER" );
+		$locationTypeFulfiller = new \stdClass;
+	  $locationTypeFulfiller->LocationType = "FULFILLER";
+		$locationTypeRetailer = new \stdClass;
+	  $locationTypeRetailer->LocationType = "RETAILER";
+		$locationTypeManufacturer = new \stdClass;
+	  $locationTypeManufacturer->LocationType = "MANUFACTURER";
+	
+    return array($locationTypeFulfiller, $locationTypeRetailer, $locationTypeManufacturer);
   }
 
   // **********************************************************************
