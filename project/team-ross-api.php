@@ -644,6 +644,8 @@ class TeamRossAPI {
     $arr = array();
     while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
       $arr[] = $sel;
+
+		error_log(print_r($arr, true));
     return $arr;
   }
 }
