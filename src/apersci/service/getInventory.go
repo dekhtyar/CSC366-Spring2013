@@ -6,7 +6,6 @@ import (
 	"apersci/soap"
 	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -28,13 +27,11 @@ func getInventory(w http.ResponseWriter, r *http.Request) (err error) {
 	}
 	defer tx.Rollback()
 
-	fmt.Println("Processing\n")
 	resp, err := processGetInventoryRequest(req, tx)
 	if err != nil {
 		return
 	}
 
-	fmt.Println("Converting\n")
 	err = output.GetInventoryResponse(w, resp)
 	if err != nil {
 		return
@@ -45,7 +42,6 @@ func getInventory(w http.ResponseWriter, r *http.Request) (err error) {
 		return
 	}
 
-	fmt.Println("Returning\n")
 	return
 }
 
@@ -75,9 +71,7 @@ func getInventory(w http.ResponseWriter, r *http.Request) (err error) {
 */
 func processGetInventoryRequest(req soap.InventoryRequest, tx *sql.Tx) (resp soap.GetInventoryResponse, err error) {
 	var result []soap.InventoryReturn
-	// TODO add distance
 
-	fmt.Println("Getting locationIDs\n")
 	locationIDs, err := getSearchableLocationIDs(req, tx)
 	if err != nil {
 		return
@@ -87,22 +81,41 @@ func processGetInventoryRequest(req soap.InventoryRequest, tx *sql.Tx) (resp soa
 		var partialItemsFound []soap.InventoryReturn
 		var anyItemsFound []soap.InventoryReturn
 
-		for _, item := range req.Quantities {
-			// FIXME remove possible SQL injection
-			whereClause_UPCorSKU := ""
-			if item.PartNumber != "" {
-				whereClause_UPCorSKU += " AND fp.SKU = '" + item.PartNumber + "' "
-			}
-			if item.UPC != "" {
-				whereClause_UPCorSKU += " AND fp.UPC = '" + item.UPC + "' "
-			}
-			if item.UPC == "" && item.PartNumber == "" {
-				err = errors.New("UPC or PartNumber is required")
+		// check distance
+		locationDistance := 0.0
+		if req.Location.Radius != 0 {
+			rows, err := tx.Query(`
+			SELECT ST_Distance(coordinates, ST_SetSRID(ST_MakePoint($1, $2), 4326)) / $3 AS Distance
+			FROM Locations
+			WHERE ID = $4`,
+				req.Location.Longitude, req.Location.Latitude, mile_meter_conversion, locationID)
+			if err != nil {
 				return resp, err
 			}
 
-			fmt.Printf("LocationID = %d\n", locationID)
-			rows, err := tx.Query(`
+			locationDistance, err = readFloatAndCloseRows(rows, "Distance")
+			if err != nil {
+				return resp, err
+			}
+
+		}
+
+		if locationDistance <= req.Location.Radius {
+			for _, item := range req.Quantities {
+				// FIXME remove possible SQL injection
+				whereClause_UPCorSKU := ""
+				if item.PartNumber != "" {
+					whereClause_UPCorSKU += " AND fp.SKU = '" + item.PartNumber + "' "
+				}
+				if item.UPC != "" {
+					whereClause_UPCorSKU += " AND fp.UPC = '" + item.UPC + "' "
+				}
+				if item.UPC == "" && item.PartNumber == "" {
+					err = errors.New("UPC or PartNumber is required")
+					return resp, err
+				}
+
+				rows, err := tx.Query(`
 				SELECT l.Name, SUM(bp.OnHand), SUM(bp.OnHand - bp.Allocated) AS Available,
 					fp.SKU, fp.UPC, lp.LTD, lp.SafetyStock
 				FROM BinProducts bp
@@ -114,70 +127,71 @@ func processGetInventoryRequest(req soap.InventoryRequest, tx *sql.Tx) (resp soa
 				GROUP BY l.Name, fp.SKU, fp.UPC, lp.LTD, lp.SafetyStock
 				`, locationID)
 
-			if err != nil {
-				return resp, err
-			}
-
-			// if item was found
-			if rows.Next() {
-				var ret soap.InventoryReturn
-				/*
-				   type InventoryReturn struct {
-				   	LocationName string
-				   	OnHand       int
-				   	Available    int
-				   	PartNumber   string
-				   	UPC          string
-				   	LTD          float64
-				   	SafetyStock  int
-				   	CountryCode  string // ??
-				   	Distance     float64
-				   }
-				*/
-				err = rows.Scan(&ret.LocationName, &ret.OnHand, &ret.Available, &ret.PartNumber,
-					&ret.UPC, &ret.LTD, &ret.SafetyStock)
 				if err != nil {
 					return resp, err
 				}
 
-				err = rows.Close()
-				if err != nil {
-					return resp, err
-				}
+				// if item was found
+				if rows.Next() {
+					var ret soap.InventoryReturn
+					/*
+					   type InventoryReturn struct {
+					   	LocationName string
+					   	OnHand       int
+					   	Available    int
+					   	PartNumber   string
+					   	UPC          string
+					   	LTD          float64
+					   	SafetyStock  int
+					   	CountryCode  string // ??
+					   	Distance     float64
+					   }
+					*/
+					ret.Distance = locationDistance
+					err = rows.Scan(&ret.LocationName, &ret.OnHand, &ret.Available, &ret.PartNumber,
+						&ret.UPC, &ret.LTD, &ret.SafetyStock)
+					if err != nil {
+						return resp, err
+					}
 
-				// conditionally use safety stock
-				effectiveAvailableItems := ret.Available - ret.SafetyStock
-				if req.IgnoreSafetyStock {
-					effectiveAvailableItems = ret.Available
-				}
+					err = rows.Close()
+					if err != nil {
+						return resp, err
+					}
 
-				fmt.Printf("Effective available = %d\n", effectiveAvailableItems)
-				if effectiveAvailableItems > 0 || req.IncludeNegativeInventory {
-					// determine if all the items were found
-					if effectiveAvailableItems >= item.Quantity {
-						partialItemsFound = append(partialItemsFound, ret)
-					} else {
-						anyItemsFound = append(anyItemsFound, ret)
+					// conditionally use safety stock
+					effectiveAvailableItems := ret.Available - ret.SafetyStock
+					if req.IgnoreSafetyStock {
+						effectiveAvailableItems = ret.Available
+					}
+
+					if effectiveAvailableItems > 0 || req.IncludeNegativeInventory {
+						// determine if all the items were found
+						if effectiveAvailableItems >= item.Quantity {
+							partialItemsFound = append(partialItemsFound, ret)
+						} else {
+							anyItemsFound = append(anyItemsFound, ret)
+						}
 					}
 				}
 			}
-		}
 
-		// potentially include the result depending on the type of request
-		switch {
-		case req.Type == TYPE_ALL || req.Type == TYPE_ALL_STORES:
-			// only include if all the items were found
-			if len(partialItemsFound) == len(req.Quantities) {
+			// potentially include the result depending on the type of request
+			switch {
+			case req.Type == TYPE_ALL || req.Type == TYPE_ALL_STORES:
+				// only include if all the items were found
+				if len(partialItemsFound) == len(req.Quantities) {
+					result = append(result, partialItemsFound...)
+				}
+			case req.Type == TYPE_PARTIAL:
 				result = append(result, partialItemsFound...)
+			case req.Type == TYPE_ANY:
+				result = append(result, partialItemsFound...)
+				result = append(result, anyItemsFound...)
+			default:
+				err = errors.New("Invalid Get Inventory request type: '" + req.Type + "'")
+				return resp, err
 			}
-		case req.Type == TYPE_PARTIAL:
-			result = append(result, partialItemsFound...)
-		case req.Type == TYPE_ANY:
-			result = append(result, partialItemsFound...)
-			result = append(result, anyItemsFound...)
-		default:
-			err = errors.New("Invalid Get Inventory request type: '" + req.Type + "'")
-			return
 		}
 	}
 
