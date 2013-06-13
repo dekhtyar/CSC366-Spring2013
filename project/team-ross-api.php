@@ -134,9 +134,9 @@ class TeamRossAPI {
       AND internalLocationId = :internalLocationId
     ");
 
-    if( $binName = 0 ) {
+    if ($binName == 0)
       $binName = 'Default';
-    }
+
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
