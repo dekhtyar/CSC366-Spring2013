@@ -291,7 +291,7 @@ function db_seed($db) {
 
   print ".";
   foreach($data as &$data_chunk) {
-    //seedInventory($data_chunk, $db);
+    seedInventory($data_chunk, $db);
     print ".";
   }
 
@@ -474,9 +474,6 @@ function getBin($binName, $internalLocationId, $db) {
 }
 
 function createProduct($product, $db) {
-  if (!getCatalog($product['catalog_id'], $proudct['mfg_id'], $db))
-    createCatalog($product['catalog_id'], $product['mfg_id'], $db);
-
   $stmt = $db->prepare("
     INSERT INTO Products
       (upc, catalogId, manufacturerId, name)
