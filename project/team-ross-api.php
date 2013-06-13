@@ -486,7 +486,7 @@ class TeamRossAPI {
         AND lc.catalogId = :catalogId
         HAVING distance < :distance
         ORDER BY distance
-        LIMIT 0 , 5
+        LIMIT 0 , :limit
     ");
     $stmt->bindParam(':fulfillerId', $fulfillerId);
     $stmt->bindParam(':mfgId', $catalog->ManufacturerID);
@@ -495,6 +495,7 @@ class TeamRossAPI {
     $stmt->bindParam(':latitude1', $location->Latitude);
     $stmt->bindParam(':longitude', $location->Longitude);
     $stmt->bindParam(':distance', $location->Radius);
+    $stmt->bindParam(':limit', $maxlocations, PDO::PARAM_INT);
 
     if (!$stmt->execute()) {
         $success = false;
