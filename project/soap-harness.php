@@ -252,7 +252,7 @@
     print_r($ret);
   }
 
-  function getInventoryNoLocs($client, $request) {
+  function getInventoryNoLocsGiven($client, $request) {
     $iq1 = new \stdClass;
     $iq1->PartNumber = 8888032133;
     $iq1->UPC = 8888032133;
@@ -265,6 +265,35 @@
     $request->request->Catalog->CatalogID = 0;
     $request->request->Quantities = array($iq1);
     $request->request->LocationNames = null;
+    $request->request->Location = null;
+    $request->request->Type = "ANY";
+    $request->request->Limit = 500;
+    $request->request->IgnoreSafetyStock = true;
+    $request->request->IncludeNegativeInventory = false;
+    $request->request->OrderByLTD = false;
+
+    $ret = $client->getInventory($request);
+    print_r($ret);
+  }
+
+  function getInventoryMultiLocsGiven($client, $request) {
+    $iq1 = new \stdClass;
+    $iq1->PartNumber = 8888032133;
+    $iq1->UPC = 8888032133;
+    $iq1->Quantity = 1;
+
+    $loc1 = new \stdClass;
+    $loc1->ExternalLocationID = 440006;
+    $loc2 = new \stdClass;
+    $loc2->ExternalLocationID = 440005;
+
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 69170;
+    $request->request->Catalog = new \stdClass;
+    $request->request->Catalog->ManufacturerID = 11416;
+    $request->request->Catalog->CatalogID = 0;
+    $request->request->Quantities = array($iq1);
+    $request->request->LocationNames = array($loc1, $loc2);
     $request->request->Location = null;
     $request->request->Type = "ANY";
     $request->request->Limit = 500;
