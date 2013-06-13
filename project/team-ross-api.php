@@ -241,7 +241,7 @@ class TeamRossAPI {
         if (0 == $item->BinID) {
           $item->BinID = 'Default';
         }
-        error_log( "BinID: ".$item->BinID );
+
         $stmt1->bindParam(':binName', $item->BinID);
         $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
         $stmt1->bindParam(':productUpc', $item->UPC);
@@ -278,26 +278,82 @@ class TeamRossAPI {
     return true;
   }
 
-  private function allocateInventory($fulfillerId, $items) {
-    $success = True;
+  public function allocateInventory($allocateInventoryRequest) {
+    $success = true;
+    $fulfillerId = $allocateInventoryRequest->request->FulfillerID;
+    $items = $allocateInventoryRequest->request->Items;
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-      SET allocated = allocated + :quantity
+      SET allocated = (allocated + :quantity)
       WHERE fulfillerId = :fulfillerId
-        AND internalLocationId =
-          (SELECT FIRST(internalLocationId)
-          FROM Locations
-          WHERE fulfillerId = :fulfillerId2
-            AND  externalLocationId = :externalLocationId);
+      AND productUpc = :productUpc
+      AND internalLocationId =
+        (SELECT internalLocationId
+        FROM Locations
+        WHERE fulfillerId = :fulfillerId2
+        AND externalLocationId = :externalLocationId
+        LIMIT 1);
     ");
 
     $stmt->bindParam(":fulfillerId", $fulfillerId);
     $stmt->bindParam(":fulfillerId2", $fulfillerId);
 
+    // Convert items to a type we can understand
+    if (!is_array($items->items))
+      $items = array($items->items);
+    else $items = $items->items;
+
+    $x = print_r($items, true);
+    error_log($x);
+
     foreach ($items as $item) {
-      $stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
-      $stmt->bindParam(":quantity", $item['Quantity']);
+      error_log("UPDATING WITH NEW QUANITYT: " . $item->Quantity);
+      $stmt->bindParam(":productUpc", $item->UPC);
+      $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
+      $stmt->bindParam(":quantity", $item->Quantity);
+
+      if (!$stmt->execute())
+        $success = False;
+    }
+
+    return $success;
+  }
+
+  public function deallocateInventory($deallocateInventoryRequest) {
+    $success = true;
+    $fulfillerId = $deallocateInventoryRequest->request->FulfillerID;
+    $items = $deallocateInventoryRequest->request->Items;
+
+    $stmt = $this->db->prepare("
+      UPDATE LocationSellsProducts
+      SET allocated = (allocated - :quantity)
+      WHERE fulfillerId = :fulfillerId
+      AND productUpc = :productUpc
+      AND internalLocationId =
+        (SELECT internalLocationId
+        FROM Locations
+        WHERE fulfillerId = :fulfillerId2
+        AND externalLocationId = :externalLocationId
+        LIMIT 1);
+    ");
+
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":fulfillerId2", $fulfillerId);
+
+    // Convert items to a type we can understand
+    if (!is_array($items->items))
+      $items = array($items->items);
+    else $items = $items->items;
+
+    $x = print_r($items, true);
+    error_log($x);
+
+    foreach ($items as $item) {
+      error_log("UPDATING WITH NEW QUANITYT: " . $item->Quantity);
+      $stmt->bindParam(":productUpc", $item->UPC);
+      $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
+      $stmt->bindParam(":quantity", $item->Quantity);
 
       if (!$stmt->execute())
         $success = False;
@@ -335,7 +391,6 @@ class TeamRossAPI {
     else $items = $items->items;
 
     foreach ($items as $item) {
-      error_log("Updating " . $item->UPC . " with new quantity: " . $item->Quantity);
       $stmt->bindParam(":productUpc", $item->UPC);
       $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
       $stmt->bindParam(":quantity", $item->Quantity);
