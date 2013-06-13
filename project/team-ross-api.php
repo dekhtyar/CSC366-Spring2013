@@ -455,54 +455,102 @@ class TeamRossAPI {
   }
 
   public function getInventory($fulfillerID, $catalog, $quantities, $locationNames, $type, $limit, $ignoreSafetyStock, $includeNegInv, $orderByLTD) {
-    $str = "SELECT externalLocationId AS LocationName,
+      $str = "SELECT externalLocationId AS LocationName, 
                    catalogId AS CatalogID,
                    manufacturerId AS ManufacturerID,
                    onHand AS OnHand,
-                   (onHand – allocated) – safetyStock AS Available,
+                   (onHand – allocated) ";
+    if (!$ignoreSafetyStock) {
+        $str = $str . "– safetyStock ";
+    }
+    $str = $str . "AS Available,
                    sku AS PartNumber,
                    productUpc AS UPC,
                    ltd AS LTD,
                    safetyStock AS SafetyStock
             FROM ((Locations
                  NATURAL JOIN LocationSellsProducts)
-                 NATURAL JOIN LocationOffersCatalog)
-                 NATURAL JOIN FulfillerCarriesProduct
+                 NATURAL JOIN LocationOffersCatalogs)
+                 NATURAL JOIN FulfillerCarriesProducts
             WHERE fulfillerId = :fulfillerID
               AND catalogId = :catalogID
               AND manufacturerId = :manufacturerID
-              AND externalLocationId = :locationName";
-
-    // Build rest of query string
-    if (!$includeNegInv) {
-      $str = $str . " AND (allocated";
-
-      if (!$ignoreSafetyStock) {
-        $str = $str . " + safetyStock";
-      }
-      $str = $str . ") < onHand";
+              AND (";
+    
+    $i = 0;
+    foreach ($locationNames as $currLoc) {
+        if( $i != 0 ) {
+            $str .= " OR ";
+        }
+        $str .= "externalLocationId = :location" . $i;
     }
-    if ($orderByLTD)
-      $str = $str . " ORDER BY ltd";
-    $str = $str . "LIMIT 0, :limit;";
-
-    $stmt = $this->db->prepare($str);
-
+          
+    $str = $str . ") AND (";
+  
+    $i = 0;
+    foreach($quantities as $currItem) {      
+        if ($i > 0) {
+            if ($type = "ANY" || $type == "PARTIAL") {
+                $str = $str . " OR ";
+            }
+            else {
+                $str = $str . " AND ";
+            }
+        }
+        
+        $str = $str . "productUpc = :upc" . $i . ")"; 
+        // We can ignore PartNumber since UPC isn't nillable
+        
+        if ( !($includeNegInv && $type == "ANY") ) {
+            $str = $str . "( (onHand - allocated ";
+            if (!$ignoreSafetyStock) {
+                $str = $str . "– safetyStock ";
+            }
+            $str = $str . ") >= :quantity" . $i . " AND ";
+        }
+        
+        $i++;
+    }
+  
+    $str = $str . ")";
+    
+    if ($orderByLTD) {
+      $str = $str . " ORDER BY ltd DESC";
+    }
+    
+    if ($limit != null) {
+      $str = $str . " LIMIT 0, :limit";
+    }
+    
+    $str = $str . ";";
+    
+    error_log($str);
+    $stmt = $this->db->prepare($str);    
+    
     $stmt->bindParam(':fulfillerID', $fulfillerID);
     $stmt->bindParam(':catalogID', $catalog['CatalogID']);
     $stmt->bindParam(':manufacturerID', $catalog['ManufacturerID']);
-    $stmt->bindParam(':type', $type);
-    $stmt->bindParam(':quantities', $quantities);
-    $stmt->bindParam(':limit', $limit);
-
-    $arr = array();
-    foreach ($locationNames as $currName) {
-      $stmt->bindParam(':locationName', $currName);
-
-      $stmt->execute();
-      while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+    if ($limit != null) {
+      $stmt->bindParam(':limit', $limit);
     }
 
+    $i = 0;
+    foreach($quantities as $currItem) {      
+        $stmt->bindParam(":upc" . $i, $currItem->UPC);
+        
+        if (type == "ANY") {
+            $stmt->bindParam(":quantity" . $i, 1);
+        }
+        else {
+            $stmt->bindParam(":quantity" . $i, $currItem['Quantity']);
+        }
+        
+        $i++;
+    }
+    
+    $stmt->execute();
+    $arr = array();
+    while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
     return $arr;
   }
 }

@@ -109,9 +109,9 @@
 
   function getBins($client, $request) {
     $request->request = new \stdClass;
-    $request->request->FulfillerID = 91710;
-    $request->request->ExternalLocationID = null;
-    $request->request->SearchTerm = null;
+    $request->request->FulfillerID = 48590;
+    $request->request->ExternalLocationID = 600;
+    $request->request->SearchTerm = 01010101;
     $request->request->NumResults = 100;
     $request->request->ResultsStart = 0;
 
