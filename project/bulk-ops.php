@@ -335,7 +335,7 @@ function seedInventory($items, $db) {
     $stmt3->bindParam(':storeSku', $item['SKU']);
     $stmt3->bindParam(':safetyStock', $item['safety_stock']);
     $stmt3->bindParam(':ltd', $item['ltd']);
-    $stmt3->bindParam(':onHand', $item['onHand']);
+    $stmt3->bindParam(':onHand', $item['onhand']);
     $stmt3->bindParam(':fulfillerId', $fulfillerId);
 
     // create product if missing
