@@ -144,7 +144,9 @@ class TeamRossAPI {
 
     $arr = array();
     while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
-    return $arr;
+
+    if (count($arr) == 1 && $arr[0] == null) return null;
+    else return $arr;
   }
 
   public function getBinTypes() {
