@@ -370,7 +370,8 @@ class TeamRossAPI {
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-      SET onHand = (onHand - :quantity)
+      SET onHand = (onHand - :quantity),
+      allocated = (allocated - :quantity2)
       WHERE fulfillerId = :fulfillerId
       AND productUpc = :productUpc
       AND internalLocationId =
@@ -393,6 +394,7 @@ class TeamRossAPI {
       $stmt->bindParam(":productUpc", $item->UPC);
       $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
       $stmt->bindParam(":quantity", $item->Quantity);
+      $stmt->bindParam(':quantity2', $item->Quantity);
 
       if (!$stmt->execute()) {
         $success = false;
@@ -545,7 +547,7 @@ class TeamRossAPI {
 	if (!is_array($quantities->items))
 	  $items = array($quantities->items);
   else $items = $quantities->items;
-	
+
       $str = "SELECT externalLocationId AS LocationName,
                    catalogId AS CatalogID,
                    manufacturerId AS ManufacturerID,
