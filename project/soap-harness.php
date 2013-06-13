@@ -68,7 +68,7 @@
 
     $request->request->FulfillerID = 91710;
     $request->request->Catalog = new \stdClass;
-    $request->request->Catalog->ManufacturerID = 1392;
+    $request->request->Catalog->ManufacturerID = 1748;
     $request->request->Catalog->CatalogID = 1;
     $request->request->Location = new \stdClass;
     $request->request->Location->Unit = 'MILES';

@@ -473,25 +473,20 @@ class TeamRossAPI {
   public function findLocations($fulfillerId, $catalog, $location, $maxlocations) {
   // developers.google.com/maps/articles/phpsqlsearch_v3
     $stmt = $this->db->prepare("
-      SELECT FulfillerId, ExternalLocationID
-      FROM (
-
-      SELECT
-  l.fulfillerId AS FulFillerId,
-  l.externalLocationId AS ExternalLocationID,
-  ( 3959 * acos( cos( radians(:latitude0) ) * cos( radians( l.latitude ) ) *
-  cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude1) ) *
-  sin( radians( l.latitude ) ) ) ) AS distance
-      FROM Locations l INNER JOIN LocationOffersCatalogs lc
-      ON lc.internalLocationId = l.internalLocationId
-      WHERE l.fulfillerId = :fulfillerId
-      AND lc.manufacturerId = :mfgId
-      AND lc.catalogId = :catalogId
-      HAVING distance < :distance
-      ORDER BY distance
-      LIMIT 0 , :maxlocations
-
-      ) myview
+        SELECT
+          l.fulfillerId AS FulFillerId,
+          l.externalLocationId AS ExternalLocationID,
+          ( 3959 * acos( cos( radians(:latitude0) ) * cos( radians( l.latitude ) ) *
+          cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude1) ) *
+          sin( radians( l.latitude ) ) ) ) AS distance
+        FROM Locations l INNER JOIN LocationOffersCatalogs lc
+        ON lc.internalLocationId = l.internalLocationId
+        WHERE l.fulfillerId = :fulfillerId
+        AND lc.manufacturerId = :mfgId
+        AND lc.catalogId = :catalogId
+        HAVING distance < :distance
+        ORDER BY distance
+        LIMIT 0 , 5
     ");
     $stmt->bindParam(':fulfillerId', $fulfillerId);
     $stmt->bindParam(':mfgId', $catalog->ManufacturerID);
@@ -500,7 +495,6 @@ class TeamRossAPI {
     $stmt->bindParam(':latitude1', $location->Latitude);
     $stmt->bindParam(':longitude', $location->Longitude);
     $stmt->bindParam(':distance', $location->Radius);
-    $stmt->bindParam(':maxlocations', $maxlocations);
 
     if (!$stmt->execute()) {
         $success = false;
