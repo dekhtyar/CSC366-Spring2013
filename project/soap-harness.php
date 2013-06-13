@@ -68,7 +68,7 @@
 
     $request->request->FulfillerID = 91710;
     $request->request->Catalog = new \stdClass;
-    $request->request->Catalog->ManufacturerID = 1392; 
+    $request->request->Catalog->ManufacturerID = 1392;
     $request->request->Catalog->CatalogID = 1;
     $request->request->Location = new \stdClass;
     $request->request->Location->Unit = 'MILES';
@@ -76,7 +76,7 @@
     $request->request->Location->PostalCode = 93450;
     $request->request->Location->Latitude = 45.000100;
     $request->request->Location->Longitude = -93.083100;
-    $request->request->Location->CountryCode = 5; 
+    $request->request->Location->CountryCode = 5;
     $request->request->MaxLocations = 5;
 
      // $request->request->FulfillerID = $location['fulfiller_id'];
@@ -181,7 +181,6 @@
   }
 
   function refreshInventory($client, $Request) {
-
     $Request->ExternalLocationID = 440008;
     $Request->FulfillerID = 69170;
     $item = new \stdClass;
@@ -193,8 +192,9 @@
     $item->SafetyStock = 10;
     $Request->Items  = array( $item );
 
-    print_r($client->refreshInventory($Request));
-
+    $ret = $client->refreshInventory($Request);
+    print_r($ret);
+    print "\n";
   }
 
   // **********************************************************************

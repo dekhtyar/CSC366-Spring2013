@@ -78,8 +78,8 @@ class TeamRossSOAP {
                     $GetFulfillmentLocationsRequest->request->Catalog,
                     $GetFulfillmentLocationsRequest->request->Location,
                     $GetFulfillmentLocationsRequest->request->MaxLocations
-                    ) 
-                ); 
+                    )
+                );
   }
 
   // **********************************************************************
@@ -212,18 +212,18 @@ class TeamRossSOAP {
   function adjustInventory() {
     if ($this->api->adjustInventory($AdjustRequest['FulfillerId'],
       $AdjustRequest['ExternalLocationID'], $AdjustRequest['items'])) {
-      return "SUCCESS!";
+      return array('AdjustResponse' => "success");
     }
-    return "FAILURE!";
+    return array('AdjustResponse' => "failure");
   }
 
   // **********************************************************************
   // MATT T
   // **********************************************************************
   function refreshInventory( $RefreshRequest ) {
-    $out = print_r( $RefreshRequest, true );
     $eid = $RefreshRequest->ExternalLocationID;
     $fid = $RefreshRequest->FulfillerID;
-    return $this->api->refreshInventory($eid, $fid, $RefreshRequest->Items);
+
+    return $this->api->refreshInventory($eid, $fid, $RefreshRequest->Items) ? 'success' : 'failure';
   }
 }

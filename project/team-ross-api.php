@@ -241,7 +241,7 @@ class TeamRossAPI {
         if (0 == $item->BinID) {
           $item->BinID = 'Default';
         }
-        error_log( "BinID: ".$item->BinID );
+
         $stmt1->bindParam(':binName', $item->BinID);
         $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
         $stmt1->bindParam(':productUpc', $item->UPC);
