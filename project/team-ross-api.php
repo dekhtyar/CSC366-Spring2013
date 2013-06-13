@@ -219,7 +219,7 @@ class TeamRossAPI {
 
       $stmt3 = $this->db->prepare("
         UPDATE LocationSellsProducts SET
-          storeSku=:storeSku, safetyStock=:safetyStock, ltd=:ltd
+          storeSku=:storeSku, safetyStock=:safetyStock, ltd=:ltd, onHand=:onHand
           WHERE fulfillerId=:fulfillerID
             AND productUpc=:productUpc
             AND internalLocationId=:internalLocationId
@@ -238,6 +238,10 @@ class TeamRossAPI {
       $fetch = $stmt4->fetch(PDO::FETCH_ASSOC);
 
       // UPDATE INVENTORY FOR EACH ITEM
+    if (!is_array($items->items))
+      $items = array($items->items);
+    else $items = $items->items;
+
       foreach ($items as $item) {
         if (0 == $item->BinID) {
           $item->BinID = 'Default';
@@ -258,6 +262,7 @@ class TeamRossAPI {
         $stmt3->bindParam(':fulfillerID',$FulfillerID);
         $stmt3->bindParam(':productUpc',$item->UPC);
         $stmt3->bindParam(':internalLocationId',$fetch['internalLocationId']);
+        $stmt3->bindParam(':onHand', $item->Quantity);
 
         // create bin if missing
         if (!$this->getBin($item->BinID, $fetch['internalLocationId']))
