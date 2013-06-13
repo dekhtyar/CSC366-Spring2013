@@ -104,9 +104,9 @@ class TeamRossAPI {
 		if (!$stmt->execute()) {
 			$out = print_r($stmt->errorInfo(), True);
 			error_log($out);
-			return False;
+			return false;
 		}
-		return True;
+		return true;
   }
 
   private function getBin($binName, $internalLocationId) {
@@ -138,8 +138,9 @@ class TeamRossAPI {
           LIMIT 1)
     ");
 
-    if ($binName == 0)
+    if ($binName === 0) {
       $binName = 'Default';
+    }
 
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':fulfillerId', $fulfillerId);
@@ -241,7 +242,7 @@ class TeamRossAPI {
         if (0 == $item->BinID) {
           $item->BinID = 'Default';
         }
-        error_log( "BinID: ".$item->BinID );
+
         $stmt1->bindParam(':binName', $item->BinID);
         $stmt1->bindParam(':internalLocationId', $fetch['internalLocationId']);
         $stmt1->bindParam(':productUpc', $item->UPC);
@@ -278,26 +279,82 @@ class TeamRossAPI {
     return true;
   }
 
-  private function allocateInventory($fulfillerId, $items) {
-    $success = True;
+  public function allocateInventory($allocateInventoryRequest) {
+    $success = true;
+    $fulfillerId = $allocateInventoryRequest->request->FulfillerID;
+    $items = $allocateInventoryRequest->request->Items;
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-      SET allocated = allocated + :quantity
+      SET allocated = (allocated + :quantity)
       WHERE fulfillerId = :fulfillerId
-        AND internalLocationId =
-          (SELECT FIRST(internalLocationId)
-          FROM Locations
-          WHERE fulfillerId = :fulfillerId2
-            AND  externalLocationId = :externalLocationId);
+      AND productUpc = :productUpc
+      AND internalLocationId =
+        (SELECT internalLocationId
+        FROM Locations
+        WHERE fulfillerId = :fulfillerId2
+        AND externalLocationId = :externalLocationId
+        LIMIT 1);
     ");
 
     $stmt->bindParam(":fulfillerId", $fulfillerId);
     $stmt->bindParam(":fulfillerId2", $fulfillerId);
 
+    // Convert items to a type we can understand
+    if (!is_array($items->items))
+      $items = array($items->items);
+    else $items = $items->items;
+
+    $x = print_r($items, true);
+    error_log($x);
+
     foreach ($items as $item) {
-      $stmt->bindParam(":externalLocationId", $item['ExternalLocationID']);
-      $stmt->bindParam(":quantity", $item['Quantity']);
+      error_log("UPDATING WITH NEW QUANITYT: " . $item->Quantity);
+      $stmt->bindParam(":productUpc", $item->UPC);
+      $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
+      $stmt->bindParam(":quantity", $item->Quantity);
+
+      if (!$stmt->execute())
+        $success = False;
+    }
+
+    return $success;
+  }
+
+  public function deallocateInventory($deallocateInventoryRequest) {
+    $success = true;
+    $fulfillerId = $deallocateInventoryRequest->request->FulfillerID;
+    $items = $deallocateInventoryRequest->request->Items;
+
+    $stmt = $this->db->prepare("
+      UPDATE LocationSellsProducts
+      SET allocated = (allocated - :quantity)
+      WHERE fulfillerId = :fulfillerId
+      AND productUpc = :productUpc
+      AND internalLocationId =
+        (SELECT internalLocationId
+        FROM Locations
+        WHERE fulfillerId = :fulfillerId2
+        AND externalLocationId = :externalLocationId
+        LIMIT 1);
+    ");
+
+    $stmt->bindParam(":fulfillerId", $fulfillerId);
+    $stmt->bindParam(":fulfillerId2", $fulfillerId);
+
+    // Convert items to a type we can understand
+    if (!is_array($items->items))
+      $items = array($items->items);
+    else $items = $items->items;
+
+    $x = print_r($items, true);
+    error_log($x);
+
+    foreach ($items as $item) {
+      error_log("UPDATING WITH NEW QUANITYT: " . $item->Quantity);
+      $stmt->bindParam(":productUpc", $item->UPC);
+      $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
+      $stmt->bindParam(":quantity", $item->Quantity);
 
       if (!$stmt->execute())
         $success = False;
@@ -335,7 +392,6 @@ class TeamRossAPI {
     else $items = $items->items;
 
     foreach ($items as $item) {
-      error_log("Updating " . $item->UPC . " with new quantity: " . $item->Quantity);
       $stmt->bindParam(":productUpc", $item->UPC);
       $stmt->bindParam(":externalLocationId", $item->ExternalLocationID);
       $stmt->bindParam(":quantity", $item->Quantity);
@@ -421,14 +477,14 @@ class TeamRossAPI {
       FROM (
 
       SELECT
-  lc.fulfillerId AS FulFillerId,
+  l.fulfillerId AS FulFillerId,
   l.externalLocationId AS ExternalLocationID,
-  ( 3959 * acos( cos( radians(:latitude) ) * cos( radians( l.latitude ) ) *
-  cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) *
+  ( 3959 * acos( cos( radians(:latitude0) ) * cos( radians( l.latitude ) ) *
+  cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude1) ) *
   sin( radians( l.latitude ) ) ) ) AS distance
       FROM Locations l INNER JOIN LocationOffersCatalogs lc
-      ON lc.internalLocationId = l.interalLocationId
-      WHERE lc.fulfillerId = :fulfillerId
+      ON lc.internalLocationId = l.internalLocationId
+      WHERE l.fulfillerId = :fulfillerId
       AND lc.manufacturerId = :mfgId
       AND lc.catalogId = :catalogId
       HAVING distance < :distance
@@ -437,19 +493,29 @@ class TeamRossAPI {
 
       ) myview
     ");
-    $stmt->bindParam(':fufillerId', $fulfillerId);
+    $stmt->bindParam(':fulfillerId', $fulfillerId);
     $stmt->bindParam(':mfgId', $catalog->ManufacturerID);
     $stmt->bindParam(':catalogId', $catalog->CatalogID);
-    $stmt->bindParam(':latitude', $location->Latitude);
+    $stmt->bindParam(':latitude0', $location->Latitude);
+    $stmt->bindParam(':latitude1', $location->Latitude);
     $stmt->bindParam(':longitude', $location->Longitude);
     $stmt->bindParam(':distance', $location->Radius);
     $stmt->bindParam(':maxlocations', $maxlocations);
 
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        $success = false;
+        $err = print_r($stmt->errorInfo(), true);
+        error_log($err);
+		}
 
-    return array('AssignmentResponse' => array($stmt->fetch(PDO::FETCH_ASSOC)));
-
-  //    $stmt->fetch(PDO::FETCH_ASSOC);
+		$arr = array();
+    while ($loc = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$assignment = new \stdClass;
+			$assignment->FulfillerID = $loc['FulfillerId'];
+			$assignment->ExternalLocationID = $loc['ExternalLocationID'];
+      $arr[] = $assignment;
+		}
+    return $arr;
   }
 
   public function adjustInventory($fulfillerId, $externalLocationId, $items) {
@@ -457,13 +523,14 @@ class TeamRossAPI {
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-        onHand = :quantity
+			SET onHand = :quantity
       WHERE productUpc = :upc
-        AND internalLocatioId =
-          (SELECT FIRST(internalLocationId)
-          FROM Locations
-          WHERE fulfillerId = :fulfillerId
-            AND  externalLocationId = :externalLocationId);
+        AND internalLocationId =
+	        (SELECT internalLocationId
+	        FROM Locations
+	        WHERE fulfillerId = :fulfillerId
+	        AND externalLocationId = :externalLocationId
+	        LIMIT 1);
     ");
 
     $stmt->bindParam(":fulfillerId", $fulfillerId);
@@ -581,6 +648,8 @@ class TeamRossAPI {
     $arr = array();
     while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
       $arr[] = $sel;
+
+		error_log(print_r($arr, true));
     return $arr;
   }
 }

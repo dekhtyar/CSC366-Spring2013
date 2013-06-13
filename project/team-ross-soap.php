@@ -12,9 +12,6 @@ class TeamRossSOAP {
 
     try {
       $db = new PDO("mysql:host=$hostname;dbname=$database", $username, $password);
-      //Both of these to throw exceptions
-      $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-      $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       $this->api = new TeamRossAPI($db);
     }
     catch (PDOException $e) {
@@ -73,13 +70,17 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-    return (
+		$locs =
         $this->api->findLocations($GetFulfillmentLocationsRequest->request->FulfillerID,
                     $GetFulfillmentLocationsRequest->request->Catalog,
                     $GetFulfillmentLocationsRequest->request->Location,
                     $GetFulfillmentLocationsRequest->request->MaxLocations
-                    ) 
-                ); 
+                    ) ;
+
+				$out = print_r($locs, true);
+				error_log($out);
+    return array('getFulfillmentLocationsReturn' =>
+                $locs);
   }
 
   // **********************************************************************
@@ -100,19 +101,14 @@ class TeamRossSOAP {
   // Matt S
   // **********************************************************************
   function allocateInventory($UpdateRequest) {
-    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-      $UpdateItem['Items']) ? 0 : -1;
+    return $this->api->allocateInventory($UpdateRequest) ? 0 : -1;
   }
 
   // **********************************************************************
   // Ian
   // **********************************************************************
-  function deallocateInventory($UpdateItem) {
-    foreach ($UpdateItem['Items'] as $CurrElem)
-      $CurrElem['Quantity'] = $CurrElem['Quantity'] * -1;
-
-    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-                         $UpdateItem['Items']) ? 0 : -1;
+  function deallocateInventory($request) {
+    return $this->api->deallocateInventory($request) ? 0 : -1;
   }
 
   // **********************************************************************
@@ -131,7 +127,7 @@ class TeamRossSOAP {
 				$request->FulfillerID, $request->ExternalLocationID,
 				$request->Name, $request->BinType,
 				$request->BinStatus
-			) ? 0 : -1
+			) ? 2 : 1
     );
   }
 
@@ -213,18 +209,18 @@ class TeamRossSOAP {
   function adjustInventory() {
     if ($this->api->adjustInventory($AdjustRequest['FulfillerId'],
       $AdjustRequest['ExternalLocationID'], $AdjustRequest['items'])) {
-      return "SUCCESS!";
+      return "success";
     }
-    return "FAILURE!";
+    return "failure";
   }
 
   // **********************************************************************
   // MATT T
   // **********************************************************************
   function refreshInventory( $RefreshRequest ) {
-    $out = print_r( $RefreshRequest, true );
     $eid = $RefreshRequest->ExternalLocationID;
     $fid = $RefreshRequest->FulfillerID;
-    return $this->api->refreshInventory($eid, $fid, $RefreshRequest->Items);
+
+    return $this->api->refreshInventory($eid, $fid, $RefreshRequest->Items) ? 'success' : 'failure';
   }
 }

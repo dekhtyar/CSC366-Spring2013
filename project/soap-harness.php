@@ -68,15 +68,15 @@
 
     $request->request->FulfillerID = 91710;
     $request->request->Catalog = new \stdClass;
-    $request->request->Catalog->ManufacturerID = 1392; 
+    $request->request->Catalog->ManufacturerID = 1392;
     $request->request->Catalog->CatalogID = 1;
     $request->request->Location = new \stdClass;
     $request->request->Location->Unit = 'MILES';
-    $request->request->Location->Radius = 30;
+    $request->request->Location->Radius = 200000;
     $request->request->Location->PostalCode = 93450;
     $request->request->Location->Latitude = 45.000100;
     $request->request->Location->Longitude = -93.083100;
-    $request->request->Location->CountryCode = 5; 
+    $request->request->Location->CountryCode = 5;
     $request->request->MaxLocations = 5;
 
      // $request->request->FulfillerID = $location['fulfiller_id'];
@@ -93,11 +93,73 @@
   }
 
   function allocateInventory($client, $request) {
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 69170;
 
+    $request->request->FulfillerLocationCatalog = new \stdClass;
+    $request->request->FulfillerLocationCatalog->ExternalLocationID = 440008;
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog = new \stdClass;
+
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog->ManufacturerID = 11416;
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog->CatalogID = 0;
+
+    $item = new \stdClass;
+    $item->PartNumber = 8888010248;
+    $item->UPC = 8888010248;
+    $item->Quantity = 2;
+    $item->OrderID = null;
+    $item->OrderItemID = null;
+    $item->ShipmentID = null;
+    $item->ExternalLocationID = 440008;
+
+    $item2 = new \stdClass;
+    $item2->PartNumber = 8888010248;
+    $item2->UPC = 8888010248;
+    $item2->Quantity = 3;
+    $item2->OrderID = null;
+    $item2->OrderItemID = null;
+    $item2->ShipmentID = null;
+    $item2->ExternalLocationID = 440008;
+
+    $request->request->Items = array($item, $item2);
+
+    $ret = $client->allocateInventory($request);
+    print_r($ret);
   }
 
   function deallocateInventory($client, $request) {
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 69170;
 
+    $request->request->FulfillerLocationCatalog = new \stdClass;
+    $request->request->FulfillerLocationCatalog->ExternalLocationID = 440008;
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog = new \stdClass;
+
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog->ManufacturerID = 11416;
+    $request->request->FulfillerLocationCatalog->ManufacturerCatalog->CatalogID = 0;
+
+    $item = new \stdClass;
+    $item->PartNumber = 8888010248;
+    $item->UPC = 8888010248;
+    $item->Quantity = 2;
+    $item->OrderID = null;
+    $item->OrderItemID = null;
+    $item->ShipmentID = null;
+    $item->ExternalLocationID = 440008;
+
+    $item2 = new \stdClass;
+    $item2->PartNumber = 8888010248;
+    $item2->UPC = 8888010248;
+    $item2->Quantity = 3;
+    $item2->OrderID = null;
+    $item2->OrderItemID = null;
+    $item2->ShipmentID = null;
+    $item2->ExternalLocationID = 440008;
+
+    $request->request->Items = array($item, $item2);
+
+    $ret = $client->deallocateInventory($request);
+    print_r($ret);
   }
 
   function fulfillInventory($client, $request) {
@@ -139,24 +201,22 @@
     $data = get_csv_data('csv_data/fulfiller_location_bins.csv');
 
     $request->request = new \stdClass;
+		$request->request->FulfillerID = 48590;
+    $request->request->ExternalLocationID = 600;
+    $request->request->BinID = 'teamross';
+    $request->request->BinType = 'teamrossinserted';
+    $request->request->BinStatus = 'inactive';
+    $request->request->Name = 'teamross';
 
-    foreach ($data as $bin) {
-			$request->request->FulfillerID = 48590;
-      $request->request->ExternalLocationID = $bin['external_fulfiller_location_id'];
-      $request->request->BinID = $bin['bin_name'];
-      $request->request->BinType = $bin['bin_type'];
-      $request->request->BinStatus = $bin['bin_status'];
-      $request->request->Name = $bin['bin_name'];
-
-      print_r($client->createBin($request));
-    }
+    print_r($client->createBin($request));
+    error_log($client->__getLastResponse());
   }
 
   function getBins($client, $request) {
     $request->request = new \stdClass;
     $request->request->FulfillerID = 48590;
     $request->request->ExternalLocationID = 600;
-    $request->request->SearchTerm = 'Default';
+    $request->request->SearchTerm = 'teamross';
     $request->request->NumResults = 100;
     $request->request->ResultsStart = 0;
 
@@ -200,11 +260,23 @@
   }
 
   function adjustInventory($client, $request) {
+		$Request->ExternalLocationID = 440008;
+    $Request->FulfillerID = 69170;
+    $item = new \stdClass;
+    $item->PartNumber = 8888010248;
+    $item->UPC = 8888010248;
+    $item->BinID = 'Default';
+    $item->Quantity = 99;
+    $item->LTD = 20;
+    $item->SafetyStock = 10;
+    $Request->Items  = array( $item );
 
+    $ret = $client->adjustInventory($Request);
+    print_r($ret);
+    print "\n";
   }
 
   function refreshInventory($client, $Request) {
-
     $Request->ExternalLocationID = 440008;
     $Request->FulfillerID = 69170;
     $item = new \stdClass;
@@ -216,8 +288,9 @@
     $item->SafetyStock = 10;
     $Request->Items  = array( $item );
 
-    print_r($client->refreshInventory($Request));
-
+    $ret = $client->refreshInventory($Request);
+    print_r($ret);
+    print "\n";
   }
 
   // **********************************************************************
