@@ -194,8 +194,7 @@ class TeamRossSOAP {
   // *********************************************************************
   function getInventory($GetInventoryRequest) {
     $GetInventoryRequest = $GetInventoryRequest->request;
-
-    $ret = $this->api->getInventory($GetInventoryRequest->FulfillerId,
+    $ret = $this->api->getInventory($GetInventoryRequest->FulfillerID,
             $GetInventoryRequest->Catalog,
             $GetInventoryRequest->Quantities,
             $GetInventoryRequest->LocationNames,

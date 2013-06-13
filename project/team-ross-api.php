@@ -546,9 +546,9 @@ class TeamRossAPI {
                    catalogId AS CatalogID,
                    manufacturerId AS ManufacturerID,
                    onHand AS OnHand,
-                   (onHand - allocated ";
+                   (onHand - allocated";
     if (!$ignoreSafetyStock) {
-        $str = $str . "- safetyStock ";
+        $str = $str . " - safetyStock";
     }
     $str = $str . ") AS Available,
                    sku AS PartNumber,
@@ -580,10 +580,10 @@ class TeamRossAPI {
     foreach($quantities as $currItem) {
         if ($i > 0) {
             if ($type = "ANY" || $type == "PARTIAL") {
-                $str = $str . " OR ";
+                $str = $str . "\nOR ";
             }
             else {
-                $str = $str . " AND ";
+                $str = $str . "\nAND ";
             }
         }
 
@@ -604,23 +604,20 @@ class TeamRossAPI {
     $str = $str . ")";
 
     if ($orderByLTD) {
-      $str = $str . " ORDER BY ltd DESC";
+      $str = $str . "\n            ORDER BY ltd DESC";
     }
 
     if ($limit != null) {
-      $str = $str . " LIMIT 0, :limit";
+      $str = $str . "\n            LIMIT 0, :limit";
     }
 
-    $str = $str . ";";
-
-    error_log($str);
     $stmt = $this->db->prepare($str);
 
-    $stmt->bindParam(':fulfillerID', $fulfillerID);
-    $stmt->bindParam(':catalogID', $catalog->CatalogID);
-    $stmt->bindParam(':manufacturerID', $catalog->ManufacturerID);
+    $stmt->bindParam(':fulfillerID', $fulfillerID, PDO::PARAM_INT);
+    $stmt->bindParam(':catalogID', $catalog->CatalogID, PDO::PARAM_INT);
+    $stmt->bindParam(':manufacturerID', $catalog->ManufacturerID, PDO::PARAM_INT);
     if ($limit != null) {
-      $stmt->bindParam(':limit', $limit);
+      $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     }
 
     $i = 0;
@@ -628,21 +625,23 @@ class TeamRossAPI {
         $stmt->bindParam(":upc" . $i, $currItem->UPC);
 
         if (type == "ANY") {
-            $stmt->bindParam(":quantity" . $i, 1);
+            $stmt->bindParam(":quantity" . $i, 1, PDO::PARAM_INT);
         }
         else {
-            $stmt->bindParam(":quantity" . $i, $currItem->Quantity);
+            $stmt->bindParam(":quantity" . $i, $currItem->Quantity, PDO::PARAM_INT);
         }
 
         $i++;
     }
 
-    $stmt->execute();
+    if (!$stmt->execute()) {
+			error_log(print_r($stmt->errorInfo(), true));
+		}
+		
     $arr = array();
-    while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
+    while ($sel = $stmt->fetch(PDO::FETCH_OBJ)) {
       $arr[] = $sel;
-
-		error_log(print_r($arr, true));
+		}
     return $arr;
   }
 }
