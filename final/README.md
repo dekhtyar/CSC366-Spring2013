@@ -30,7 +30,12 @@ Adjust inventory is underimplemented
 
 This project was made to connect to the webUI using tomcat 7.0 and Axis2. These instructions assumes that the user knows to install a tomcat server on their machine. 
 
-Please download the cpe366Test.war file, and click and drag that into your /usr/share/apache-tomcat-7.0.40/webapps/ folder. Once it is inside run the command "service tomcat start". This should automatically deploy the files onto the server. The endpoint to connect to the files on our vm was localhost:8080 although this can vary from system to system. The files that contain the files are located at /cpe366Test/services/CoreServiceService. Thus the complete endpoint used for the demo is http://localhost:8080/cpe366Test/services/CoreServiceService. In the web connection folder you can find the different files that were used in the implementation of the SOAP and XML parser. 
+The WebConnection folder contains a zip folder that holes the structure of the webUI interface along with api.java and CoreServiceServiceSkeleton.java
 
-The file that called our api.java is located on the top level and is CoreServiceServiceSkeleton.java . This files the requests structure and the calling of the api.java methods to fill the responses to the SOAP parser.
+Please download the cpe366Test.war file, and click and drag that into your /usr/share/apache-tomcat-7.0.40/webapps/ folder. Once it is inside run the command "service tomcat start". This should automatically deploy the files onto the server.
+ The endpoint to connect to the files on our vm was localhost:8080 although this can vary from system to system. The files that contain the files are located at /cpe366Test/services/CoreServiceService. Thus the complete endpoint used for the demo is http://localhost:8080/cpe366Test/services/CoreServiceService. In the web connection folder you can find the different files that were used in the implementation of the SOAP and XML parser. 
+
+
+
+The file that calles our api.java is located on the top level and is CoreServiceServiceSkeleton.java . This file represents the request and response structure of the SOAP.  The calling of the api.java methods all happens in CoreServiceServiceSkeleton.java.
 
