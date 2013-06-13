@@ -61,7 +61,7 @@ class TeamRossAPI {
       $this->createCatalog($catalogId, $mfgId);
 
     // Create default Bin
-    $this->createBin($intLID, 'Default', 'Default', $status);
+    $this->createBin($fulfillerId, $extLID, 'Default', 'Default', $status);
 
     // Create LocationOffersCatalog
     $relational = $this->db->prepare("
