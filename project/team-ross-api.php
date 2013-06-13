@@ -486,11 +486,11 @@ class TeamRossAPI {
                    catalogId AS CatalogID,
                    manufacturerId AS ManufacturerID,
                    onHand AS OnHand,
-                   (onHand – allocated) ";
+                   (onHand - allocated ";
     if (!$ignoreSafetyStock) {
-        $str = $str . "– safetyStock ";
+        $str = $str . "- safetyStock ";
     }
-    $str = $str . "AS Available,
+    $str = $str . ") AS Available,
                    sku AS PartNumber,
                    productUpc AS UPC,
                    ltd AS LTD,
@@ -512,7 +512,9 @@ class TeamRossAPI {
         $str .= "externalLocationId = :location" . $i;
     }
 
-    $str = $str . ") AND (";
+    if (count($locationNames) > 0) {
+      $str = $str . ") AND (";
+    }
 
     $i = 0;
     foreach($quantities as $currItem) {
@@ -525,16 +527,16 @@ class TeamRossAPI {
             }
         }
 
-        $str = $str . "productUpc = :upc" . $i . ")";
-        // We can ignore PartNumber since UPC isn't nillable
-
         if ( !($includeNegInv && $type == "ANY") ) {
             $str = $str . "( (onHand - allocated ";
             if (!$ignoreSafetyStock) {
-                $str = $str . "– safetyStock ";
+                $str = $str . "- safetyStock ";
             }
             $str = $str . ") >= :quantity" . $i . " AND ";
         }
+
+        $str = $str . "productUpc = :upc" . $i . ")";
+        // We can ignore PartNumber since UPC isn't nillable
 
         $i++;
     }
@@ -555,8 +557,8 @@ class TeamRossAPI {
     $stmt = $this->db->prepare($str);
 
     $stmt->bindParam(':fulfillerID', $fulfillerID);
-    $stmt->bindParam(':catalogID', $catalog['CatalogID']);
-    $stmt->bindParam(':manufacturerID', $catalog['ManufacturerID']);
+    $stmt->bindParam(':catalogID', $catalog->CatalogID);
+    $stmt->bindParam(':manufacturerID', $catalog->ManufacturerID);
     if ($limit != null) {
       $stmt->bindParam(':limit', $limit);
     }
@@ -569,7 +571,7 @@ class TeamRossAPI {
             $stmt->bindParam(":quantity" . $i, 1);
         }
         else {
-            $stmt->bindParam(":quantity" . $i, $currItem['Quantity']);
+            $stmt->bindParam(":quantity" . $i, $currItem->Quantity);
         }
 
         $i++;

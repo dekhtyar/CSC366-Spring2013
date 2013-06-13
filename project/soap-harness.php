@@ -173,7 +173,30 @@
   }
 
   function getInventory($client, $request) {
+    $iq1 = new \stdClass;
+    $iq1->PartNumber = 14239745;
+    $iq1->UPC = 14239745;
+    $iq1->Quantity = 2;
 
+    $loc1 = new \stdClass;
+    $loc1->ExternalLocationID = 600;
+
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 48590;
+    $request->request->Catalog = new \stdClass;
+    $request->request->Catalog->ManufacturerID = 10636;
+    $request->request->Catalog->CatalogID = 0;
+    $request->request->Quantities = array($iq1);
+    $request->request->LocationNames = $loc1;
+    $request->request->Location = null;
+    $request->request->Type = "ANY";
+    $request->request->Limit = 500;
+    $request->request->IgnoreSafetyStock = true;
+    $request->request->IncludeNegativeInventory = false;
+    $request->request->OrderByLTD = false;
+
+    $ret = $client->getInventory($request);
+    print_r($ret);
   }
 
   function adjustInventory($client, $request) {

@@ -193,16 +193,17 @@ class TeamRossSOAP {
   // Ian
   // *********************************************************************
   function getInventory($GetInventoryRequest) {
-    return $this->api->getInventory($GetInventoryRequest['FulfillerId'],
-            $GetInventoryRequest['Catalog'],
-            $GetInventoryRequest['Quantities'],
-            $GetInventoryRequest['LocationNames'],
-            $GetInventoryRequest['Location'],
-            $GetInventoryRequest['Type'],
-            $GetInventoryRequest['Limit'],
-            $GetInventoryRequest['IgnoreSafetyStock'],
-            $GetInventoryRequest['IncludeNegativeInventory'],
-            $GetInventoryRequest['OrderByLTD']
+    $GetInventoryRequest = $GetInventoryRequest->request;
+
+    return $this->api->getInventory($GetInventoryRequest->FulfillerId,
+            $GetInventoryRequest->Catalog,
+            $GetInventoryRequest->Quantities,
+            $GetInventoryRequest->LocationNames,
+            $GetInventoryRequest->Type,
+            $GetInventoryRequest->Limit,
+            $GetInventoryRequest->IgnoreSafetyStock,
+            $GetInventoryRequest->IncludeNegativeInventory,
+            $GetInventoryRequest->OrderByLTD
           );
   }
 
