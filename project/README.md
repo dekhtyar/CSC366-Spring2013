@@ -2,13 +2,13 @@ Running Tests
 -------------
 
 ## Reset database
-###``php test-harness.php destroy && php test-harness.php create``
+###``php bulk-ops.php destroy && php bulk-ops.php create``
 
 ## Test inserts via SOAP
 ###``php soap-harness.php create``
 
 ## Seed all data (lab05)
-###``php test-harness.php reset`` OR ``php test-harness.php seed``
+###``php bulk-ops.php reset`` OR ``php bulk-ops.php seed``
 **Note: ``reset`` will destory and create tables prior to seeding**
 
 ## Test an individual function
