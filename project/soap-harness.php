@@ -282,18 +282,13 @@
     $iq1->UPC = 8888032133;
     $iq1->Quantity = 1;
 
-    $loc1 = new \stdClass;
-    $loc1->ExternalLocationID = 440006;
-    $loc2 = new \stdClass;
-    $loc2->ExternalLocationID = 440005;
-
     $request->request = new \stdClass;
     $request->request->FulfillerID = 69170;
     $request->request->Catalog = new \stdClass;
     $request->request->Catalog->ManufacturerID = 11416;
     $request->request->Catalog->CatalogID = 0;
     $request->request->Quantities = array($iq1);
-    $request->request->LocationNames = array($loc1, $loc2);
+    $request->request->LocationNames = array("440005");
     $request->request->Location = null;
     $request->request->Type = "ANY";
     $request->request->Limit = 500;
@@ -305,6 +300,37 @@
     print_r($ret);
   }
 
+  function getInventoryPartial($client, $request) {
+    $iq1 = new \stdClass;
+    $iq1->PartNumber = 8888032133;
+    $iq1->UPC = 8888032133;
+    $iq1->Quantity = 1;
+
+    $iq2 = new \stdClass;
+    $iq2->PartNumber = 8888056664;
+    $iq2->UPC = 8888056664;
+    $iq2->Quantity = 5;
+
+    $locs = new \stdClass;
+    $locs->ExternalLocationID = 440005;
+
+    $request->request = new \stdClass;
+    $request->request->FulfillerID = 69170;
+    $request->request->Catalog = new \stdClass;
+    $request->request->Catalog->ManufacturerID = 11416;
+    $request->request->Catalog->CatalogID = 0;
+    $request->request->Quantities = array($iq1, $iq2);
+    $request->request->LocationNames = $locs;
+    $request->request->Location = null;
+    $request->request->Type = "PARTIAL";
+    $request->request->Limit = 500;
+    $request->request->IgnoreSafetyStock = true;
+    $request->request->IncludeNegativeInventory = false;
+    $request->request->OrderByLTD = false;
+
+    $ret = $client->getInventory($request);
+    print_r($ret);
+  }
 
   function adjustInventory($client, $request) {
 		$Request->ExternalLocationID = 440008;
