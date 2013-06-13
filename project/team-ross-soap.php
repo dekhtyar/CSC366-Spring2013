@@ -100,19 +100,14 @@ class TeamRossSOAP {
   // Matt S
   // **********************************************************************
   function allocateInventory($UpdateRequest) {
-    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-      $UpdateItem['Items']) ? 0 : -1;
+    return $this->api->allocateInventory($UpdateRequest) ? 0 : -1;
   }
 
   // **********************************************************************
   // Ian
   // **********************************************************************
-  function deallocateInventory($UpdateItem) {
-    foreach ($UpdateItem['Items'] as $CurrElem)
-      $CurrElem['Quantity'] = $CurrElem['Quantity'] * -1;
-
-    return $this->api->allocateInventory($UpdateItem['FulfillerId'],
-                         $UpdateItem['Items']) ? 0 : -1;
+  function deallocateInventory($request) {
+    return $this->api->deallocateInventory($request) ? 0 : -1;
   }
 
   // **********************************************************************
