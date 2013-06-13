@@ -265,7 +265,10 @@ function db_seed($db) {
   $data = get_csv_data($csv['location_bins']);
   $count = 0;
 
-  foreach($data as &$bin) {
+  foreach ($data as &$bin) {
+    if (getBin($bin['bin_name'], $bin['internal_fulfiller_location_id'], $db))
+      continue;
+
     createBin(
       $bin['internal_fulfiller_location_id'],
       $bin['bin_name'],
@@ -288,7 +291,7 @@ function db_seed($db) {
 
   print ".";
   foreach($data as &$data_chunk) {
-    seedInventory($data_chunk, $db);
+    //seedInventory($data_chunk, $db);
     print ".";
   }
 
@@ -376,6 +379,16 @@ function createBin($internalLocationId, $binName, $binType, $binStatus, $db) {
 
 function createFulfillmentLocation($locationName, $extLID, $intLID,
   $fulfillerId, $locationType, $latitude, $longitude, $status, $safetyStock,$mfgId, $catalogId, $db) {
+
+  $check = $db->prepare("SELECT count(*) RCOUNT FROM Locations WHERE internalLocationId = :intLID");
+  $check->bindParam(':intLID', $intLID);
+  $check->execute();
+  $num = $check->fetch(PDO::FETCH_ASSOC);
+
+  if ($num['RCOUNT'] > 0) {
+    return;
+  }
+
   $success = TRUE;
     // Create Location, update if exists
     $stmt = $db->prepare("
@@ -403,11 +416,10 @@ function createFulfillmentLocation($locationName, $extLID, $intLID,
   }
 
   // Create catalog if missing
-  if (!getCatalog($catalogId, $db))
+  if (!getCatalog($catalogId, $mfgId, $db))
     createCatalog($catalogId, $mfgId, $db);
 
   // Create default Bin
-  print $intLID . "\n";
   if (!getBin('Default', $intLID, $db))
     createBin($intLID, 'Default', 'Default', $status, $db);
 
@@ -444,7 +456,7 @@ function createFulfiller( $id, $name, $db ) {
 
 function getBin($binName, $internalLocationId, $db) {
   $stmt = $db->prepare("
-    SELECT * FROM Bins
+    SELECT count(*) RCOUNT FROM Bins
     WHERE binName = :binName
     AND internalLocationId = :internalLocationId
   ");
@@ -457,11 +469,12 @@ function getBin($binName, $internalLocationId, $db) {
 
   $stmt->execute();
 
-  return $stmt->fetch(PDO::FETCH_ASSOC);
+  $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $fetch['RCOUNT'] == 0 ? false : true;
 }
 
 function createProduct($product, $db) {
-  if (!getCatalog($product['catalog_id'], $db))
+  if (!getCatalog($product['catalog_id'], $proudct['mfg_id'], $db))
     createCatalog($product['catalog_id'], $product['mfg_id'], $db);
 
   $stmt = $db->prepare("
@@ -479,19 +492,23 @@ function createProduct($product, $db) {
   $stmt->execute();
 }
 
-function getCatalog($catalog_id, $db) {
+function getCatalog($catalog_id, $mfg_id, $db) {
   $stmt = $db->prepare("
-    SELECT * FROM Catalogs
+    SELECT count(*) RCOUNT FROM Catalogs
     WHERE catalogId = :catalogId
+    AND manufacturerId = :mfgId
   ");
+
   $stmt->bindParam(':catalogId', $catalog_id);
+  $stmt->bindParam(':mfgId', $mfg_id);
 
   if (!$stmt->execute()) {
     print "\ngetCatalog\n";
     print_r($stmt->errorInfo());
   }
 
-  return $stmt->fetch(PDO::FETCH_ASSOC);
+  $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $fetch['RCOUNT'] == 0 ? false : true;
 }
 
 function createCatalog($catalog_id, $mfg_id, $db) {
