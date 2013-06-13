@@ -148,10 +148,10 @@ class TeamRossAPI {
     $stmt->execute();
 
     $arr = array();
-    while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+    while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
+      $arr[] = $sel;
 
-    if (count($arr) == 1 && $arr[0] == null) return null;
-    else return $arr;
+    return $arr;
   }
 
   public function getBinTypes() {
@@ -162,7 +162,9 @@ class TeamRossAPI {
     $stmt->execute();
 
     $arr = array();
-    while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+    while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
+      $arr[] = $sel;
+
     return $arr;
   }
 
@@ -175,8 +177,9 @@ class TeamRossAPI {
     $stmt->execute();
 
     $arr = array();
-    while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
-      return $arr;
+    while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
+      $arr[] = $sel;
+    return $arr;
   }
 
   private function getFulfillerIdFromLocationId($internalLocationId) {
@@ -270,7 +273,8 @@ class TeamRossAPI {
       error_log( $e->getMessage() );
       return false;
     }
-    return true;//array();
+
+    return true;
   }
 
   private function allocateInventory($fulfillerId, $items) {
@@ -569,7 +573,8 @@ class TeamRossAPI {
 
     $stmt->execute();
     $arr = array();
-    while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
+    while ($sel = $stmt->fetch(PDO::FETCH_ASSOC))
+      $arr[] = $sel;
     return $arr;
   }
 }
