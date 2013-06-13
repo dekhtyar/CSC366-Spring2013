@@ -201,24 +201,21 @@
     $data = get_csv_data('csv_data/fulfiller_location_bins.csv');
 
     $request->request = new \stdClass;
+		$request->request->FulfillerID = 48590;
+    $request->request->ExternalLocationID = 600;
+    $request->request->BinID = 'teamross';
+    $request->request->BinType = 'teamrossinserted';
+    $request->request->BinStatus = 'inactive';
+    $request->request->Name = 'teamross';
 
-    foreach ($data as $bin) {
-			$request->request->FulfillerID = 48590;
-      $request->request->ExternalLocationID = $bin['external_fulfiller_location_id'];
-      $request->request->BinID = $bin['bin_name'];
-      $request->request->BinType = $bin['bin_type'];
-      $request->request->BinStatus = $bin['bin_status'];
-      $request->request->Name = $bin['bin_name'];
-
-      print_r($client->createBin($request));
-    }
+    print_r($client->createBin($request));
   }
 
   function getBins($client, $request) {
     $request->request = new \stdClass;
     $request->request->FulfillerID = 48590;
     $request->request->ExternalLocationID = 600;
-    $request->request->SearchTerm = 'Default';
+    $request->request->SearchTerm = 'teamross';
     $request->request->NumResults = 100;
     $request->request->ResultsStart = 0;
 
