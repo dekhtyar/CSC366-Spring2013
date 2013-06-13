@@ -1,6 +1,6 @@
-This is a README file for CSC366-Spring2013 repository.
+Team GLADE
 
-Most of the attention should go to the wiki.
+Final set of deliverables can be found in the "final" folder
 
 Team Members:
 
@@ -13,6 +13,7 @@ George Reyes 	(greyes01@calpoly.edu)
 Lauren Thurston 	(lathurst@calpoly.edu)
 
 Diego Torres 	(dtorre08@calpoly.edu)
+
 
 How to commit to git from your home computer:
 
