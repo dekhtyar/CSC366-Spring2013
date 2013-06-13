@@ -209,6 +209,7 @@
     $request->request->Name = 'teamross';
 
     print_r($client->createBin($request));
+    error_log($client->__getLastResponse());
   }
 
   function getBins($client, $request) {
