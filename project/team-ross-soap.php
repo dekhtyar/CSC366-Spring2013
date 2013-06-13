@@ -83,9 +83,7 @@ class TeamRossSOAP {
 				$out = print_r($locs, true);
 				error_log($out);
     return array('getFulfillmentLocationsReturn' =>
-                $locs); 
-                    )
-                );
+                $locs);
   }
 
   // **********************************************************************
@@ -213,9 +211,9 @@ class TeamRossSOAP {
   function adjustInventory() {
     if ($this->api->adjustInventory($AdjustRequest['FulfillerId'],
       $AdjustRequest['ExternalLocationID'], $AdjustRequest['items'])) {
-      return array('AdjustResponse' => "success");
+      return "success";
     }
-    return array('AdjustResponse' => "failure");
+    return "failure";
   }
 
   // **********************************************************************

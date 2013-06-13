@@ -239,7 +239,20 @@
   }
 
   function adjustInventory($client, $request) {
+		$Request->ExternalLocationID = 440008;
+    $Request->FulfillerID = 69170;
+    $item = new \stdClass;
+    $item->PartNumber = 8888010248;
+    $item->UPC = 8888010248;
+    $item->BinID = 'Default';
+    $item->Quantity = 99;
+    $item->LTD = 20;
+    $item->SafetyStock = 10;
+    $Request->Items  = array( $item );
 
+    $ret = $client->adjustInventory($Request);
+    print_r($ret);
+    print "\n";
   }
 
   function refreshInventory($client, $Request) {

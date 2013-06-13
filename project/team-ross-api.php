@@ -522,13 +522,14 @@ class TeamRossAPI {
 
     $stmt = $this->db->prepare("
       UPDATE LocationSellsProducts
-        onHand = :quantity
+			SET onHand = :quantity
       WHERE productUpc = :upc
-        AND internalLocatioId =
-          (SELECT FIRST(internalLocationId)
-          FROM Locations
-          WHERE fulfillerId = :fulfillerId
-            AND  externalLocationId = :externalLocationId);
+        AND internalLocationId =
+	        (SELECT internalLocationId
+	        FROM Locations
+	        WHERE fulfillerId = :fulfillerId
+	        AND externalLocationId = :externalLocationId
+	        LIMIT 1);
     ");
 
     $stmt->bindParam(":fulfillerId", $fulfillerId);
