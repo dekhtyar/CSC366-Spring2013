@@ -4,99 +4,257 @@ import (
 	"apersci/input"
 	"apersci/output"
 	"apersci/soap"
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
-/*
-From the Inventory-Spec-v2.pdf:
-
-There are a few use modes for the Get Inventory request. However, there are some common elements
-to all requests. All get inventory requests involve:
-	• A manufacturer id and catalog id
-	• One or more SKU/UPC combinations, with a minimum on-hand stock threshold.
-	• Limited to one type of store location.
-	• An upper limit on how many locations should be returned.
-	• A flag on if safety stock should be enforced.
-	• A flag on if negative available inventory should be included.
-	• A flag to order by LTD or by quantity available.
-
-The variations of the Get Inventory request are:
-	1. Limit the results to one or more locations, identified by name.
-	2. Limit the results to locations within a specific distance radius of a given Latitude and Longitude.
-	3. Limit the results to locations within a specific distance radius of a given zip code.
-*/
+const TYPE_ALL_STORES = "ALL_STORES"
+const TYPE_ALL = "ALL"
+const TYPE_PARTIAL = "PARTIAL"
+const TYPE_ANY = "ANY"
 
 func getInventory(w http.ResponseWriter, r *http.Request) (err error) {
-	fmt.Println("In getInventory\n")
-
 	req, err := input.GetInventoryRequest(r.Body)
 	if err != nil {
 		return
 	}
 
-	fmt.Println("get connection\n")
-	conn, err := getDBConnection()
+	tx, err := getDBTransaction()
 	if err != nil {
 		return
 	}
-	defer conn.Close()
+	defer tx.Rollback()
 
-	/*
-		144 type InventoryRequest struct {
-		145     FulfillerID              uint
-		146     Quantities               []InventoryItem `xml:">items"`
-		147     LocationIDs              []uint          `xml:">LocationIDs"`
-		148     Location                 Location
-		149     Type                     string
-		150     Limit                    int
-		151     IgnoreSafetyStock        bool
-		152     IncludeNegativeInventory bool
-		153     OrderByLTD               bool
-		154 }
-	*/
-	req = req
-	var resp soap.GetInventoryResponse
-	/* TODO
-	rows, err := conn.Query(`
-		SELECT l.FulfillerID, b.ID, l.ID, b.Type, b.Status, b.Name
-		FROM Bins b
-			JOIN Locations l ON (l.Id = b.LocationID)
-		WHERE l.FulfillerID = $1
-			AND l.ID = $2
-			AND b.Name LIKE '%`+req.SearchTerm+`%'
-		LIMIT $3 OFFSET $4`,
-		req.FulfillerID, req.FulfillerLocationID, req.NumResults, req.ResultsStart)
+	fmt.Println("Processing\n")
+	resp, err := processGetInventoryRequest(req, tx)
 	if err != nil {
 		return
 	}
 
-	var resp soap.GetBinsResponse
-	for rows.Next() {
-		var bin soap.Bin
-		err = rows.Scan(&bin.FulfillerID, &bin.BinID, &bin.FulfillerLocationID,
-			&bin.BinType, &bin.BinStatus, &bin.Name)
-		if err != nil {
-			return
-		}
-
-		resp.Return.Bins = append(resp.Return.Bins, bin)
-	}
-	err = rows.Err()
-	if err != nil {
-		return
-	}
-
-	resp.Return.ResultCount = len(resp.Return.Bins)
-
-	*/
-
-	fmt.Println("converting\n")
+	fmt.Println("Converting\n")
 	err = output.GetInventoryResponse(w, resp)
 	if err != nil {
 		return
 	}
 
+	err = tx.Commit()
+	if err != nil {
+		return
+	}
+
 	fmt.Println("Returning\n")
+	return
+}
+
+/*
+	type InventoryRequest struct {
+		FulfillerID              uint
+		Quantities               []InventoryItem
+		Type                     string
+			// ALL = ALL_STORES
+			// PARTIAL (can fulfill any one quantity of items)
+			// ANY (has any items at all)
+
+		LocationIDs              []uint         // Limit to these locations, if any
+		Location                 Location		// Limit to a distance, if any
+		Limit                    int			// upper limit on how many locations returned
+
+		IgnoreSafetyStock        bool			// use the safety stock value?
+		IncludeNegativeInventory bool		    // include negative available inventory
+		OrderByLTD               bool			// Order by LTD or, if false, quantity available
+	}
+
+	type InventoryItem struct {
+		PartNumber string	// SKU
+		UPC        string	// UPC
+		Quantity   int		// minimum available stock theshold
+	}
+*/
+func processGetInventoryRequest(req soap.InventoryRequest, tx *sql.Tx) (resp soap.GetInventoryResponse, err error) {
+	var result []soap.InventoryReturn
+	// TODO add distance
+
+	fmt.Println("Getting locationIDs\n")
+	locationIDs, err := getSearchableLocationIDs(req, tx)
+	if err != nil {
+		return
+	}
+
+	for _, locationID := range locationIDs {
+		var partialItemsFound []soap.InventoryReturn
+		var anyItemsFound []soap.InventoryReturn
+
+		for _, item := range req.Quantities {
+			// FIXME remove possible SQL injection
+			whereClause_UPCorSKU := ""
+			if item.PartNumber != "" {
+				whereClause_UPCorSKU += " AND fp.SKU = '" + item.PartNumber + "' "
+			}
+			if item.UPC != "" {
+				whereClause_UPCorSKU += " AND fp.UPC = '" + item.UPC + "' "
+			}
+			if item.UPC == "" && item.PartNumber == "" {
+				err = errors.New("UPC or PartNumber is required")
+				return resp, err
+			}
+
+			fmt.Printf("LocationID = %d\n", locationID)
+			rows, err := tx.Query(`
+				SELECT l.Name, SUM(bp.OnHand), SUM(bp.OnHand - bp.Allocated) AS Available,
+					fp.SKU, fp.UPC, lp.LTD, lp.SafetyStock
+				FROM BinProducts bp
+					JOIN FulfillerProducts fp ON (fp.FulfillerID = bp.FulfillerID AND fp.SKU = bp.SKU)
+					JOIN Bins b ON (b.ID = bp.BinID)
+					JOIN Locations l ON (l.ID = b.LocationID)
+					JOIN LocationProducts lp ON (lp.LocationID = l.ID AND lp.SKU = bp.SKU)
+				WHERE l.ID = $1`+whereClause_UPCorSKU+`
+				GROUP BY l.Name, fp.SKU, fp.UPC, lp.LTD, lp.SafetyStock
+				`, locationID)
+
+			if err != nil {
+				return resp, err
+			}
+
+			// if item was found
+			if rows.Next() {
+				var ret soap.InventoryReturn
+				/*
+				   type InventoryReturn struct {
+				   	LocationName string
+				   	OnHand       int
+				   	Available    int
+				   	PartNumber   string
+				   	UPC          string
+				   	LTD          float64
+				   	SafetyStock  int
+				   	CountryCode  string // ??
+				   	Distance     float64
+				   }
+				*/
+				err = rows.Scan(&ret.LocationName, &ret.OnHand, &ret.Available, &ret.PartNumber,
+					&ret.UPC, &ret.LTD, &ret.SafetyStock)
+				if err != nil {
+					return resp, err
+				}
+
+				err = rows.Close()
+				if err != nil {
+					return resp, err
+				}
+
+				// conditionally use safety stock
+				effectiveAvailableItems := ret.Available - ret.SafetyStock
+				if req.IgnoreSafetyStock {
+					effectiveAvailableItems = ret.Available
+				}
+
+				fmt.Printf("Effective available = %d\n", effectiveAvailableItems)
+				if effectiveAvailableItems > 0 || req.IncludeNegativeInventory {
+					// determine if all the items were found
+					if effectiveAvailableItems >= item.Quantity {
+						partialItemsFound = append(partialItemsFound, ret)
+					} else {
+						anyItemsFound = append(anyItemsFound, ret)
+					}
+				}
+			}
+		}
+
+		// potentially include the result depending on the type of request
+		switch {
+		case req.Type == TYPE_ALL || req.Type == TYPE_ALL_STORES:
+			// only include if all the items were found
+			if len(partialItemsFound) == len(req.Quantities) {
+				result = append(result, partialItemsFound...)
+			}
+		case req.Type == TYPE_PARTIAL:
+			result = append(result, partialItemsFound...)
+		case req.Type == TYPE_ANY:
+			result = append(result, partialItemsFound...)
+			result = append(result, anyItemsFound...)
+		default:
+			err = errors.New("Invalid Get Inventory request type: '" + req.Type + "'")
+			return
+		}
+	}
+
+	// sort and limit the results
+	result = sortGetInventoryResponse(req, result)
+	if req.Limit > 0 && req.Limit < len(result) {
+		result = result[:req.Limit]
+	}
+
+	resp.Return = result
+	return
+}
+
+// it seems there is no easy way to sort a slice of InventoryReturns
+// using different types of comparison functions
+func sortGetInventoryResponse(req soap.InventoryRequest, resp []soap.InventoryReturn) (sortedResp []soap.InventoryReturn) {
+	var isLessThan func(soap.InventoryReturn, soap.InventoryReturn) bool
+
+	if req.OrderByLTD {
+		isLessThan = func(inv1 soap.InventoryReturn, inv2 soap.InventoryReturn) bool {
+			return inv1.LTD > inv2.LTD
+		}
+	} else {
+		isLessThan = func(inv1 soap.InventoryReturn, inv2 soap.InventoryReturn) bool {
+			return inv1.Available < inv2.Available
+		}
+	}
+
+	// simple insertion sort
+	for _, invReturn := range resp {
+		x := 0
+		for x < len(sortedResp) && isLessThan(invReturn, sortedResp[x]) {
+			x = x + 1
+		}
+
+		invReturnToAppend := invReturn
+		for x < len(sortedResp) {
+			swp := sortedResp[x]
+			sortedResp[x] = invReturnToAppend
+			invReturnToAppend = swp
+			x = x + 1
+		}
+
+		sortedResp = append(sortedResp, invReturnToAppend)
+	}
+
+	return
+}
+
+func getSearchableLocationIDs(req soap.InventoryRequest, tx *sql.Tx) (locationIDs []uint, err error) {
+	if len(req.LocationIDs) != 0 {
+		// get the location ID for each external location ID
+		for _, extLocationID := range req.LocationIDs {
+			locationID, err := getInternalFromExternalLocationID(tx, extLocationID)
+			if err != nil {
+				return locationIDs, err
+			}
+
+			locationIDs = append(locationIDs, locationID)
+		}
+	} else {
+		// get all locations of the fulfiller
+		rows, err := tx.Query(`SELECT id FROM Locations WHERE FulfillerID = $1`, req.FulfillerID)
+		if err != nil {
+			return locationIDs, err
+		}
+
+		locationIDs, err = readUintSliceAndCloseRows(rows)
+		if err != nil {
+			return locationIDs, err
+		}
+
+		if len(locationIDs) == 0 {
+			err = errors.New("Could not find any locations with Fulfiller ID = '" + strconv.Itoa(int(req.FulfillerID)) + "'")
+			return locationIDs, err
+		}
+	}
+
 	return
 }

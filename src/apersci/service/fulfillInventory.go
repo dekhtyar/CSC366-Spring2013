@@ -91,7 +91,7 @@ func fulfillAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 				WHERE BinID = $1`,
 				binID)
 
-			maxToFulfill, err := readIntAndCloseRows(rows)
+			maxToFulfill, err := readIntAndCloseRows(rows, "Fulfillable Inventory")
 			if err != nil {
 				return err
 			}

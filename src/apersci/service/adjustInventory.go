@@ -52,7 +52,7 @@ func adjustInventory(w http.ResponseWriter, r *http.Request) (err error) {
 			return err
 		}
 
-		fulfillerid, err := readIntAndCloseRows(rows)
+		fulfillerid, err := readIntAndCloseRows(rows, "FulfillerID")
 		if err != nil {
 			return err
 		}
@@ -63,7 +63,7 @@ func adjustInventory(w http.ResponseWriter, r *http.Request) (err error) {
 			return err
 		}
 
-		count, err := readIntAndCloseRows(rows)
+		count, err := readIntAndCloseRows(rows, "COUNT(*)")
 		if err != nil {
 			return err
 		}
@@ -80,7 +80,7 @@ func adjustInventory(w http.ResponseWriter, r *http.Request) (err error) {
 				return err
 			}
 
-			count, err = readIntAndCloseRows(rows)
+			count, err = readIntAndCloseRows(rows, "COUNT(*)")
 			if err != nil {
 				return err
 			}
@@ -98,7 +98,7 @@ func adjustInventory(w http.ResponseWriter, r *http.Request) (err error) {
 				return err
 			}
 
-			count, err = readIntAndCloseRows(rows)
+			count, err = readIntAndCloseRows(rows, "COUNT(*)")
 			if err != nil {
 				return err
 			}
@@ -126,7 +126,7 @@ func adjustInventory(w http.ResponseWriter, r *http.Request) (err error) {
 			return err
 		}
 
-		count, err = readIntAndCloseRows(rows)
+		count, err = readIntAndCloseRows(rows, "COUNT(*)")
 		if err != nil {
 			return err
 		}

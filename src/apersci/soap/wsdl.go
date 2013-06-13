@@ -144,7 +144,7 @@ type GetInventory struct {
 type InventoryRequest struct {
 	FulfillerID              uint
 	Quantities               []InventoryItem `xml:">items"`
-	LocationIDs              []uint          `xml:">LocationIDs"`
+	LocationIDs              []string        `xml:">LocationIDs"`
 	Location                 Location
 	Type                     string
 	Limit                    int

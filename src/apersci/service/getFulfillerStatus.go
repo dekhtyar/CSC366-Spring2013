@@ -30,7 +30,7 @@ func getFulfillerStatus(w http.ResponseWriter, r *http.Request) (err error) {
 		return
 	}
 
-	count, err := readIntAndCloseRows(rows)
+	count, err := readIntAndCloseRows(rows, "COUNT(*)")
 	if err != nil {
 		return
 	}

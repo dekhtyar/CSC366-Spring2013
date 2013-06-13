@@ -73,7 +73,7 @@ func isDeallocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool
 			return isPossible, err
 		}
 
-		allocated, err := readIntAndCloseRows(rows)
+		allocated, err := readIntAndCloseRows(rows, "Allocated Inventory")
 		if err != nil {
 			return isPossible, err
 		}
@@ -128,7 +128,7 @@ func deallocateAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 				WHERE BinID = $1`,
 				binID)
 
-			maxToDeallocate, err := readIntAndCloseRows(rows)
+			maxToDeallocate, err := readIntAndCloseRows(rows, "Allocated Inventory")
 			if err != nil {
 				return err
 			}

@@ -1,11 +1,9 @@
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v4="http://v4.core.coexprivate.api.shopatron.com">
    <soapenv:Header/>
    <soapenv:Body>
-       <v4:getInventoryResponse>{{range .getInventoryResponse}}
+       <v4:getInventoryResponse>{{range .Return}}
          <v4:getInventoryReturn>
-             <v4:LocationName>{{.LocationName}}</v4:LocationName>
-            <v4:CatalogID>{{.CatalogID}}</v4:CatalogID>
-            <v4:ManufacturerID>{{.ManufacturerID}}</v4:ManufacturerID>
+            <v4:LocationName>{{.LocationName}}</v4:LocationName>
             <v4:OnHand>{{.OnHand}}</v4:OnHand>
             <v4:Available>{{.Available}}</v4:Available>
             <v4:PartNumber>{{.PartNumber}}</v4:PartNumber>

@@ -63,9 +63,9 @@ func isAllocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool, 
 			SELECT (SUM(bp.OnHand) - SUM(bp.Allocated) - lp.SafetyStock) AS Available
 			FROM BinProducts bp
 				JOIN FulfillerProducts fp ON (fp.FulfillerID = bp.FulfillerID AND fp.SKU = bp.SKU)
-				JOIN LocationProducts lp ON (lp.FulfillerID = bp.FulfillerID and lp.SKU = bp.SKU)
 				JOIN Bins b ON (b.ID = bp.BinID)
 				JOIN Locations l ON (l.ID = b.LocationID)
+				JOIN LocationProducts lp ON (lp.LocationID = l.ID AND lp.SKU = bp.SKU)
 				JOIN Products p ON (p.UPC = fp.UPC)
 			WHERE l.ExternalFulfillerID = $1`+whereClause_UPCorSKU+`
 			GROUP BY lp.SafetyStock`,
@@ -74,7 +74,7 @@ func isAllocationPossible(tx *sql.Tx, req soap.UpdateRequest) (isPossible bool, 
 			return isPossible, err
 		}
 
-		adjustedAvailable, err := readIntAndCloseRows(rows)
+		adjustedAvailable, err := readIntAndCloseRows(rows, "Available Inventory")
 		if err != nil {
 			return isPossible, err
 		}
@@ -129,7 +129,7 @@ func allocateAllItems(tx *sql.Tx, req soap.UpdateRequest) (err error) {
 				WHERE BinID = $1`,
 				binID)
 
-			maxToAllocate, err := readIntAndCloseRows(rows)
+			maxToAllocate, err := readIntAndCloseRows(rows, "Available Inventory")
 			if err != nil {
 				return err
 			}
