@@ -140,11 +140,24 @@ class TeamRossSOAP {
   // **********************************************************************
   function getBins($GetBinsRequest) {
     $request = $GetBinsRequest->request;
-    $bins = $this->api->getBins($request->SearchTerm, $request->FulfillerLocationID);
+    $bins = $this->api->getBins($request->SearchTerm, $request->FulfillerID, $request->ExternalLocationID);
+
+    // Format bins for SOAP
+    foreach ($bins as &$bin) {
+      $new = new \stdClass;
+      $new->FulfillerID = $request->FulfillerID;
+      $new->BinID = null;
+      $new->ExternalLocationID = $request->ExternalLocationID;
+      $new->BinType = $bin['binType'];
+      $new->Name = $bin['binName'];
+      $new->BinStatus = $bin['status'];
+
+      $bin = $new;
+    }
 
     return array(
       'getBinsReturn' => array(
-        'Bins' => $bins,
+        'Bins' => array('items' => $bins),
         'ResultCount' => count($bins)
       ));
   }

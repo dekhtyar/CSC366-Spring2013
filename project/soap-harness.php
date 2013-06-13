@@ -142,7 +142,7 @@
     $request->request = new \stdClass;
     $request->request->FulfillerID = 48590;
     $request->request->ExternalLocationID = 600;
-    $request->request->SearchTerm = 01010101;
+    $request->request->SearchTerm = 'Default';
     $request->request->NumResults = 100;
     $request->request->ResultsStart = 0;
 
