@@ -134,9 +134,9 @@ class TeamRossAPI {
       AND internalLocationId = :internalLocationId
     ");
 
-    if( $binName = 0 ) {
+    if ($binName == 0)
       $binName = 'Default';
-    }
+
     $stmt->bindValue(':binName', $binName);
     $stmt->bindValue(':internalLocationId', $internalLocationId);
 
@@ -144,7 +144,9 @@ class TeamRossAPI {
 
     $arr = array();
     while ($arr[] = $stmt->fetch(PDO::FETCH_ASSOC));
-    return $arr;
+
+    if (count($arr) == 1 && $arr[0] == null) return null;
+    else return $arr;
   }
 
   public function getBinTypes() {
