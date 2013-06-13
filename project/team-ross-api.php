@@ -438,15 +438,18 @@ class TeamRossAPI {
       ) myview
     ");
     $stmt->bindParam(':fufillerId', $fulfillerId);
-    $stmt->bindParam(':mfgId', $catalog['mfg_id']);
-    $stmt->bindParam(':catalogId', $catalog['catalog_id']);
-    $stmt->bindParam(':latitude', $location['latitude']);
-    $stmt->bindParam(':longitude', $location['longitude']);
-    $stmt->bindParam(':distance', $location['radius']);
+    $stmt->bindParam(':mfgId', $catalog->ManufacturerID);
+    $stmt->bindParam(':catalogId', $catalog->CatalogID);
+    $stmt->bindParam(':latitude', $location->Latitude);
+    $stmt->bindParam(':longitude', $location->Longitude);
+    $stmt->bindParam(':distance', $location->Radius);
     $stmt->bindParam(':maxlocations', $maxlocations);
+
     $stmt->execute();
 
-    return $stmt->fetchALL(PDO::FETCH_ASSOC);
+    return array('AssignmentResponse' => array($stmt->fetch(PDO::FETCH_ASSOC)));
+
+  //    $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
   public function adjustInventory($fulfillerId, $externalLocationId, $items) {
