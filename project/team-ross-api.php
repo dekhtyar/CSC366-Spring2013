@@ -421,14 +421,14 @@ class TeamRossAPI {
       FROM (
 
       SELECT
-  lc.fulfillerId AS FulFillerId,
+  l.fulfillerId AS FulFillerId,
   l.externalLocationId AS ExternalLocationID,
-  ( 3959 * acos( cos( radians(:latitude) ) * cos( radians( l.latitude ) ) *
-  cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) *
+  ( 3959 * acos( cos( radians(:latitude0) ) * cos( radians( l.latitude ) ) *
+  cos( radians( l.longitude ) - radians(:longitude) ) + sin( radians(:latitude1) ) *
   sin( radians( l.latitude ) ) ) ) AS distance
       FROM Locations l INNER JOIN LocationOffersCatalogs lc
-      ON lc.internalLocationId = l.interalLocationId
-      WHERE lc.fulfillerId = :fulfillerId
+      ON lc.internalLocationId = l.internalLocationId
+      WHERE l.fulfillerId = :fulfillerId
       AND lc.manufacturerId = :mfgId
       AND lc.catalogId = :catalogId
       HAVING distance < :distance
@@ -437,19 +437,29 @@ class TeamRossAPI {
 
       ) myview
     ");
-    $stmt->bindParam(':fufillerId', $fulfillerId);
+    $stmt->bindParam(':fulfillerId', $fulfillerId);
     $stmt->bindParam(':mfgId', $catalog->ManufacturerID);
     $stmt->bindParam(':catalogId', $catalog->CatalogID);
-    $stmt->bindParam(':latitude', $location->Latitude);
+    $stmt->bindParam(':latitude0', $location->Latitude);
+    $stmt->bindParam(':latitude1', $location->Latitude);
     $stmt->bindParam(':longitude', $location->Longitude);
     $stmt->bindParam(':distance', $location->Radius);
     $stmt->bindParam(':maxlocations', $maxlocations);
 
-    $stmt->execute();
-
-    return array('AssignmentResponse' => array($stmt->fetch(PDO::FETCH_ASSOC)));
-
-  //    $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$stmt->execute()) {
+        $success = false;
+        $err = print_r($stmt->errorInfo(), true);
+        error_log($err);
+		}
+		
+		$arr = array();
+    while ($loc = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			$assignment = new \stdClass;
+			$assignment->FulfillerID = $loc['FulfillerId'];
+			$assignment->ExternalLocationID = $loc['ExternalLocationID'];
+      $arr[] = $assignment;
+		}
+    return $arr;
   }
 
   public function adjustInventory($fulfillerId, $externalLocationId, $items) {

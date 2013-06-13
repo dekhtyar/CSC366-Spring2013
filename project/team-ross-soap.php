@@ -73,13 +73,17 @@ class TeamRossSOAP {
   // Riley
   // **********************************************************************
   function getFulfillmentLocations($GetFulfillmentLocationsRequest) {
-    return (
+		$locs = 
         $this->api->findLocations($GetFulfillmentLocationsRequest->request->FulfillerID,
                     $GetFulfillmentLocationsRequest->request->Catalog,
                     $GetFulfillmentLocationsRequest->request->Location,
                     $GetFulfillmentLocationsRequest->request->MaxLocations
-                    ) 
-                ); 
+                    ) ;
+
+				$out = print_r($locs, true);
+				error_log($out);
+    return array('getFulfillmentLocationsReturn' =>
+                $locs); 
   }
 
   // **********************************************************************
