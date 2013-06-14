@@ -553,7 +553,7 @@ public class api {
    }
 
    public ArrayList<String> getBinTypes() {
-      String query = "SELECT b.Type "
+      String query = "SELECT DISTINCT b.Type "
             + "FROM StoreBin b, Location l "
             + "WHERE b.FulfillerId = l.FulfillerId "
             + "AND b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
@@ -562,7 +562,7 @@ public class api {
    }
 
    public ArrayList<String> getBinStatuses() {
-      String query = "SELECT b.Status "
+      String query = "SELECT DISTINCT b.Status "
             + "FROM StoreBin b, Location l "
             + "WHERE b.FulfillerId = l.FulfillerId "
             + "AND b.ExternalFulfillerLocationId = l.ExternalFulfillerLocationId";
