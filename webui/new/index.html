@@ -52,6 +52,10 @@
         <form class="pure-form">
             <fieldset>
             <input type="text" ng-model="remoteHost" placeholder="http://example.com">
+            <label for="realSOAP">
+                <input id="realSOAP" type="checkbox" ng-model="useRealSOAP">
+                Use real SOAP (/inventoryService/ instead of /&lt;operationName&gt;/)
+            </label>
             <!--
             <label for="remember">
                 <input id="remember" type="checkbox" ng-model="rememberHost"> Remember

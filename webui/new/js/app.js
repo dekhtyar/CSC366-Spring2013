@@ -156,7 +156,7 @@ angular.module('apersci', ['apersci.services', 'apersci.controllers', 'apersci.f
     },
     getFulfillerStatus: {
         getFulfillerStatus: {
-            fulfillerID: { _label:'Fulfiller ID', __placeholder:'positiveInteger', __value:'' }
+            fulfillerID: { __label:'Fulfiller ID', __placeholder:'positiveInteger', __value:'' }
         }
     },
     getFulfillmentLocationTypes: {
@@ -177,7 +177,8 @@ angular.module('apersci', ['apersci.services', 'apersci.controllers', 'apersci.f
                     Latitude:    { __label:'Latitude',     __placeholder:'double',          __value:'' },
                     Longitude:   { __label:'Longitude',    __placeholder:'double',          __value:'' },
                     CountryCode: { __label:'Country Code', __placeholder:'string',          __value:'' }
-                }
+                },
+                MaxLocations: { __label:'Max Locations', __placeholder:'positiveInteger', __value:'' }
             }
         }
     },

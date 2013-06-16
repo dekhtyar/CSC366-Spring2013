@@ -186,12 +186,12 @@
             }
 
             function doProducts() {
-                var products = _.map(data, function(row) { return row.slice(1, 5).concat(row.slice(7)); }); // TODO slice out ext ful loc id
+                var products = _.map(data, function(row) { return row.slice(1, 5).concat(row.splice(7)); }); // TODO slice out ext ful loc id
                 //SKU,UPC,safety_stock,ltd,onhand,bin_name,external_fulfiller_location_id,internal_fulfiller_location_id
                 var productRequests = _.map(products, function(row) {
                     return [row[0], WSDL.refreshInventory({
                         FulfillerID: 0,
-                        LocationName: row[7],
+                        LocationName: row[6],
                         Items: [{
                             PartNumber: row[0],
                             UPC: row[1],
